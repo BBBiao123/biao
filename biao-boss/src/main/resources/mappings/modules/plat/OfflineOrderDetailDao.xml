@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.OfflineOrderDetailDao">
+    
+	<sql id="offlineOrderDetailColumns">
+		a.id AS "id",
+		a.order_id AS "orderId",
+		a.sub_order_id AS "subOrderId",
+		a.volume AS "volume",
+		a.coin_id AS "coinId",
+		a.symbol AS "symbol",
+		a.price AS "price",
+		a.total_price AS "totalPrice",
+		a.user_id AS "userId",
+		a.ask_user_id AS "askUserId",
+		a.remarks AS "remarks",
+		a.status AS "status",
+		a.radom_num AS "radomNum",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.sync_date AS "syncDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="offlineOrderDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="OfflineOrderDetail">
+		SELECT 
+			<include refid="offlineOrderDetailColumns"/>
+		FROM js_plat_offline_order_detail a
+		<include refid="offlineOrderDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OfflineOrderDetail">
+		SELECT 
+			<include refid="offlineOrderDetailColumns"/>
+		FROM js_plat_offline_order_detail a
+		<include refid="offlineOrderDetailJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="subOrderId != null and subOrderId != ''">
+				AND a.sub_order_id = #{subOrderId}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OfflineOrderDetail">
+		SELECT 
+			<include refid="offlineOrderDetailColumns"/>
+		FROM js_plat_offline_order_detail a
+		<include refid="offlineOrderDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_order_detail(
+			id,
+			order_id,
+			sub_order_id,
+			volume,
+			coin_id,
+			symbol,
+			price,
+			total_price,
+			user_id,
+			ask_user_id,
+			remarks,
+			status,
+			radom_num,
+			create_date,
+			update_date,
+			sync_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{subOrderId},
+			#{volume},
+			#{coinId},
+			#{symbol},
+			#{price},
+			#{totalPrice},
+			#{userId},
+			#{askUserId},
+			#{remarks},
+			#{status},
+			#{radomNum},
+			#{createDate},
+			#{updateDate},
+			#{syncDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_order_detail SET 	
+			order_id = #{orderId},
+			sub_order_id = #{subOrderId},
+			volume = #{volume},
+			coin_id = #{coinId},
+			symbol = #{symbol},
+			price = #{price},
+			total_price = #{totalPrice},
+			user_id = #{userId},
+			ask_user_id = #{askUserId},
+			remarks = #{remarks},
+			status = #{status},
+			radom_num = #{radomNum},
+			update_date = #{updateDate},
+			sync_date = #{syncDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_order_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

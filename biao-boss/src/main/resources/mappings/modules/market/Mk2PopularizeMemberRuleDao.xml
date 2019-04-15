@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeMemberRuleDao">
+    
+	<sql id="mk2PopularizeMemberRuleColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.release_open AS "releaseOpen",
+		a.release_version AS "releaseVersion",
+		a.release_day AS "releaseDay",
+		a.release_week AS "releaseWeek",
+		a.release_month AS "releaseMonth",
+		a.release_year AS "releaseYear",
+		a.release_type AS "releaseType",
+		a.total_member AS "totalMember",
+		a.sold_member AS "soldMember",
+		a.bonus_ratio AS "bonusRatio",
+		a.phone_bonus_ratio AS "phoneBonusRatio",
+		a.refer_bonus_ratio AS "referBonusRatio",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="mk2PopularizeMemberRuleJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeMemberRule">
+		SELECT 
+			<include refid="mk2PopularizeMemberRuleColumns"/>
+		FROM mk2_popularize_member_rule a
+		<include refid="mk2PopularizeMemberRuleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeMemberRule">
+		SELECT 
+			<include refid="mk2PopularizeMemberRuleColumns"/>
+		FROM mk2_popularize_member_rule a
+		<include refid="mk2PopularizeMemberRuleJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeMemberRule">
+		SELECT 
+			<include refid="mk2PopularizeMemberRuleColumns"/>
+		FROM mk2_popularize_member_rule a
+		<include refid="mk2PopularizeMemberRuleJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_member_rule(
+			id,
+			type,
+			release_open,
+			release_version,
+			release_day,
+			release_week,
+			release_month,
+			release_year,
+			release_type,
+			total_member,
+			sold_member,
+			bonus_ratio,
+			phone_bonus_ratio,
+			refer_bonus_ratio,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{type},
+			#{releaseOpen},
+			0,
+			#{releaseDay},
+			#{releaseWeek},
+			#{releaseMonth},
+			#{releaseYear},
+			#{releaseType},
+			#{totalMember},
+			#{soldMember},
+			#{bonusRatio},
+			#{phoneBonusRatio},
+			#{referBonusRatio},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_member_rule SET 	
+			type = #{type},
+			release_open = #{releaseOpen},
+			release_version = #{releaseVersion},
+			release_day = #{releaseDay},
+			release_week = #{releaseWeek},
+			release_month = #{releaseMonth},
+			release_year = #{releaseYear},
+			release_type = #{releaseType},
+			total_member = #{totalMember},
+			sold_member = #{soldMember},
+			bonus_ratio = #{bonusRatio},
+			phone_bonus_ratio = #{phoneBonusRatio},
+			refer_bonus_ratio = #{referBonusRatio},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_member_rule
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

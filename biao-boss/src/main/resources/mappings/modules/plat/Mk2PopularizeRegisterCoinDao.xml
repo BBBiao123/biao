@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.Mk2PopularizeRegisterCoinDao">
+    
+	<sql id="mk2PopularizeRegisterCoinColumns">
+		a.id AS "id",
+		a.register_conf_id AS "registerConfId",
+		a.conf_name AS "confName",
+		a.user_id AS "userId",
+		a.user_name AS "userName",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.volume AS "volume",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.for_user_id AS "forUserId",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="mk2PopularizeRegisterCoinJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeRegisterCoin">
+		SELECT 
+			<include refid="mk2PopularizeRegisterCoinColumns"/>
+		FROM mk2_popularize_register_coin a
+		<include refid="mk2PopularizeRegisterCoinJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeRegisterCoin">
+		SELECT 
+			<include refid="mk2PopularizeRegisterCoinColumns"/>
+		FROM mk2_popularize_register_coin a
+		<include refid="mk2PopularizeRegisterCoinJoins"/>
+		<where>
+			<if test="confName != null and confName != ''">
+				AND a.conf_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{confName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{confName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{confName},'%')</if>
+			</if>
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+			<if test="userName != null and userName != ''">
+				AND a.user_name = #{userName}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE concat('%',#{mail},'%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE concat('%',#{mobile},'%')
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeRegisterCoin">
+		SELECT 
+			<include refid="mk2PopularizeRegisterCoinColumns"/>
+		FROM mk2_popularize_register_coin a
+		<include refid="mk2PopularizeRegisterCoinJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_register_coin(
+			register_conf_id,
+			conf_name,
+			user_id,
+			user_name,
+			volume,
+			coin_id,
+			coin_symbol,
+			for_user_id,
+			status
+		) VALUES (
+			#{registerConfId},
+			#{confName},
+			#{userId},
+			#{userName},
+			#{volume},
+			#{coinId},
+			#{coinSymbol},
+			#{forUserId},
+			#{status}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_register_coin SET 	
+			register_conf_id = #{registerConfId},
+			conf_name = #{confName},
+			user_id = #{userId},
+			user_name = #{userName},
+			volume = #{volume},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			for_user_id = #{forUserId},
+			status = #{status},
+			create_date = #{createDate},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_register_coin
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

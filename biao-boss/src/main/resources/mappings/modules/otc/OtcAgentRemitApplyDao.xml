@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.otc.dao.OtcAgentRemitApplyDao">
+    
+	<sql id="otcAgentRemitApplyColumns">
+		a.id AS "id",
+		a.agent_id AS "agentId",
+		a.agent_name AS "agentName",
+		a.status AS "status",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.discount AS "discount",
+		a.pay_coin_type AS "payCoinType",
+		a.transfer_to AS "transferTo",
+		a.transfer_out AS "transferOut",
+		a.usdt_rate AS "usdtRate",
+		a.trade_coin_rate AS "tradeCoinRate",
+		a.volume AS "volume",
+		a.apply_volume AS "applyVolume",
+		a.remit_volume AS "remitVolume",
+		a.finance_audit_comment AS "financeAuditComment",
+		a.market_audit_comment AS "marketAuditComment",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.create_by_name AS "createByName",
+		a.update_by AS "updateBy",
+		a.update_by_name AS "updateByName"
+	</sql>
+	
+	<sql id="otcAgentRemitApplyJoins">
+	</sql>
+    
+	<select id="get" resultType="OtcAgentRemitApply">
+		SELECT 
+			<include refid="otcAgentRemitApplyColumns"/>
+		FROM otc_agent_remit_apply a
+		<include refid="otcAgentRemitApplyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OtcAgentRemitApply">
+		SELECT 
+			<include refid="otcAgentRemitApplyColumns"/>
+		FROM otc_agent_remit_apply a
+		<include refid="otcAgentRemitApplyJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by  = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OtcAgentRemitApply">
+		SELECT 
+			<include refid="otcAgentRemitApplyColumns"/>
+		FROM otc_agent_remit_apply a
+		<include refid="otcAgentRemitApplyJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO otc_agent_remit_apply(
+			id,
+			agent_id,
+			agent_name,
+			status,
+			coin_id,
+			coin_symbol,
+			discount,
+			pay_coin_type,
+			transfer_to,
+			transfer_out,
+			usdt_rate,
+			trade_coin_rate,
+			volume,
+			apply_volume,
+			remit_volume,
+			remark,
+			create_by,
+			create_by_name,
+			update_by,
+			update_by_name
+		) VALUES (
+			#{id},
+			#{agentId},
+			#{agentName},
+			#{status},
+			#{coinId},
+			#{coinSymbol},
+			#{discount},
+			#{payCoinType},
+			#{transferTo},
+			#{transferOut},
+			#{usdtRate},
+			#{tradeCoinRate},
+			#{volume},
+			#{applyVolume},
+			#{remitVolume},
+			#{remark},
+			#{createBy.id},
+			#{createByName},
+			#{updateBy.id},
+			#{updateByName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE otc_agent_remit_apply SET 	
+			id = #{id},
+			agent_id = #{agentId},
+			agent_name = #{agentName},
+			status = #{status},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			discount = #{discount},
+			pay_coin_type = #{payCoinType},
+			transfer_to = #{transferTo},
+			transfer_out = #{transferOut},
+			usdt_rate = #{usdtRate},
+			trade_coin_rate = #{tradeCoinRate},
+			volume = #{volume},
+			apply_volume = #{applyVolume},
+			remit_volume = #{remitVolume},
+			finance_audit_comment = #{financeAuditComment},
+			market_audit_comment = #{marketAuditComment},
+			remark = #{remark},
+			update_date = #{updateDate},
+			create_by_name = #{createByName},
+			update_by = #{updateBy.id},
+			update_by_name = #{updateByName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM otc_agent_remit_apply
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatCoinVolumeRiskMgtDao">
+    
+	<sql id="jsPlatCoinVolumeRiskMgtColumns">
+		a.id AS "id",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="jsPlatCoinVolumeRiskMgtJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatCoinVolumeRiskMgt">
+		SELECT 
+			<include refid="jsPlatCoinVolumeRiskMgtColumns"/>
+		FROM js_plat_coin_volume_risk_mgt a
+		<include refid="jsPlatCoinVolumeRiskMgtJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatCoinVolumeRiskMgt">
+		SELECT 
+			<include refid="jsPlatCoinVolumeRiskMgtColumns"/>
+		FROM js_plat_coin_volume_risk_mgt a
+		<include refid="jsPlatCoinVolumeRiskMgtJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatCoinVolumeRiskMgt">
+		SELECT 
+			<include refid="jsPlatCoinVolumeRiskMgtColumns"/>
+		FROM js_plat_coin_volume_risk_mgt a
+		<include refid="jsPlatCoinVolumeRiskMgtJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_coin_volume_risk_mgt(
+			id,
+			coin_id,
+			coin_symbol,
+			volume,
+			remark
+		) VALUES (
+			#{id},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_coin_volume_risk_mgt SET 	
+			id = #{id},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_coin_volume_risk_mgt
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

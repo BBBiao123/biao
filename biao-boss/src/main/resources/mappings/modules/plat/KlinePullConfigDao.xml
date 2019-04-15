@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.KlinePullConfigDao">
+    
+	<sql id="klinePullConfigColumns">
+		a.id AS "id",
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		a.exchange_name AS "exchangeName",
+		a.pull_url AS "pullUrl",
+		a.proxyed AS "proxyed",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="klinePullConfigJoins">
+	</sql>
+    
+	<select id="get" resultType="KlinePullConfig">
+		SELECT 
+			<include refid="klinePullConfigColumns"/>
+		FROM kline_pull_config a
+		<include refid="klinePullConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="KlinePullConfig">
+		SELECT 
+			<include refid="klinePullConfigColumns"/>
+		FROM kline_pull_config a
+		<include refid="klinePullConfigJoins"/>
+		<where>
+			
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="KlinePullConfig">
+		SELECT 
+			<include refid="klinePullConfigColumns"/>
+		FROM kline_pull_config a
+		<include refid="klinePullConfigJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO kline_pull_config(
+			id,
+			coin_main,
+			coin_other,
+			exchange_name,
+			pull_url,
+			proxyed,
+			status,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{coinMain},
+			#{coinOther},
+			#{exchangeName},
+			#{pullUrl},
+			#{proxyed},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE kline_pull_config SET 	
+			coin_main = #{coinMain},
+			coin_other = #{coinOther},
+			exchange_name = #{exchangeName},
+			pull_url = #{pullUrl},
+			proxyed = #{proxyed},
+			status = #{status},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM kline_pull_config
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

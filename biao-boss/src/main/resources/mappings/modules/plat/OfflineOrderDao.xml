@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.OfflineOrderDao">
+    
+	<sql id="offlineOrderColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.real_name AS "realName",
+		a.coin_id AS "coinId",
+		a.symbol AS "symbol",
+		a.volume AS "volume",
+		a.lock_volume AS "lockVolume",
+		a.success_volume AS "successVolume",
+		a.price AS "price",
+		a.total_price AS "totalPrice",
+		a.fee_volume AS "feeVolume",
+		a.status AS "status",
+		a.flag AS "flag",
+		a.ex_type AS "exType",
+		a.remarks AS "remarks",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="offlineOrderJoins">
+	</sql>
+    
+	<select id="get" resultType="OfflineOrder">
+		SELECT 
+			<include refid="offlineOrderColumns"/>
+		FROM js_plat_offline_order a
+		<include refid="offlineOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OfflineOrder">
+		SELECT 
+			<include refid="offlineOrderColumns"/>
+		FROM js_plat_offline_order a
+		<include refid="offlineOrderJoins"/>
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="realName != null and realName != ''">
+				AND a.real_name = #{realName}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OfflineOrder">
+		SELECT 
+			<include refid="offlineOrderColumns"/>
+		FROM js_plat_offline_order a
+		<include refid="offlineOrderJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_order(
+			id,
+			user_id,
+			real_name,
+			coin_id,
+			symbol,
+			volume,
+			lock_volume,
+			success_volume,
+			price,
+			total_price,
+			fee_volume,
+			status,
+			flag,
+			ex_type,
+			remarks,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{realName},
+			#{coinId},
+			#{symbol},
+			#{volume},
+			#{lockVolume},
+			#{successVolume},
+			#{price},
+			#{totalPrice},
+			#{feeVolume},
+			#{status},
+			#{flag},
+			#{exType},
+			#{remarks},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_order SET 	
+			user_id = #{userId},
+			real_name = #{realName},
+			coin_id = #{coinId},
+			symbol = #{symbol},
+			volume = #{volume},
+			lock_volume = #{lockVolume},
+			success_volume = #{successVolume},
+			price = #{price},
+			total_price = #{totalPrice},
+			fee_volume = #{feeVolume},
+			status = #{status},
+			flag = #{flag},
+			ex_type = #{exType},
+			remarks = #{remarks},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_order
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.otc.dao.OtcAgentUserDao">
+    
+	<sql id="otcAgentUserColumns">
+		a.id AS "id",
+		a.agent_id AS "agentId",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.real_name AS "realName",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="otcAgentUserJoins">
+	</sql>
+    
+	<select id="get" resultType="OtcAgentUser">
+		SELECT 
+			<include refid="otcAgentUserColumns"/>
+		FROM otc_agent_user a
+		<include refid="otcAgentUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getOneByUserId" resultType="OtcAgentUser">
+		SELECT
+		<include refid="otcAgentUserColumns"/>
+		FROM otc_agent_user a
+		<include refid="otcAgentUserJoins"/>
+		WHERE a.user_id = #{userId}
+	</select>
+	
+	<select id="findList" resultType="OtcAgentUser">
+		SELECT 
+			<include refid="otcAgentUserColumns"/>
+		FROM otc_agent_user a
+		<include refid="otcAgentUserJoins"/>
+		<where>
+			<if test="agentId != null and agentId != ''">
+				AND a.agent_id = #{agentId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OtcAgentUser">
+		SELECT 
+			<include refid="otcAgentUserColumns"/>
+		FROM otc_agent_user a
+		<include refid="otcAgentUserJoins"/>
+		<where>
+			<if test="agentId != null and agentId != ''">
+				AND a.agent_id = #{agentId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO otc_agent_user(
+			id,
+			agent_id,
+			user_id,
+			mail,
+			mobile,
+			real_name,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{agentId},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{realName},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE otc_agent_user SET 	
+			agent_id = #{agentId},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			real_name = #{realName},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM otc_agent_user
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteByAgentId">
+		DELETE FROM otc_agent_user
+		WHERE agent_id = #{agentId}
+	</update>
+	
+</mapper>

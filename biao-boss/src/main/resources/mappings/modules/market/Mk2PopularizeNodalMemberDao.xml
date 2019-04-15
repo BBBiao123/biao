@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeNodalMemberDao">
+    
+	<sql id="mk2PopularizeNodalMemberColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.parent_id AS "parentId",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+	  	a.id_card AS "idCard",
+	  	a.real_name AS "realName",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.lock_status AS "lockStatus",
+		a.lock_volume AS "lockVolume",
+		a.release_volume AS "releaseVolume",
+		a.release_begin_date AS "releaseBeginDate",
+		a.release_cycle AS "releaseCycle",
+		a.release_cycle_ratio AS "releaseCycleRatio",
+		a.release_over AS "releaseOver",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="mk2PopularizeNodalMemberJoins">
+	</sql>
+
+	<select id="findByUserId" resultType="Mk2PopularizeNodalMember">
+		SELECT
+			<include refid="mk2PopularizeNodalMemberColumns"/>
+		FROM mk2_popularize_nodal_member a
+		WHERE a.user_id = #{userId}
+	</select>
+
+	<select id="get" resultType="Mk2PopularizeNodalMember">
+		SELECT 
+			<include refid="mk2PopularizeNodalMemberColumns"/>
+		FROM mk2_popularize_nodal_member a
+		<include refid="mk2PopularizeNodalMemberJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeNodalMember">
+		SELECT 
+			<include refid="mk2PopularizeNodalMemberColumns"/>
+		FROM mk2_popularize_nodal_member a
+		<include refid="mk2PopularizeNodalMemberJoins"/>
+		<where>
+			a.type = '1'
+			<if test="mail != null and mail != ''">
+				AND a.mail = #{mail}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="releaseOver != null and releaseOver != ''">
+				AND a.release_over = #{releaseOver}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeNodalMember">
+		SELECT 
+			<include refid="mk2PopularizeNodalMemberColumns"/>
+		FROM mk2_popularize_nodal_member a
+		<include refid="mk2PopularizeNodalMemberJoins"/>
+		<where>
+			a.type = '1'
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findLockReleaseInfo" resultType="Mk2PopularizeNodalMember">
+		SELECT
+		<include refid="mk2PopularizeNodalMemberColumns"/>
+		FROM mk2_popularize_nodal_member a
+		WHERE a.parent_id = #{id} AND a.type = '2' ORDER BY a.create_date
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_nodal_member(
+			id,
+			type,
+			parent_id,
+			user_id,
+			mail,
+			mobile,
+			id_card,
+			real_name,
+			coin_id,
+			coin_symbol,
+			lock_status,
+			lock_volume,
+			release_begin_date,
+			release_cycle_ratio,
+			relation_id
+		) VALUES (
+			#{id},
+			#{type},
+			#{parentId},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{idCard},
+			#{realName},
+			#{coinId},
+			#{coinSymbol},
+			#{lockStatus},
+			#{lockVolume},
+			#{releaseBeginDate},
+			#{releaseCycleRatio},
+			#{relationId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_nodal_member SET 	
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			id_card = #{idCard},
+			real_name = #{realName},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			lock_volume = #{lockVolume},
+			release_begin_date = #{releaseBeginDate},
+			release_cycle_ratio = #{releaseCycleRatio}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateNoLockReleaseInfo">
+		UPDATE mk2_popularize_nodal_member SET
+			lock_status = #{lockStatus},
+			lock_volume = #{lockVolume},
+			release_begin_date = #{releaseBeginDate},
+			release_cycle_ratio = #{releaseCycleRatio}
+		WHERE id = #{id} AND lock_status = '0'
+	</update>
+
+	<update id="updateHadLockReleaseInfo">
+		UPDATE mk2_popularize_nodal_member SET
+			release_begin_date = #{releaseBeginDate},
+			release_cycle_ratio = #{releaseCycleRatio}
+		WHERE id = #{id} AND lock_status = '1'
+	</update>
+
+	<update id="delete">
+		DELETE FROM mk2_popularize_nodal_member
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

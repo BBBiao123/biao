@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.OfflineCancelLogDao">
+    
+	<sql id="offlineCancelLogColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.date AS "date",
+		a.user_id AS "userId"
+	</sql>
+	
+	<sql id="offlineCancelLogJoins">
+	</sql>
+    
+	<select id="get" resultType="OfflineCancelLog">
+		SELECT 
+			<include refid="offlineCancelLogColumns"/>
+		FROM offline_cancel_log a
+		<include refid="offlineCancelLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OfflineCancelLog">
+		SELECT 
+			<include refid="offlineCancelLogColumns"/>
+		FROM offline_cancel_log a
+		<include refid="offlineCancelLogJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OfflineCancelLog">
+		SELECT 
+			<include refid="offlineCancelLogColumns"/>
+		FROM offline_cancel_log a
+		<include refid="offlineCancelLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO offline_cancel_log(
+			id,
+			type,
+			date,
+			user_id
+		) VALUES (
+			#{id},
+			#{type},
+			#{date},
+			#{userId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE offline_cancel_log SET 	
+			type = #{type},
+			date = #{date},
+			user_id = #{userId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM offline_cancel_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

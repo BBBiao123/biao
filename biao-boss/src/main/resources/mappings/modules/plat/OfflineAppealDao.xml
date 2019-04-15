@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.OfflineAppealDao">
+    
+	<sql id="offlineAppealColumns">
+			a.id AS "id",
+			a.appeal_user_id AS "appealUserId",
+			a.appeal_mail AS "appealMail",
+			a.appeal_mobile AS "appealMobile",
+			a.appeal_real_name AS "appealRealName",
+			a.appeal_id_card AS "appealIdCard",
+			a.sub_order_id AS "subOrderId",
+			a.sell_user_id AS "sellUserId",
+			a.sell_mail AS "sellMail",
+			a.sell_mobile AS "sellMobile",
+			a.sell_real_name AS "sellRealName",
+			a.sell_id_card AS "sellIdCard",
+			a.buy_user_id AS "buyUserId",
+			a.buy_mail AS "buyMail",
+			a.buy_mobile AS "buyMobile",
+			a.buy_real_name AS "buyRealName",
+			a.buy_id_card AS "buyIdCard",
+			a.examine_user_id AS "examineUserId",
+			a. STATUS AS "status",
+			a.appeal_type AS "appealType",
+			a.reason AS "reason",
+			a.image_path AS "imagePath",
+			a.image_path2 AS "imagePath2",
+			a.image_path3 AS "imagePath3",
+			a.create_date AS "createDate",
+			a.examine_date AS "examineDate",
+			a.examine_result_user_id AS "examineResultUserId",
+			a.examine_result_reason AS "examineResultReason",
+			a.examine_result_user_name AS "examineResultUserName"
+	</sql>
+	
+	<sql id="offlineAppealJoins">
+	</sql>
+    
+	<select id="get" resultType="OfflineAppeal">
+		SELECT
+			a.id AS "id",
+			a.appeal_user_id AS "appealUserId",
+			a.appeal_mail AS "appealMail",
+			a.appeal_mobile AS "appealMobile",
+			a.appeal_real_name AS "appealRealName",
+			a.appeal_id_card AS "appealIdCard",
+			a.sub_order_id AS "subOrderId",
+			a.sell_user_id AS "sellUserId",
+			a.sell_mail AS "sellMail",
+			a.sell_mobile AS "sellMobile",
+			a.sell_real_name AS "sellRealName",
+			a.sell_id_card AS "sellIdCard",
+			d.wechat_no AS "sellWechat",
+			d.alipay_no AS "sellAlipay",
+			d.sell_bank_name AS "sellBankName",
+			d.sell_bank_no AS "sellBankNo",
+			a.buy_user_id AS "buyUserId",
+			a.buy_mail AS "buyMail",
+			a.buy_mobile AS "buyMobile",
+			a.buy_real_name AS "buyRealName",
+			a.buy_id_card AS "buyIdCard",
+			a.examine_user_id AS "examineUserId",
+			a. STATUS AS "status",
+			a.appeal_type AS "appealType",
+			a.reason AS "reason",
+			a.image_path AS "imagePath",
+			a.image_path2 AS "imagePath2",
+			a.image_path3 AS "imagePath3",
+			a.create_date AS "createDate",
+			a.examine_date AS "examineDate",
+			a.examine_result_user_id AS "examineResultUserId",
+			a.examine_result_reason AS "examineResultReason",
+			a.examine_result_user_name AS "examineResultUserName"
+		FROM js_plat_offline_appeal a left join js_plat_offline_order_detail d on a.sub_order_id = d.sub_order_id AND d.remarks = 'sell'
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OfflineAppeal">
+		SELECT
+			<include refid="offlineAppealColumns"/>
+		FROM js_plat_offline_appeal a
+		<include refid="offlineAppealJoins"/>
+		<where>
+			<if test="appealMail != null and appealMail != ''">
+				AND (a.sell_mail = #{appealMail} OR a.buy_mail = #{appealMail})
+			</if>
+			<if test="appealMobile != null and appealMobile != ''">
+				AND (a.sell_mobile = #{appealMobile} OR a.buy_mobile = #{appealMobile} )
+			</if>
+			<if test="appealRealName != null and appealRealName != ''">
+				AND (a.sell_real_name like concat('%',#{appealRealName},'%') OR a.buy_real_name like concat('%',#{appealRealName},'%'))
+			</if>
+			<if test="subOrderId != null and subOrderId != ''">
+				AND a.sub_order_id = #{subOrderId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+			<if test="beginExamineDate != null and endExamineDate != null and beginExamineDate != '' and endExamineDate != ''">
+				AND a.examine_date BETWEEN #{beginExamineDate} AND #{endExamineDate}
+			</if>
+		</where>
+			ORDER BY a.create_date DESC
+		<!--<choose>-->
+			<!--<when test="page !=null and page.orderBy != null and page.orderBy != ''">-->
+				<!--ORDER BY ${page.orderBy}-->
+			<!--</when>-->
+			<!--<otherwise>-->
+			<!--</otherwise>-->
+		<!--</choose>-->
+	</select>
+	
+	<select id="findAllList" resultType="OfflineAppeal">
+		SELECT 
+			<include refid="offlineAppealColumns"/>
+		FROM js_plat_offline_appeal a
+		<include refid="offlineAppealJoins"/>
+		<where>
+			
+		</where>
+		ORDER BY a.create_date DESC
+		<!--<choose>-->
+			<!--<when test="page !=null and page.orderBy != null and page.orderBy != ''">-->
+				<!--ORDER BY ${page.orderBy}-->
+			<!--</when>-->
+			<!--<otherwise>-->
+			<!--</otherwise>-->
+		<!--</choose>-->
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_appeal(
+			id,
+			appeal_user_id,
+			sub_order_id,
+			sell_user_id,
+			buy_user_id,
+			examine_user_id,
+			status,
+			appeal_type,
+			reason,
+			image_path,
+			image_path2,
+			image_path3,
+			create_date,
+			examine_date
+		) VALUES (
+			#{id},
+			#{appealUserId},
+			#{subOrderId},
+			#{sellUserId},
+			#{buyUserId},
+			#{examineUserId},
+			#{status},
+			#{appealType},
+			#{reason},
+			#{imagePath},
+			#{imagePath2},
+			#{imagePath3},
+			#{createDate},
+			#{examineDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_appeal SET 	
+			appeal_user_id = #{appealUserId},
+			sub_order_id = #{subOrderId},
+			sell_user_id = #{sellUserId},
+			buy_user_id = #{buyUserId},
+			examine_user_id = #{examineUserId},
+			status = #{status},
+			appeal_type = #{appealType},
+			reason = #{reason},
+			image_path = #{imagePath},
+			image_path2 = #{imagePath2},
+			image_path3 = #{imagePath3},
+			examine_date = #{examineDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_appeal
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

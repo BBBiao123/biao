@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeAreaMemberDao">
+    
+	<sql id="mk2PopularizeAreaMemberColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.parent_id AS "parentId",
+		a.ratio AS "ratio",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.area_id AS "areaId",
+		a.area_name AS "areaName",
+		a.area_paraent_id AS "areaParaentId",
+		a.area_paraent_name AS "areaParaentName",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.id_card AS "idCard",
+		a.real_name AS "realName",
+		a.lock_volume AS "lockVolume",
+		a.release_volume AS "releaseVolume",
+		a.release_begin_date AS "releaseBeginDate",
+		a.release_cycle AS "releaseCycle",
+		a.release_cycle_ratio AS "releaseCycleRatio",
+		a.release_over AS "releaseOver",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="mk2PopularizeAreaMemberJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeAreaMember">
+		SELECT 
+			<include refid="mk2PopularizeAreaMemberColumns"/>
+		FROM mk2_popularize_area_member a
+		<include refid="mk2PopularizeAreaMemberJoins"/>
+		WHERE a.id = #{id} AND a.type = '1'
+	</select>
+
+	<select id="findShareholder" resultType="Mk2PopularizeAreaMember">
+		SELECT
+			<include refid="mk2PopularizeAreaMemberColumns"/>
+		FROM  mk2_popularize_area_member a
+		WHERE a.parent_id = #{id} AND a.type = '2'
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeAreaMember">
+		SELECT 
+			<include refid="mk2PopularizeAreaMemberColumns"/>
+		FROM mk2_popularize_area_member a
+		<include refid="mk2PopularizeAreaMemberJoins"/>
+		<where>
+			a.type = '1'
+			<if test="areaName != null and areaName != ''">
+				AND a.area_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{areaName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{areaName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{areaName},'%')</if>
+			</if>
+			<if test="areaParaentName != null and areaParaentName != ''">
+				AND a.area_paraent_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{areaParaentName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{areaParaentName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{areaParaentName},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail = #{mail}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="releaseOver != null and releaseOver != ''">
+				AND a.release_over = #{releaseOver}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeAreaMember">
+		SELECT 
+			<include refid="mk2PopularizeAreaMemberColumns"/>
+		FROM mk2_popularize_area_member a
+		<include refid="mk2PopularizeAreaMemberJoins"/>
+		<where>
+			a.type = '1'
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_area_member(
+			id,
+			type,
+			parent_id,
+			ratio,
+			coin_id,
+			coin_symbol,
+			area_id,
+			area_name,
+			area_paraent_id,
+			area_paraent_name,
+			status,
+			user_id,
+			mail,
+			mobile,
+			id_card,
+			real_name,
+			lock_volume,
+			relation_id
+		) VALUES (
+			#{id},
+			#{type},
+			#{parentId},
+			#{ratio},
+			#{coinId},
+			#{coinSymbol},
+			#{areaId},
+			#{areaName},
+			#{areaParaentId},
+			#{areaParaentName},
+			#{status},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{idCard},
+			#{realName},
+			#{lockVolume},
+			#{relationId}
+		)
+	</insert>
+
+	<update id="updateBatchAreaMember">
+		UPDATE mk2_popularize_area_member
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="coinId != null and coinId != ''">
+				coin_id = #{coinId},
+				coin_symbol = #{coinSymbol},
+			</if>
+			<if test="lockVolume != null ">
+				lock_volume = #{lockVolume},
+			</if>
+			<if test="releaseCycleRatio != null">
+                release_cycle_ratio = #{releaseCycleRatio},
+			</if>
+		</trim>
+		WHERE type = '1' AND status = '0'
+	</update>
+	
+	<update id="update">
+		UPDATE mk2_popularize_area_member SET 	
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			status = #{status},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			id_card = #{idCard},
+			real_name = #{realName},
+			lock_volume = #{lockVolume},
+			release_begin_date = #{releaseBeginDate},
+			release_cycle_ratio = #{releaseCycleRatio}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_area_member
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

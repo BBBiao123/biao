@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatOfflineChangeLogDao">
+    
+	<sql id="jsPlatOfflineChangeLogColumns">
+		a.id AS "id",
+		a.change_no AS "changeNo",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.account AS "account",
+		a.real_name AS "realName",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.type AS "type",
+		a.fee AS "fee",
+		a.other_user_id AS "otherUserId",
+		a.other_account AS "otherAccount",
+		a.other_real_name AS "otherRealName",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="jsPlatOfflineChangeLogJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatOfflineChangeLog">
+		SELECT 
+			<include refid="jsPlatOfflineChangeLogColumns"/>
+		FROM js_plat_offline_change_log a
+		<include refid="jsPlatOfflineChangeLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatOfflineChangeLog">
+		SELECT 
+			<include refid="jsPlatOfflineChangeLogColumns"/>
+		FROM js_plat_offline_change_log a
+		<include refid="jsPlatOfflineChangeLogJoins"/>
+		<where>
+			
+			<if test="changeNo != null and changeNo != ''">
+				AND a.change_no = #{changeNo}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="otherUserId != null and otherUserId != ''">
+				AND a.other_user_id = #{otherUserId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatOfflineChangeLog">
+		SELECT 
+			<include refid="jsPlatOfflineChangeLogColumns"/>
+		FROM js_plat_offline_change_log a
+		<include refid="jsPlatOfflineChangeLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_change_log(
+			id,
+			change_no,
+			status,
+			user_id,
+			account,
+			real_name,
+			coin_id,
+			coin_symbol,
+			volume,
+			type,
+			fee,
+			other_user_id,
+			other_account,
+			other_real_name,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{changeNo},
+			#{status},
+			#{userId},
+			#{account},
+			#{realName},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{type},
+			#{fee},
+			#{otherUserId},
+			#{otherAccount},
+			#{otherRealName},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_change_log SET 	
+			change_no = #{changeNo},
+			status = #{status},
+			user_id = #{userId},
+			account = #{account},
+			real_name = #{realName},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			type = #{type},
+			fee = #{fee},
+			other_user_id = #{otherUserId},
+			other_account = #{otherAccount},
+			other_real_name = #{otherRealName},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_change_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

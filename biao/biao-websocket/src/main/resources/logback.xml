@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        　　　　　　
+        <encoder>
+            　　　　　　　　
+            <pattern>[%p] %X{sessionId} %date [%thread] %-5level %logger{36} - %msg%n</pattern>
+            　　　　　　
+        </encoder>
+        　　　
+    </appender>
+    <appender name="binlog_file"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${logPath}/plat.log</File>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logPath}/plat-info.log.%d{yyyy-MM-dd}.gz</FileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%p] %X{sessionId} %date [%thread] %-5level %logger{80} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="error_file"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${logPath}/plat-error.log</File>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logPath}/plat-error.log.%d{yyyy-MM-dd}.gz</FileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%p] %X{sessionId} %date [%thread] %-5level %logger{80} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- root -->
+    　　　
+    <root level="${log.level.root}">
+        　　　　　　
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="binlog_file"/>
+        <appender-ref ref="error_file"/>
+        　　　
+    </root>
+</configuration>
+

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatMainCnbDao">
+    
+	<sql id="jsPlatMainCnbColumns">
+		a.id AS "id",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.cnb_rate AS "cnbRate",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="jsPlatMainCnbJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatMainCnb">
+		SELECT 
+			<include refid="jsPlatMainCnbColumns"/>
+		FROM js_plat_main_cnb a
+		<include refid="jsPlatMainCnbJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatMainCnb">
+		SELECT 
+			<include refid="jsPlatMainCnbColumns"/>
+		FROM js_plat_main_cnb a
+		<include refid="jsPlatMainCnbJoins"/>
+		<where>
+			
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatMainCnb">
+		SELECT 
+			<include refid="jsPlatMainCnbColumns"/>
+		FROM js_plat_main_cnb a
+		<include refid="jsPlatMainCnbJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_main_cnb(
+			id,
+			coin_id,
+			coin_symbol,
+			cnb_rate
+		) VALUES (
+			#{id},
+			#{coinId},
+			#{coinSymbol},
+			#{cnbRate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_main_cnb SET 	
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			cnb_rate = #{cnbRate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_main_cnb
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

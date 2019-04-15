@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkCommonPlatIncomeTaskLogDao">
+    
+	<sql id="mkCommonPlatIncomeTaskLogColumns">
+		a.id AS "id",
+		a.begin_date AS "beginDate",
+		a.end_date AS "endDate",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mkCommonPlatIncomeTaskLogJoins">
+	</sql>
+    
+	<select id="get" resultType="MkCommonPlatIncomeTaskLog">
+		SELECT 
+			<include refid="mkCommonPlatIncomeTaskLogColumns"/>
+		FROM mk_common_plat_income_task_log a
+		<include refid="mkCommonPlatIncomeTaskLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkCommonPlatIncomeTaskLog">
+		SELECT 
+			<include refid="mkCommonPlatIncomeTaskLogColumns"/>
+		FROM mk_common_plat_income_task_log a
+		<include refid="mkCommonPlatIncomeTaskLogJoins"/>
+		<where>
+			
+			<if test="beginBeginDate != null and endBeginDate != null and beginBeginDate != '' and endBeginDate != ''">
+				AND a.begin_date BETWEEN #{beginBeginDate} AND #{endBeginDate}
+			</if>
+			<if test="beginEndDate != null and endEndDate != null and beginEndDate != '' and endEndDate != ''">
+				AND a.end_date BETWEEN #{beginEndDate} AND #{endEndDate}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkCommonPlatIncomeTaskLog">
+		SELECT 
+			<include refid="mkCommonPlatIncomeTaskLogColumns"/>
+		FROM mk_common_plat_income_task_log a
+		<include refid="mkCommonPlatIncomeTaskLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_common_plat_income_task_log(
+			id,
+			begin_date,
+			end_date,
+			status,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{beginDate},
+			#{endDate},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_common_plat_income_task_log SET 	
+			begin_date = #{beginDate},
+			end_date = #{endDate},
+			status = #{status},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_common_plat_income_task_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

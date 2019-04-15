@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeBonusMemberLogDao">
+    
+	<sql id="mk2PopularizeBonusMemberLogColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.relation_id AS "relationId",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.total_volume AS "totalVolume",
+		a.bonus_ratio AS "bonusRatio",
+		a.income_volume AS "incomeVolume",
+		a.area_name AS "areaName",
+		a.befor_income_volume AS "beforIncomeVolume",
+		a.join_volume AS "joinVolume",
+		a.join_total_volume AS "joinTotalVolume",
+		a.bonus_date_begin AS "bonusDateBegin",
+		a.bonus_date_end AS "bonusDateEnd",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeBonusMemberLogJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeBonusMemberLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusMemberLogColumns"/>
+		FROM mk2_popularize_bonus_member_log a
+		<include refid="mk2PopularizeBonusMemberLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeBonusMemberLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusMemberLogColumns"/>
+		FROM mk2_popularize_bonus_member_log a
+		<include refid="mk2PopularizeBonusMemberLogJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="areaName != null and areaName != ''">
+				AND a.area_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{areaName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{areaName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{areaName},'%')</if>
+			</if>
+			<if test="beginBonusDateBegin != null and endBonusDateBegin != null and beginBonusDateBegin != '' and endBonusDateBegin != ''">
+				AND a.bonus_date_begin BETWEEN #{beginBonusDateBegin} AND #{endBonusDateBegin}
+			</if>
+			<if test="beginBonusDateEnd != null and endBonusDateEnd != null and beginBonusDateEnd != '' and endBonusDateEnd != ''">
+				AND a.bonus_date_end BETWEEN #{beginBonusDateEnd} AND #{endBonusDateEnd}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeBonusMemberLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusMemberLogColumns"/>
+		FROM mk2_popularize_bonus_member_log a
+		<include refid="mk2PopularizeBonusMemberLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_bonus_member_log(
+			id,
+			type,
+			relation_id,
+			user_id,
+			mail,
+			mobile,
+			coin_id,
+			coin_symbol,
+			total_volume,
+			bonus_ratio,
+			income_volume,
+			area_name,
+			befor_income_volume,
+			join_volume,
+			join_total_volume,
+			bonus_date_begin,
+			bonus_date_end,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{type},
+			#{relationId},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{coinId},
+			#{coinSymbol},
+			#{totalVolume},
+			#{bonusRatio},
+			#{incomeVolume},
+			#{areaName},
+			#{beforIncomeVolume},
+			#{joinVolume},
+			#{joinTotalVolume},
+			#{bonusDateBegin},
+			#{bonusDateEnd},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_bonus_member_log SET 	
+			type = #{type},
+			relation_id = #{relationId},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			total_volume = #{totalVolume},
+			bonus_ratio = #{bonusRatio},
+			income_volume = #{incomeVolume},
+			area_name = #{areaName},
+			befor_income_volume = #{beforIncomeVolume},
+			join_volume = #{joinVolume},
+			join_total_volume = #{joinTotalVolume},
+			bonus_date_begin = #{bonusDateBegin},
+			bonus_date_end = #{bonusDateEnd},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_bonus_member_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

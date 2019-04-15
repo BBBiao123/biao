@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.SuperCoinVolumeDao">
+    
+	<sql id="superCoinVolumeColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.deposit_begin AS "depositBegin",
+		a.deposit_end AS "depositEnd",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="superCoinVolumeJoins">
+	</sql>
+    
+	<select id="get" resultType="SuperCoinVolume">
+		SELECT 
+			<include refid="superCoinVolumeColumns"/>
+		FROM js_plat_super_coin_volume a
+		<include refid="superCoinVolumeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SuperCoinVolume">
+		SELECT 
+			<include refid="superCoinVolumeColumns"/>
+		FROM js_plat_super_coin_volume a
+		<include refid="superCoinVolumeJoins"/>
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SuperCoinVolume">
+		SELECT 
+			<include refid="superCoinVolumeColumns"/>
+		FROM js_plat_super_coin_volume a
+		<include refid="superCoinVolumeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_super_coin_volume(
+			id,
+			user_id,
+			coin_id,
+			coin_symbol,
+			volume,
+			deposit_begin,
+			deposit_end,
+			create_date,
+			update_date,
+			create_by,
+			update_by,
+			version
+		) VALUES (
+			#{id},
+			#{userId},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{depositBegin},
+			#{depositEnd},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_super_coin_volume SET 	
+			user_id = #{userId},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			deposit_begin = #{depositBegin},
+			deposit_end = #{depositEnd},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_super_coin_volume
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

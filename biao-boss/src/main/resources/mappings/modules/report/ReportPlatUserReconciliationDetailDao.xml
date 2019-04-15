@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportPlatUserReconciliationDetailDao">
+    
+	<sql id="reportPlatUserReconciliationDetailColumns">
+			 t.create_date as createDate,
+			 t.type as type,
+			 t.coin_symbol as coinSymbol,
+			 t.volume as volume
+	</sql>
+	
+	<sql id="reportPlatUserReconciliationDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportPlatUserReconciliationDetail">
+		SELECT 
+			<include refid="reportPlatUserReconciliationDetailColumns"/>
+		FROM report_trade_day a
+		<include refid="reportPlatUserReconciliationDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportPlatUserReconciliationDetail">
+		SELECT 
+			<include refid="reportPlatUserReconciliationDetailColumns"/>
+		FROM (
+		#查充币
+		select create_date,'充币' as type ,coin_symbol,volume from js_plat_user_deposit_log where status = 1 and
+		user_id = #{userId}
+		#查提币
+		union all
+		select create_date,'提币' as type,coin_symbol,0-volume as volume from js_plat_user_withdraw_log where status = 3 and
+		user_id = #{userId}
+		#查赠币
+		union all
+		select create_date,'赠币' as type,coin_symbol,volume from mk2_popularize_register_coin where status = 2 and
+		user_id = #{userId}
+		#查手工转币
+		union all
+		select create_date,'手工转币' as type,coin_symbol,volume from js_plat_user_coin_volume_history where   type != 'manual_scene' and type != 'income_scene' and
+		user_id = #{userId}
+		#查买入交易记录
+		union all
+		SELECT create_date,'买入支出' as type,coin_main as coin_symbol,0-spent_volume as volume from js_plat_ex_order where ex_type = 0 and `status` in(1,2,3) and
+		user_id = #{userId}
+		union all
+		SELECT create_date,'买入收入' as type,coin_other as coin_symbol,to_coin_volume as volume from js_plat_ex_order where ex_type = 0 and `status` in(1,2,3) and
+		user_id = #{userId}
+		#查卖出交易记录
+		union all
+		SELECT create_date,'卖出支出' as type,coin_other as coin_symbol,0-spent_volume as volume from js_plat_ex_order where ex_type = 1 and `status` in(1,2,3) and
+		user_id = #{userId}
+		union all
+		SELECT create_date,'卖出收入' as type,coin_main as coin_symbol,to_coin_volume as volume from js_plat_ex_order where ex_type = 1 and `status` in(1,2,3) and
+		user_id = #{userId}
+		#C2C查买入交易记录
+		UNION ALL
+		SELECT create_date,'C2C买入收入' as type,symbol as coin_symbol, volume from js_plat_offline_order_detail where  `status` = 2 and remarks='buy'  and
+		user_id = #{userId}
+		UNION ALL
+		SELECT create_date,'C2C买入收入' as type,symbol as coin_symbol, volume from js_plat_offline_order_detail_copy where  `status` = 2 and remarks='buy'  and
+		user_id = #{userId}
+		#C2C查卖出交易记录
+		union all
+		SELECT create_date,'C2C卖出支出' as type,symbol as coin_symbol,0-volume-fee_volume as volume from js_plat_offline_order_detail where  `status` = 2 and remarks='sell'  and
+		user_id = #{userId}
+		union all
+		SELECT create_date,'C2C卖出支出' as type,symbol as coin_symbol,0-volume-fee_volume as volume from js_plat_offline_order_detail_copy where  `status` = 2 and remarks='sell'  and
+		user_id = #{userId}
+		#个人挖矿
+		union all
+		select create_date,'持币挖矿' as type ,coin_symbol,volume  from mk2_popularize_mining_give_coin_log where type = 1 and
+		user_id = #{userId}
+		#多元挖矿
+		union all
+		select create_date,'多元挖矿' as type ,coin_symbol,volume  from mk2_popularize_mining_give_coin_log where type = 2 and
+		user_id = #{userId}
+		#查OTC交易记录
+		union all
+		SELECT create_date,'otc买入收入' as type,symbol as coin_symbol, volume from otc_offline_order_detail where  `status` = 2 and remarks='buy'  and
+		user_id = #{userId}
+		union all
+		SELECT create_date,'otc卖出支出' as type,symbol as coin_symbol,0-volume as volume from otc_offline_order_detail where  `status` = 2 and remarks='sell'  and
+		user_id = #{userId}
+		#查转帐转入记录
+		union all
+		select create_date,'转帐转入' as type,coin_symbol ,(volume+fee) as volume from js_plat_offline_change_log where type = 0 and
+		user_id = #{userId}
+		union all
+		select create_date,'转帐转出' as type,coin_symbol ,0-(volume+fee) as volume from js_plat_offline_change_log where type = 1 and
+		user_id = #{userId}
+		union all
+		select create_date,'红包支出' as type,coin_symbol ,0-(volume+fee) as volume from js_plat_offline_change_log where type = '2' and
+		user_id = #{userId}
+		union all
+		select create_date,'红包收入' as type,coin_symbol ,(volume+fee) as volume from js_plat_offline_change_log where type = '3' and
+		user_id = #{userId}
+		union all
+		select create_date,'红包退回' as type,coin_symbol ,(volume+fee) as volume from js_plat_offline_change_log where type = '4' and
+		user_id = #{userId}
+		#查广告手续费
+		union all
+		select create_date,'广告手续费' as type,symbol as coin_symbol,0-fee_volume as volume from js_plat_offline_order where fee_volume >0 and
+		user_id = #{userId}
+		union all
+		select create_date,'广告手续费' as type,symbol as coin_symbol,0-fee_volume as volume from js_plat_offline_order_copy where fee_volume >0 and
+		user_id = #{userId}
+		#注册红包
+		union all
+		select create_date,'注册红包' as type,coin_symbol,real_volume as volume  from mk_user_register_lottery_log  where
+		user_id = #{userId}
+		#接力撞奖
+		union all
+		select create_date,'接力撞奖' as type,coin_symbol, volume  from mk_relay_remit_log  where
+		user_id = #{userId}
+		#通兑加资产
+		union all
+		SELECT create_date as create_date,'OTC通兑转入' as type, symbol as coin_symbol,real_volume as volume from otc_exchange_request where
+		ask_user_id = #{userId} and status = '1'
+		#通兑减资产
+		union all
+		SELECT create_date as create_date,'OTC通兑转出' as type, symbol as coin_symbol, 0-volume as volume from otc_exchange_request
+		where status = '1' and
+		user_id = #{userId}
+		#兑换加资产
+		union all
+		SELECT create_date as create_date,'OTC兑换转入' as type, (SELECT `name` from js_plat_coin t WHERE t.id = to_coin_id) as coin_symbol, to_volume as volume
+		from otc_convert_coin_request where  status = '1' and
+		user_id = #{userId}
+		#兑换减资产
+		union all
+		SELECT create_date as create_date,'OTC兑换转出' as type, (SELECT `name` from js_plat_coin t WHERE t.id = from_coin_id) as coin_symbol, 0-from_volume as volume
+		from otc_convert_coin_request where  status = '1' and
+		user_id = #{userId}
+		#OTC买入收入
+		union all
+		select create_date as create_date, 'OTC买入收入' as type, symbol as coin_symbol, volume - if(ad_type = '0',fee_volume, 0) as volume
+		from otc_volume_change_request where status = '1' and type in ('6','7') and
+		buy_user_id = #{userId}
+		#OTC卖出支出
+		union all
+		select create_date as create_date,'OTC卖出支出' as type, symbol as coin_symbol, 0 - (volume  + if(ad_type = '1',fee_volume, 0)) as volume
+		from otc_volume_change_request where status = '1' and type in ('6','7') and
+		sell_user_id = #{userId}
+		#OTC划拨收入
+		union all
+		SELECT MIN(t.create_date) AS create_date, 'OTC划拨收入' as type, MIN(t.coin_symbol) as coin_symbol, MAX(t.volume) - IF(COUNT(1)=1,0,MIN(t.volume))  AS volume
+		FROM otc_appropriation_request r, js_plat_offline_coin_volume_log t
+		WHERE r.`status` = '1' AND r.batch_no = t.batch_no AND
+		t.user_id  = #{userId} GROUP BY t.batch_no
+		#超级帐户转出违约金
+		union all
+		SELECT create_date as create_date,'超级帐户转出违约金' as type, coin_symbol, 0 - fee_volume as volume from js_plat_offline_transfer_log
+		where type = '12' and
+		user_id = #{userId}
+		#手续费偿还
+		union all
+		SELECT create_date as create_date,'手续费偿还' as type, coin_symbol, volume as volume from js_plat_offline_transfer_log
+		where type = '9' and
+		user_id = #{userId}
+		#手动补齐20190304
+		union all
+		select create_date,'手动补齐' as type,coin_symbol ,(volume) as volume from js_plat_offline_transfer_log where type = 99 and
+		user_id = #{userId}
+		#普通会员冻结释放
+		union all
+		SELECT create_date as create_date,'普通会员冻结释放' as type, coin_symbol, release_volume as volume from mk2_popularize_release_log
+		where user_id = #{userId}
+		) t
+		<where>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND t.`coin_symbol`= #{coinSymbol}
+			</if>
+		</where>
+
+		order by t.`create_date`
+	</select>
+	
+	<select id="findAllList" resultType="ReportPlatUserReconciliationDetail">
+		SELECT 
+			<include refid="reportPlatUserReconciliationDetailColumns"/>
+		FROM report_trade_day a
+		<include refid="reportPlatUserReconciliationDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY dayTime DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

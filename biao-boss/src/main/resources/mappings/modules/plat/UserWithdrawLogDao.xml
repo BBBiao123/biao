@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.UserWithdrawLogDao">
+    
+	<sql id="userWithdrawLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_id AS "coinId",
+		a.address AS "address",
+		a.coin_symbol AS "coinSymbol",
+		a.tx_id AS "txId",
+		a.status AS "status",
+		a.confirms AS "confirms",
+		a.confirm_status AS "confirmStatus",
+		a.volume AS "volume",
+		a.real_volume AS "realVolume",
+		a.fee AS "fee",
+		a.remark AS "remark",
+		a.audit_reason AS "auditReason",
+		a.audit_date AS "auditDate",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="userWithdrawLogJoins">
+	</sql>
+    
+	<select id="get" resultType="UserWithdrawLog">
+		SELECT 
+			<include refid="userWithdrawLogColumns"/>
+		FROM js_plat_user_withdraw_log a
+		<include refid="userWithdrawLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="UserWithdrawLog">
+		SELECT 
+			<include refid="userWithdrawLogColumns"/>
+		FROM js_plat_user_withdraw_log a
+		<include refid="userWithdrawLogJoins"/>
+		<where>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="txId != null and txId != ''">
+				AND a.tx_id = #{txId}
+			</if>
+			<if test="address != null and address != ''">
+				AND a.address = #{address}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListCount" resultType="UserWithdrawLog">
+	  select v.coinSymbol,v.coinId,sum(v.depositVolume) as depositVolume,sum(v.withdrawVolume) as withdrawVolume from (
+		SELECT SUM(a.volume) AS depositVolume,a.coin_symbol AS coinSymbol,a.coin_id AS coinId, 0 AS withdrawVolume
+		FROM js_plat_user_deposit_log a
+		<where>
+		    a.status = 1 
+		    <if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND a.create_date >= #{startTime}]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND a.create_date < #{endTime}]]>
+			</if>
+		</where>
+		GROUP BY a.coin_symbol,a.coin_id
+		
+		UNION ALL
+		
+		SELECT 0 AS depositVolume,a.coin_symbol AS coinSymbol,a.coin_id AS coinId,SUM(a.real_volume) AS withdrawVolume
+		FROM js_plat_user_withdraw_log a
+		<where>
+		    a.status = 3 
+		    <if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND a.create_date >= #{startTime}]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND a.create_date < #{endTime}]]>
+			</if>
+		</where>
+		GROUP BY a.coin_symbol,a.coin_id
+		) v  GROUP BY v.coinSymbol,v.coinId
+	</select>
+	
+	<select id="findAllList" resultType="UserWithdrawLog">
+		SELECT 
+			<include refid="userWithdrawLogColumns"/>
+		FROM js_plat_user_withdraw_log a
+		<include refid="userWithdrawLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="checkUserWithdrawLog" resultType="UserWithdrawLogCount">
+			SELECT coin_symbol AS coinSymbol,SUM(币币资产) AS bbVolumn,SUM(c2c资产) AS ccVolumn, 
+			SUM(冻结资产) AS lockVolumn,SUM(币币资产+c2c资产+超级钱包资产+冻结资产) AS volumn, SUM(流水汇总) AS sumVolumn,
+			SUM(币币资产+c2c资产+超级钱包资产+冻结资产)-SUM(流水汇总) AS plusVolumn 
+			FROM (
+			SELECT coin_symbol,SUM(volume+lock_volume+IFNULL(out_lock_volume,0)) AS 币币资产,0 AS c2c资产,0 AS 冻结资产,0 AS 超级钱包资产,0 AS 流水汇总 
+			FROM js_plat_user_coin_volume WHERE user_id = #{userId} GROUP BY coin_symbol 
+			UNION ALL 
+			SELECT coin_symbol,0 AS 币币资产,SUM(volume + advert_volume+ IFNULL(otc_advert_volume,0)+IFNULL(otc_lock_volume,0)+ lock_volume + bail_volume) AS  c2c资产,0 AS 冻结资产,0 AS 超级钱包资产,0 AS 流水汇总 
+			FROM js_plat_offline_coin_volume WHERE user_id  = #{userId} GROUP BY coin_symbol 
+			UNION ALL 
+			SELECT coin_symbol,0 AS 币币资产,0 AS  c2c资产,0 AS 冻结资产,SUM(volume) AS 超级钱包资产,0 AS 流水汇总 
+			FROM js_plat_super_coin_volume WHERE user_id  = #{userId} GROUP BY coin_symbol 
+			UNION ALL 
+			SELECT coin_symbol,0 AS 币币资产,0 AS c2c资产 ,SUM(volume) AS 冻结资产,0 AS 超级钱包资产 ,0 AS 流水汇总 
+			FROM (
+			    SELECT coin_symbol, t.lock_volume AS volume FROM mk2_popularize_common_member t WHERE t.lock_status = '1' AND 
+			    t.user_id = #{userId}
+			    UNION ALL  
+			    SELECT coin_symbol,t.lock_volume AS volume FROM mk2_popularize_nodal_member t WHERE t.type = '2' AND t.lock_status = '1' AND 
+			    t.user_id = #{userId}
+			    UNION ALL 
+			    SELECT coin_symbol,t.lock_volume AS volume FROM mk2_popularize_area_member t WHERE t.type = '1' AND t.`status` = '1'  AND 
+			    t.user_id = #{userId}
+			) f GROUP BY coin_symbol 
+			UNION ALL 
+			SELECT  coin_symbol,0 AS 币币资产,0 AS c2c资产 ,0 AS 冻结资产,0 AS 超级钱包资产 ,SUM(volume) AS 流水汇总 FROM (
+			SELECT create_date,'充币' AS TYPE ,coin_symbol,volume FROM js_plat_user_deposit_log WHERE STATUS = 1 AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'提币' AS TYPE,coin_symbol,0-volume AS volume FROM js_plat_user_withdraw_log WHERE STATUS = 3 AND  
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'赠币' AS TYPE,coin_symbol,volume FROM mk2_popularize_register_coin WHERE STATUS = 2 AND   
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'手工转币' AS TYPE,coin_symbol,volume FROM js_plat_user_coin_volume_history WHERE   TYPE != 'manual_scene' AND TYPE != 'income_scene' AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'买入支出' AS TYPE,coin_main AS coin_symbol,0-spent_volume AS volume FROM js_plat_ex_order WHERE ex_type = 0 AND `status` IN(1,2,3) AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'买入收入' AS TYPE,coin_other AS coin_symbol,to_coin_volume AS volume FROM js_plat_ex_order WHERE ex_type = 0 AND `status` IN(1,2,3) AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'卖出支出' AS TYPE,coin_other AS coin_symbol,0-spent_volume AS volume FROM js_plat_ex_order WHERE ex_type = 1 AND `status` IN(1,2,3) AND 
+			user_id = #{userId}
+			UNION ALL  
+			SELECT create_date,'卖出收入' AS TYPE,coin_main AS coin_symbol,to_coin_volume AS volume FROM js_plat_ex_order WHERE ex_type = 1 AND `status` IN(1,2,3) AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'C2C买入收入' AS TYPE,symbol AS coin_symbol, volume FROM js_plat_offline_order_detail WHERE  `status` = 2 AND remarks='buy'  AND 
+			user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date,'C2C卖出支出' AS TYPE,symbol AS coin_symbol,0-volume-fee_volume AS volume FROM js_plat_offline_order_detail WHERE  `status` = 2 AND remarks='sell'  AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'持币挖矿' AS TYPE ,coin_symbol,volume  FROM mk2_popularize_mining_give_coin_log WHERE TYPE = 1 AND 
+			user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date,'多元挖矿' AS TYPE ,coin_symbol,volume  FROM mk2_popularize_mining_give_coin_log WHERE TYPE = 2 AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'otc买入收入' AS TYPE,symbol AS coin_symbol, volume FROM otc_offline_order_detail WHERE  `status` = 2 AND remarks='buy'  AND 
+			user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date,'otc卖出支出' AS TYPE,symbol AS coin_symbol,0-volume AS volume FROM otc_offline_order_detail WHERE  `status` = 2 AND remarks='sell'  AND 
+			user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date,'转帐转入' AS TYPE,coin_symbol ,(volume+fee) AS volume FROM js_plat_offline_change_log WHERE TYPE = 0 AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'转帐转出' AS TYPE,coin_symbol ,0-(volume+fee) AS volume FROM js_plat_offline_change_log WHERE TYPE = 1 AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'广告手续费' AS TYPE,symbol AS coin_symbol,0-fee_volume AS volume FROM js_plat_offline_order WHERE fee_volume >0 AND 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT create_date,'注册红包' AS TYPE,coin_symbol,real_volume AS volume  FROM mk_user_register_lottery_log  WHERE 
+			user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date,'接力撞奖' AS TYPE,coin_symbol, volume  FROM mk_relay_remit_log  WHERE 
+			user_id = #{userId}
+			UNION ALL 
+			SELECT count_date AS create_date,'C2C买入收入汇总' AS TYPE,symbol AS coin_symbol, buy_total FROM js_plat_offline_order_detail_log WHERE  
+			user_id = #{userId}
+			UNION ALL 
+			SELECT count_date AS create_date,'C2C卖出支出汇总' AS TYPE,symbol AS coin_symbol,0-sell_total AS volume FROM js_plat_offline_order_detail_log WHERE  
+			user_id = #{userId}
+			UNION ALL 
+			SELECT count_date AS create_date,'C2C卖出支出汇总' AS TYPE,symbol AS coin_symbol,0-fee_total AS volume FROM js_plat_offline_order_detail_fee_log WHERE  
+			user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date AS create_date,'OTC通兑转入' AS TYPE, symbol AS coin_symbol,real_volume AS volume FROM otc_exchange_request WHERE  
+			ask_user_id = #{userId} AND STATUS = '1'
+			UNION ALL 
+			SELECT create_date AS create_date,'OTC通兑转出' AS TYPE, symbol AS coin_symbol, 0-volume AS volume FROM otc_exchange_request 
+			WHERE STATUS = '1' AND user_id = #{userId}  
+			UNION ALL 
+			SELECT create_date AS create_date,'OTC兑换转入' AS TYPE, (SELECT `name` FROM js_plat_coin t WHERE t.id = to_coin_id) AS coin_symbol, to_volume AS volume 
+			FROM otc_convert_coin_request WHERE  STATUS = '1' AND user_id = #{userId}
+			UNION ALL 
+			SELECT create_date AS create_date,'OTC兑换转出' AS TYPE, (SELECT `name` FROM js_plat_coin t WHERE t.id = from_coin_id) AS coin_symbol, 0-from_volume AS volume 
+			FROM otc_convert_coin_request WHERE  STATUS = '1' AND user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date AS create_date, 'OTC买入收入' AS TYPE, symbol AS coin_symbol, volume - IF(ad_type = '0',fee_volume, 0) AS volume 
+			FROM otc_volume_change_request WHERE STATUS = '1' AND TYPE IN ('6','7') AND buy_user_id = #{userId} 
+			UNION ALL 
+			SELECT create_date AS create_date,'OTC卖出支出' AS TYPE, symbol AS coin_symbol, 0 - (volume  + IF(ad_type = '1',fee_volume, 0)) AS volume 
+			FROM otc_volume_change_request WHERE STATUS = '1' AND TYPE IN ('6','7') AND sell_user_id = #{userId}
+			UNION ALL 
+			SELECT MIN(t.create_date) AS create_date, 'OTC划拨收入' AS TYPE, MIN(t.coin_symbol) AS coin_symbol, MAX(t.volume) - IF(COUNT(1)=1,0,MIN(t.volume))  AS volume 
+			FROM otc_appropriation_request r, js_plat_offline_coin_volume_log t 
+			WHERE r.`status` = '1' AND r.batch_no = t.batch_no AND t.user_id  = #{userId} GROUP BY t.batch_no 
+			) t
+			GROUP BY t.coin_symbol
+			) t 
+			GROUP BY coin_symbol HAVING coin_symbol = #{coinSymbol}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_user_withdraw_log(
+			id,
+			user_id,
+			coin_id,
+			address,
+			coin_symbol,
+			tx_id,
+			status,
+			volume,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{coinId},
+			#{address},
+			#{coinSymbol},
+			#{txId},
+			#{status},
+			#{volume},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_user_withdraw_log SET
+			status = #{status},
+			<if test="auditReason != null and auditReason != ''">
+			audit_reason = #{auditReason},
+			</if>
+			audit_date = #{auditDate},
+		    confirm_status = #{confirmStatus},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_user_withdraw_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkAutoTradeOrderDao">
+    
+	<sql id="mkAutoTradeOrderColumns">
+		a.id AS "id",
+		a.setting_id AS "settingId",
+		a.monitor_id AS "monitorId",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.type AS "type",
+		a.status AS "status",
+		a.coin_main_symbol AS "coinMainSymbol",
+		a.coin_other_symbol AS "coinOtherSymbol",
+		a.price AS "price",
+		a.volume AS "volume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.create_by_name AS "createByName",
+		a.update_by AS "updateBy",
+		a.update_by AS "updateByName"
+	</sql>
+	
+	<sql id="mkAutoTradeOrderJoins">
+		LEFT JOIN sys_user u4 ON u4.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="MkAutoTradeOrder">
+		SELECT 
+			<include refid="mkAutoTradeOrderColumns"/>
+		FROM mk_auto_trade_order a
+		<include refid="mkAutoTradeOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkAutoTradeOrder">
+		SELECT 
+			<include refid="mkAutoTradeOrderColumns"/>
+		FROM mk_auto_trade_order a
+		<include refid="mkAutoTradeOrderJoins"/>
+		<where>
+			
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="coinMainSymbol != null and coinMainSymbol != ''">
+				AND a.coin_main_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinMainSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinMainSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinMainSymbol},'%')</if>
+			</if>
+			<if test="coinOtherSymbol != null and coinOtherSymbol != ''">
+				AND a.coin_other_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinOtherSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinOtherSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinOtherSymbol},'%')</if>
+			</if>
+			<if test="createByName != null and createByName != ''">
+				AND a.create_by_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{createByName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{createByName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{createByName},'%')</if>
+			</if>
+			<if test="monitorId != null and monitorId != ''">
+				AND a.monitor_id = #{monitorId}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkAutoTradeOrder">
+		SELECT 
+			<include refid="mkAutoTradeOrderColumns"/>
+		FROM mk_auto_trade_order a
+		<include refid="mkAutoTradeOrderJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_auto_trade_order(
+			setting_id,
+			monitor_id,
+			user_id,
+			mail,
+			mobile,
+			type,
+			status,
+			coin_main_symbol,
+			coin_other_symbol,
+			price,
+			volume,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{settingId},
+			#{monitorId},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{type},
+			#{status},
+			#{coinMainSymbol},
+			#{coinOtherSymbol},
+			#{price},
+			#{volume},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_auto_trade_order SET 	
+			setting_id = #{settingId},
+			monitor_id = #{monitorId},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			type = #{type},
+			status = #{status},
+			coin_main_symbol = #{coinMainSymbol},
+			coin_other_symbol = #{coinOtherSymbol},
+			price = #{price},
+			volume = #{volume},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_auto_trade_order
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkLuckyDrawConfigDao">
+    
+	<sql id="mkLuckyDrawConfigColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.periods AS "periods",
+		a.status AS "status",
+		a.volume AS "volume",
+		a.start_volume AS "startVolume",
+		a.step_add_volume AS "stepAddVolume",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.grant_volume AS "grantVolume",
+		a.pool_volume AS "poolVolume",
+		a.min_volume AS "minVolume",
+		a.deduct_fee AS "deductFee",
+		a.fee AS "fee",
+		a.player_number AS "playerNumber",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkLuckyDrawConfigJoins">
+	</sql>
+    
+	<select id="get" resultType="MkLuckyDrawConfig">
+		SELECT 
+			<include refid="mkLuckyDrawConfigColumns"/>
+		FROM mk_lucky_draw_config a
+		<include refid="mkLuckyDrawConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkLuckyDrawConfig">
+		SELECT 
+			<include refid="mkLuckyDrawConfigColumns"/>
+		FROM mk_lucky_draw_config a
+		<include refid="mkLuckyDrawConfigJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkLuckyDrawConfig">
+		SELECT 
+			<include refid="mkLuckyDrawConfigColumns"/>
+		FROM mk_lucky_draw_config a
+		<include refid="mkLuckyDrawConfigJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_lucky_draw_config(
+			id,
+			name,
+			periods,
+			status,
+			volume,
+			start_volume,
+			step_add_volume,
+			coin_id,
+			coin_symbol,
+			grant_volume,
+			pool_volume,
+			min_volume,
+			deduct_fee,
+			fee,
+			player_number,
+			remark,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{name},
+			#{periods},
+			#{status},
+			#{volume},
+			#{startVolume},
+			#{stepAddVolume},
+			#{coinId},
+			#{coinSymbol},
+			#{grantVolume},
+			#{poolVolume},
+			#{minVolume},
+			#{deductFee},
+			#{fee},
+			#{playerNumber},
+			#{remark},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_lucky_draw_config SET 	
+			name = #{name},
+			periods = #{periods},
+			status = #{status},
+			volume = #{volume},
+			start_volume = #{startVolume},
+			step_add_volume = #{stepAddVolume},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			grant_volume = #{grantVolume},
+			pool_volume = #{poolVolume},
+			min_volume = #{minVolume},
+			deduct_fee = #{deductFee},
+			fee = #{fee},
+			player_number = #{playerNumber},
+			remark = #{remark},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_lucky_draw_config
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkRedEnvelopeConfDao">
+    
+	<sql id="mkRedEnvelopeConfColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.single_lower_volume AS "singleLowerVolume",
+		a.single_higher_volume AS "singleHigherVolume",
+		a.lower_number AS "lowerNumber",
+		a.higher_number AS "higherNumber",
+		a.fee AS "fee",
+		a.destroy_user_id AS "destroyUserId",
+		a.lucky_lower_volume AS "luckyLowerVolume",
+		a.lucky_higher_volume AS "luckyHigherVolume",
+		a.point_volume AS "pointVolume",
+		a.status AS "status",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="mkRedEnvelopeConfJoins">
+	</sql>
+    
+	<select id="get" resultType="MkRedEnvelopeConf">
+		SELECT 
+			<include refid="mkRedEnvelopeConfColumns"/>
+		FROM mk_red_envelope_conf a
+		<include refid="mkRedEnvelopeConfJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkRedEnvelopeConf">
+		SELECT 
+			<include refid="mkRedEnvelopeConfColumns"/>
+		FROM mk_red_envelope_conf a
+		<include refid="mkRedEnvelopeConfJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkRedEnvelopeConf">
+		SELECT 
+			<include refid="mkRedEnvelopeConfColumns"/>
+		FROM mk_red_envelope_conf a
+		<include refid="mkRedEnvelopeConfJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_red_envelope_conf(
+			id,
+			name,
+			coin_id,
+			coin_symbol,
+			single_lower_volume,
+			single_higher_volume,
+			lower_number,
+			higher_number,
+			fee,
+			destroy_user_id,
+			lucky_lower_volume,
+			lucky_higher_volume,
+			point_volume,
+			status,
+			remark,
+			create_date,
+			update_date,
+			version
+		) VALUES (
+			#{id},
+			#{name},
+			#{coinId},
+			#{coinSymbol},
+			#{singleLowerVolume},
+			#{singleHigherVolume},
+			#{lowerNumber},
+			#{higherNumber},
+			#{fee},
+			#{destroyUserId},
+			#{luckyLowerVolume},
+			#{luckyHigherVolume},
+			#{pointVolume},
+			#{status},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_red_envelope_conf SET 	
+			name = #{name},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			single_lower_volume = #{singleLowerVolume},
+			single_higher_volume = #{singleHigherVolume},
+			lower_number = #{lowerNumber},
+			higher_number = #{higherNumber},
+			fee = #{fee},
+			destroy_user_id = #{destroyUserId},
+			lucky_lower_volume = #{luckyLowerVolume},
+			lucky_higher_volume = #{luckyHigherVolume},
+			point_volume = #{pointVolume},
+			status = #{status},
+			remark = #{remark},
+			update_date = #{updateDate},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_red_envelope_conf
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

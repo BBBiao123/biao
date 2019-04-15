@@ -1,0 +1,22 @@
+spring:
+  dev_model: false
+  output:
+    ansi:
+      enabled: always
+  profiles:
+    active: dev
+
+
+#日志级别
+logging:
+    level:
+        root: error
+        org.springframework.boot: info
+        org.apache.ibatis: info
+        com.bbex.bonuspoint: info
+        com.bbex.lottery: info
+        com.bbex: info
+        io.netty: info
+    path: "./logs"
+    config: classpath:logback.xml
+    

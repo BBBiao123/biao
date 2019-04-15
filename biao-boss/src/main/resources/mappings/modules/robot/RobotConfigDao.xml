@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.robot.dao.RobotConfigDao">
+    
+	<sql id="robotConfigColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		a.user_id AS "user.id",
+		a.volume_range AS "volumeRange",
+		a.price_range AS "priceRange",
+		a.status AS "status",
+		u5.username AS "user.name"
+	</sql>
+	
+	<sql id="robotConfigJoins">
+		LEFT JOIN js_plat_user u5 ON u5.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="RobotConfig">
+		SELECT 
+			<include refid="robotConfigColumns"/>
+		FROM robot_config a
+		<include refid="robotConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RobotConfig">
+		SELECT 
+			<include refid="robotConfigColumns"/>
+		FROM robot_config a
+		<include refid="robotConfigJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RobotConfig">
+		SELECT 
+			<include refid="robotConfigColumns"/>
+		FROM robot_config a
+		<include refid="robotConfigJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO robot_config(
+			id,
+			type,
+			coin_main,
+			coin_other,
+			user_id,
+			volume_range,
+			price_range,
+			status
+		) VALUES (
+			#{id},
+			#{type},
+			#{coinMain},
+			#{coinOther},
+			#{user.id},
+			#{volumeRange},
+			#{priceRange},
+			#{status}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE robot_config SET 	
+			type = #{type},
+			coin_main = #{coinMain},
+			coin_other = #{coinOther},
+			user_id = #{user.id},
+			volume_range = #{volumeRange},
+			status = #{status},
+			price_range = #{priceRange}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM robot_config
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

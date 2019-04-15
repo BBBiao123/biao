@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.OfflineCoinVolumeDao">
+    
+	<sql id="offlineCoinVolumeColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.bail_volume AS "bailVolume",
+		a.advert_volume AS "advertVolume",
+		a.lock_volume AS "lockVolume",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.version AS "version",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="offlineCoinVolumeJoins">
+	</sql>
+    
+	<select id="get" resultType="OfflineCoinVolume">
+		SELECT 
+			<include refid="offlineCoinVolumeColumns"/>
+		FROM js_plat_offline_coin_volume a
+		<include refid="offlineCoinVolumeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OfflineCoinVolume">
+		SELECT 
+			<include refid="offlineCoinVolumeColumns"/>
+		FROM js_plat_offline_coin_volume a
+		<include refid="offlineCoinVolumeJoins"/>
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OfflineCoinVolume">
+		SELECT 
+			<include refid="offlineCoinVolumeColumns"/>
+		FROM js_plat_offline_coin_volume a
+		<include refid="offlineCoinVolumeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_coin_volume(
+			id,
+			user_id,
+			coin_id,
+			coin_symbol,
+			volume,
+			advert_volume,
+			lock_volume,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{advertVolume},
+			#{lockVolume},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_coin_volume SET 	
+			user_id = #{userId},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			advert_volume = #{advertVolume},
+			lock_volume = #{lockVolume},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_coin_volume
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

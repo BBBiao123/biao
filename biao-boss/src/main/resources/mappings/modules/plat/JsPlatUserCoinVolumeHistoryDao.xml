@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatUserCoinVolumeHistoryDao">
+    
+	<sql id="jsPlatUserCoinVolumeHistoryColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.account AS "account",
+		a.type AS "type",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark as "remark",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="jsPlatUserCoinVolumeHistoryJoins">
+		LEFT JOIN js_plat_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="JsPlatUserCoinVolumeHistory">
+		SELECT 
+			<include refid="jsPlatUserCoinVolumeHistoryColumns"/>
+		FROM js_plat_user_coin_volume_history a
+		<include refid="jsPlatUserCoinVolumeHistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatUserCoinVolumeHistory">
+		SELECT 
+			<include refid="jsPlatUserCoinVolumeHistoryColumns"/>
+		FROM js_plat_user_coin_volume_history a
+		<include refid="jsPlatUserCoinVolumeHistoryJoins"/>
+		<where>
+			
+			<if test="account != null and account != ''">
+				AND a.account like concat('%',#{account},'%')
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatUserCoinVolumeHistory">
+		SELECT 
+			<include refid="jsPlatUserCoinVolumeHistoryColumns"/>
+		FROM js_plat_user_coin_volume_history a
+		<include refid="jsPlatUserCoinVolumeHistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_user_coin_volume_history(
+		    id,
+			user_id,
+			account,
+			type,
+			coin_id,
+			coin_symbol,
+			volume,
+			create_date,
+			update_date,
+			remark,
+			create_by,
+			update_by
+		) VALUES (
+		    #{id},
+			#{user.id},
+			#{account},
+			#{type},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{createDate},
+			#{updateDate},
+			#{remark},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_user_coin_volume_history SET 	
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_user_coin_volume_history
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

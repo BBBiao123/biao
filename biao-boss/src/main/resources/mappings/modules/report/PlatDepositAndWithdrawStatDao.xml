@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.PlatDepositAndWithdrawStatDao">
+    
+	<sql id="platDepositAndWithdrawStatColumns">
+	a.coinSymbol,
+	a.depositNumber,
+	a.allocationFee,
+	a.depositVolume,
+	b.withdrawNumber,
+	b.withdrawApplyVolume,
+	b.withdrawVolume,
+	b.blockFeeVolume,
+	b.withdrawFee
+	</sql>
+	
+	<sql id="platDepositAndWithdrawStatJoins">
+		LEFT JOIN sys_user u3 ON u3.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="PlatDepositAndWithdrawStat">
+		SELECT 
+			<include refid="platDepositAndWithdrawStatColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="platDepositAndWithdrawStatJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PlatDepositAndWithdrawStat">
+		SELECT 
+			<include refid="platDepositAndWithdrawStatColumns"/>
+		FROM
+		(
+		SELECT
+		coin_symbol AS coinSymbol,
+		count(*) AS depositNumber,
+		0 AS allocationFee,
+		sum(volume) AS depositVolume
+		FROM
+		js_plat_user_deposit_log
+		WHERE
+        status = '1'
+		<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+		AND create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+		</if>
+		GROUP BY
+		coin_symbol
+		) a
+		LEFT JOIN (
+		SELECT
+		coin_symbol AS coinSymbol,
+		count(*) AS withdrawNumber,
+		sum(volume) AS withdrawApplyVolume,
+		sum(real_volume) AS withdrawVolume,
+		0 AS blockFeeVolume,
+		sum(fee) AS withdrawFee
+		FROM
+		js_plat_user_withdraw_log
+		WHERE
+        status = '3'
+		<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+		AND audit_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+		</if>
+		GROUP BY
+		coin_symbol
+		) b ON a.coinSymbol = b.coinSymbol
+		UNION
+		SELECT
+		b.coinSymbol,
+		a.depositNumber,
+		a.allocationFee,
+		a.depositVolume,
+		b.withdrawNumber,
+		b.withdrawApplyVolume,
+		b.withdrawVolume,
+		b.blockFeeVolume,
+		b.withdrawFee
+		FROM
+		(
+		SELECT
+		coin_symbol AS coinSymbol,
+		count(*) AS depositNumber,
+		0 AS allocationFee,
+		sum(volume) AS depositVolume
+		FROM
+		js_plat_user_deposit_log
+		WHERE
+        status = '1'
+		<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+		AND create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+		</if>
+		GROUP BY
+		coin_symbol
+		) a
+		RIGHT JOIN (
+		SELECT
+		coin_symbol AS coinSymbol,
+		count(*) AS withdrawNumber,
+		sum(volume) AS withdrawApplyVolume,
+		sum(real_volume) AS withdrawVolume,
+		0 AS blockFeeVolume,
+		sum(fee) AS withdrawFee
+		FROM
+		js_plat_user_withdraw_log
+		WHERE
+        status = '3'
+		<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+		AND audit_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+		</if>
+		GROUP BY
+		coin_symbol
+		) b ON a.coinSymbol = b.coinSymbol
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PlatDepositAndWithdrawStat">
+		SELECT 
+			<include refid="platDepositAndWithdrawStatColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="platDepositAndWithdrawStatJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_trader_volume_snapshot(
+			id,
+			snap_date,
+			user_id,
+			user_tag,
+			coin_id,
+			coin_symbol,
+			trade_volume,
+			offline_volume,
+			lock_volume,
+			total_volume,
+			bill_sum_volume,
+			balance,
+			bobi_volume,
+			remark,
+			create_date,
+			create_by
+		) VALUES (
+			#{id},
+			#{snapDate},
+			#{userId},
+			#{userTag},
+			#{coinId},
+			#{coinSymbol},
+			#{tradeVolume},
+			#{offlineVolume},
+			#{lockVolume},
+			#{totalVolume},
+			#{billSumVolume},
+			#{balance},
+			#{bobiVolume},
+			#{remark},
+			#{createDate},
+			#{createBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_trader_volume_snapshot SET 	
+			snap_date = #{snapDate},
+			user_id = #{userId},
+			user_tag = #{userTag},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			trade_volume = #{tradeVolume},
+			offline_volume = #{offlineVolume},
+			lock_volume = #{lockVolume},
+			total_volume = #{totalVolume},
+			bill_sum_volume = #{billSumVolume},
+			balance = #{balance},
+			bobi_volume = #{bobiVolume},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_trader_volume_snapshot
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

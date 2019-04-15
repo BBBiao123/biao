@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkSysUserExPairDao">
+    
+	<sql id="mkSysUserExPairColumns">
+		a.id AS "id",
+		a.sys_user_id AS "sysUserId",
+		a.sys_user_name AS "sysUserName",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.real_name AS "realName",
+		a.id_card AS "idCard",
+		a.ex_pair_id AS "exPairId",
+		a.ex_pair_symbol AS "exPairSymbol",
+		a.coin_main_id AS "coinMainId",
+		a.coin_main_symbol AS "coinMainSymbol",
+		a.coin_other_id AS "coinOtherId",
+		a.coin_other_symbol AS "coinOtherSymbol",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+
+	<sql id="platUserColumns">
+		a.id AS "id",
+		a.username AS "username",
+		a.password AS "password",
+		a.user_type AS "userType",
+		a.status AS "status",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.ex_password AS "exPassword",
+		a.google_auth AS "googleAuth",
+		a.sex AS "sex",
+		a.age AS "age",
+		a.invite_code AS "inviteCode",
+		a.refer_invite_code AS "referInviteCode",
+		a.real_name AS "realName",
+		a.id_card AS "idCard",
+		a.card_up_id AS "cardUpId",
+		a.card_down_id AS "cardDownId",
+		a.card_face_id AS "cardFaceId",
+		a.card_status AS "cardStatus",
+		a.card_status_reason AS "cardStatusReason",
+		a.open_discount AS "openDiscount",
+		a.remarks AS "remarks",
+		a.country_id AS "countryId",
+		a.country_code AS "countryCode",
+		a.wechat_no AS "wechatNo",
+		a.wechat_qrcode_id AS "wechatQrcodeId",
+		a.alipay_no AS "alipayNo",
+		a.alipay_qrcode_id AS "alipayQrcodeId",
+		a.refer_id AS "referId",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.c2c_in AS c2cIn,
+		a.coin_out AS  coinOut
+	</sql>
+	
+	<sql id="mkSysUserExPairJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.sys_user_id
+	</sql>
+    
+	<select id="get" resultType="MkSysUserExPair">
+		SELECT 
+			<include refid="mkSysUserExPairColumns"/>
+		FROM mk_sys_user_ex_pair a
+		<include refid="mkSysUserExPairJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkSysUserExPair">
+		SELECT 
+			<include refid="mkSysUserExPairColumns"/>
+		FROM mk_sys_user_ex_pair a
+		<include refid="mkSysUserExPairJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="sysUserName != null and sysUserName != ''">
+				AND a.sys_user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sysUserName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sysUserName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sysUserName},'%')</if>
+			</if>
+			<if test="coinMainSymbol != null and coinMainSymbol != ''">
+				AND a.coin_main_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinMainSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinMainSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinMainSymbol},'%')</if>
+			</if>
+			<if test="coinOtherSymbol != null and coinOtherSymbol != ''">
+				AND a.coin_other_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinOtherSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinOtherSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinOtherSymbol},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkSysUserExPair">
+		SELECT DISTINCT
+			<include refid="mkSysUserExPairColumns"/>
+		FROM mk_sys_user_ex_pair a
+		<where>
+			<if test="sysUserId != null and sysUserId != ''">
+				AND a.sys_user_id = #{sysUserId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getByUserAndExPair" resultType="MkSysUserExPair">
+		SELECT
+		<include refid="mkSysUserExPairColumns"/>
+		FROM mk_sys_user_ex_pair a
+		<where>
+			a.ex_pair_id = #{exPairId}
+			AND a.sys_user_id = #{sysUserId}
+			AND a.user_id = #{userId}
+		</where>
+	</select>
+
+	<select id="getBySysUser" resultType="MkSysUserExPair">
+		SELECT DISTINCT
+		<include refid="mkSysUserExPairColumns"/>
+		FROM mk_sys_user_ex_pair a
+		<where>
+			a.sys_user_id = #{sysUserId}
+		</where>
+	</select>
+
+
+	<select id="getPlatUserBySysUser" resultType="PlatUser">
+		SELECT DISTINCT
+		<include refid="platUserColumns"/>
+		FROM mk_sys_user_ex_pair u inner join js_plat_user a on u.user_id = a.id
+		<where>
+			<if test="sysUserId != null and sysUserId != ''">
+				AND u.sys_user_id = #{sysUserId}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_sys_user_ex_pair(
+			id,
+			sys_user_id,
+			sys_user_name,
+			user_id,
+			username,
+			mobile,
+			mail,
+			real_name,
+			id_card,
+			ex_pair_id,
+			ex_pair_symbol,
+			coin_main_id,
+			coin_main_symbol,
+			coin_other_id,
+			coin_other_symbol,
+			remark
+		) VALUES (
+			#{id},
+			#{sysUserId},
+			#{sysUserName},
+			#{userId},
+			#{username},
+			#{mobile},
+			#{mail},
+			#{realName},
+			#{idCard},
+			#{exPairId},
+			#{exPairSymbol},
+			#{coinMainId},
+			#{coinMainSymbol},
+			#{coinOtherId},
+			#{coinOtherSymbol},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_sys_user_ex_pair SET 	
+			sys_user_id = #{sysUserId},
+			sys_user_name = #{sysUserName},
+			user_id = #{userId},
+			username = #{username},
+			mobile = #{mobile},
+			mail = #{mail},
+			real_name = #{realName},
+			id_card = #{idCard},
+			ex_pair_id = #{exPairId},
+			ex_pair_symbol = #{exPairSymbol},
+			coin_main_id = #{coinMainId},
+			coin_main_symbol = #{coinMainSymbol},
+			coin_other_id = #{coinOtherId},
+			coin_other_symbol = #{coinOtherSymbol},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_sys_user_ex_pair
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

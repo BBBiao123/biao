@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.SuperCoinVolumeConfDao">
+    
+	<sql id="superCoinVolumeConfColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.in_min_volume AS "inMinVolume",
+		a.out_min_volume AS "outMinVolume",
+		a.multiple AS "multiple",
+		a.member_lock_multiple AS "memberLockMultiple",
+		a.lock_cycle AS "lockCycle",
+		a.frozen_day AS "frozenDay",
+		a.break_ratio AS "breakRatio",
+		a.destroy_user_id AS "destroyUserId",
+		a.transfer_status AS "transferStatus",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="superCoinVolumeConfJoins">
+	</sql>
+    
+	<select id="get" resultType="SuperCoinVolumeConf">
+		SELECT 
+			<include refid="superCoinVolumeConfColumns"/>
+		FROM js_plat_super_coin_volume_conf a
+		<include refid="superCoinVolumeConfJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SuperCoinVolumeConf">
+		SELECT 
+			<include refid="superCoinVolumeConfColumns"/>
+		FROM js_plat_super_coin_volume_conf a
+		<include refid="superCoinVolumeConfJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SuperCoinVolumeConf">
+		SELECT 
+			<include refid="superCoinVolumeConfColumns"/>
+		FROM js_plat_super_coin_volume_conf a
+		<include refid="superCoinVolumeConfJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_super_coin_volume_conf(
+			id,
+			name,
+			coin_id,
+			coin_symbol,
+			in_min_volume,
+			out_min_volume,
+			multiple,
+			member_lock_multiple,
+			lock_cycle,
+			frozen_day,
+			break_ratio,
+			destroy_user_id,
+			transfer_status,
+			status,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{name},
+			#{coinId},
+			#{coinSymbol},
+			#{inMinVolume},
+			#{outMinVolume},
+			#{multiple},
+			#{memberLockMultiple},
+			#{lockCycle},
+			#{frozenDay},
+			#{breakRatio},
+			#{destroyUserId},
+			#{transferStatus},
+			#{status},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_super_coin_volume_conf SET 	
+			name = #{name},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			in_min_volume = #{inMinVolume},
+			out_min_volume = #{outMinVolume},
+			multiple = #{multiple},
+			member_lock_multiple = #{memberLockMultiple},
+			lock_cycle = #{lockCycle},
+			frozen_day = #{frozenDay},
+			break_ratio = #{breakRatio},
+			destroy_user_id = #{destroyUserId},
+			transfer_status = #{transferStatus},
+			status = #{status},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_super_coin_volume_conf
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

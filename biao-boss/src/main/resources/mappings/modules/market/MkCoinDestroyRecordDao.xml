@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkCoinDestroyRecordDao">
+    
+	<sql id="mkCoinDestroyRecordColumns">
+		a.id AS "id",
+		a.symbol AS "symbol",
+		a.coin_id AS "coinId",
+		a.volume AS "volume",
+		a.destroy_date AS "destroyDate",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkCoinDestroyRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="MkCoinDestroyRecord">
+		SELECT 
+			<include refid="mkCoinDestroyRecordColumns"/>
+		FROM mk_coin_destroy_record a
+		<include refid="mkCoinDestroyRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkCoinDestroyRecord">
+		SELECT 
+			<include refid="mkCoinDestroyRecordColumns"/>
+		FROM mk_coin_destroy_record a
+		<include refid="mkCoinDestroyRecordJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkCoinDestroyRecord">
+		SELECT 
+			<include refid="mkCoinDestroyRecordColumns"/>
+		FROM mk_coin_destroy_record a
+		<include refid="mkCoinDestroyRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_coin_destroy_record(
+			id,
+			symbol,
+			coin_id,
+			volume,
+			destroy_date,
+			remark
+		) VALUES (
+			#{id},
+			#{symbol},
+			#{coinId},
+			#{volume},
+			#{destroyDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_coin_destroy_record SET 	
+			symbol = #{symbol},
+			coin_id = #{coinId},
+			volume = #{volume},
+			destroy_date = #{destroyDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_coin_destroy_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

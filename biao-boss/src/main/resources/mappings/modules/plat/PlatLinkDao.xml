@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.PlatLinkDao">
+    
+	<sql id="platLinkColumns">
+		a.id AS "id",
+		a.typeid AS "typeid",
+		a.linkurl AS "linkurl",
+		a.linkimage AS "linkimage",
+		a.show_order AS "showOrder",
+		a.createby AS "createby",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="platLinkJoins">
+	</sql>
+    
+	<select id="get" resultType="PlatLink">
+		SELECT 
+			<include refid="platLinkColumns"/>
+		FROM js_plat_link a
+		<include refid="platLinkJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PlatLink">
+		SELECT 
+			<include refid="platLinkColumns"/>
+		FROM js_plat_link a
+		<include refid="platLinkJoins"/>
+		<where>
+			
+			<if test="typeid != null and typeid != ''">
+				AND a.typeid = #{typeid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PlatLink">
+		SELECT 
+			<include refid="platLinkColumns"/>
+		FROM js_plat_link a
+		<include refid="platLinkJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_link(
+			id,
+			typeid,
+			linkurl,
+			linkimage,
+			show_order,
+			createby,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{typeid},
+			#{linkurl},
+			#{linkimage},
+			#{showOrder},
+			#{createby},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_link SET 	
+			typeid = #{typeid},
+			linkurl = #{linkurl},
+			linkimage = #{linkimage},
+			show_order = #{showOrder}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_link
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

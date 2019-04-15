@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.CoinDao">
+    
+	<sql id="coinColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.full_name AS "fullName",
+		a.domain AS "domain",
+		a.whitepaper_url AS "whitepaperUrl",
+		a.token_volume AS "tokenVolume",
+		a.ico_price AS "icoPrice",
+		a.circulate_volume AS "circulateVolume",
+		a.token_status AS "tokenStatus",
+		a.status AS "status",
+		a.ex_min_volume AS "exMinVolume",
+		a.withdraw_min_volume AS "withdrawMinVolume",
+		a.withdraw_max_volume AS "withdrawMaxVolume",
+		a.withdraw_day_max_volume AS "withdrawDayMaxVolume",
+		a.withdraw_fee AS "withdrawFee",
+		a.withdraw_fee_type AS "withdrawFeeType",
+		a.coin_type AS "coinType",
+		a.icon_id AS "iconId",
+		a.parent_id AS "parentId",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<sql id="coinJoins">
+	</sql>
+    
+	<select id="get" resultType="Coin">
+		SELECT 
+			<include refid="coinColumns"/>
+		FROM js_plat_coin a
+		<include refid="coinJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Coin">
+		SELECT 
+			<include refid="coinColumns"/>
+		FROM js_plat_coin a
+		<include refid="coinJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Coin">
+		SELECT 
+			<include refid="coinColumns"/>
+		FROM js_plat_coin a
+		<include refid="coinJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_coin(
+			id,
+			name,
+			full_name,
+			domain,
+			whitepaper_url,
+			token_volume,
+			ico_price,
+			circulate_volume,
+			token_status,
+			status,
+			ex_min_volume,
+			withdraw_min_volume,
+			withdraw_max_volume,
+			withdraw_day_max_volume,
+			withdraw_fee,
+			withdraw_fee_type,
+			coin_type,
+			icon_id,
+			parent_id,
+			remarks
+		) VALUES (
+			#{id},
+			#{name},
+			#{fullName},
+			#{domain},
+			#{whitepaperUrl},
+			#{tokenVolume},
+			#{icoPrice},
+			#{circulateVolume},
+			#{tokenStatus},
+			#{status},
+			#{exMinVolume},
+			#{withdrawMinVolume},
+			#{withdrawMaxVolume},
+			#{withdrawDayMaxVolume},
+			#{withdrawFee},
+			#{withdrawFeeType},
+			#{coinType},
+			#{iconId},
+			#{parentId},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_coin SET 	
+			name = #{name},
+			full_name = #{fullName},
+			domain = #{domain},
+			whitepaper_url = #{whitepaperUrl},
+			token_volume = #{tokenVolume},
+			ico_price = #{icoPrice},
+			circulate_volume = #{circulateVolume},
+			token_status = #{tokenStatus},
+			status = #{status},
+			ex_min_volume = #{exMinVolume},
+			withdraw_min_volume = #{withdrawMinVolume},
+			withdraw_max_volume = #{withdrawMaxVolume},
+			withdraw_day_max_volume = #{withdrawDayMaxVolume},
+			withdraw_fee = #{withdrawFee},
+			withdraw_fee_type = #{withdrawFeeType},
+			coin_type = #{coinType},
+			icon_id = #{iconId},
+			parent_id = #{parentId},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_coin
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

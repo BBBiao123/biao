@@ -1,0 +1,101 @@
+# 默认的profile为dev，其他环境通过指定启动参数使用不同的profile，比如：
+#   测试环境：java -jar my-spring-boot.jar --spring.profiles.active=test
+#   生产环境：java -jar my-spring-boot.jar --spring.profiles.active=prod
+
+server:
+  port: 8081
+management:
+  health:
+    mail:
+      enabled: false
+info:
+  app:
+    name: "@project.name@" #从pom.xml中获取
+    description: "@project.description@"
+    version: "@project.version@"
+    spring-boot-version: "@project.parent.version@"
+
+spring:
+  dev_model: false
+  output:
+    ansi:
+      enabled: always
+  messages:
+    basename: /i18n/message
+  profiles:
+    active: dev
+  datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+               url : jdbc:mysql://47.88.229.139:3306/biao?serverTimezone=UTC&useSSL=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+               username: root
+               password: rootroot
+               hikari:
+                 maxLifetime: 1765000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上
+                 maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+         data:
+    mongodb:
+      host: localhost     # mongo 地址
+      port: 27017         # mongo 端口号
+      database: im
+      authentication-database: admin   # 验证数据库
+      username: admin                  # 用户名
+      password: admin                  # 密码
+  redis:
+    host: 47.244.153.103
+#    password: foobaredbbexONE123
+    port: 6800
+  nats:
+    urls:
+      - nats://localhost:4222            # Nats 地址21
+  rocketmq:
+      name-server: 47.88.229.139:9876
+      producer:
+        group: my-group
+
+
+  kafka:
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    bootstrap-servers: 47.52.67.6:9092
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: testGroup
+      auto-offset-reset: earliest
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.biao.listener.kafka
+  mail:
+    password: Bbex87095356
+    host: smtp.biao.one
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+    username: service@biao.one
+  influx:
+    user:
+    password:
+    url:
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+mybatis:
+    typeAliasesPackage: com.biao.entity
+    configLocation: classpath:mybatis/mybatis-config.xml
+
+#日志级别
+#logging:
+#  config: classpath:log4j2.xml
+#  level:
+#    org.springframework:
+#      security: DEBUG
+#      data: DEBUG
+
+
+    

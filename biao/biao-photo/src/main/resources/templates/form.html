@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>添加更新banner</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webuploader/webuploader.css}"/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini ">
+<div id="uploader" class="wu-example">
+    <!--用来存放文件信息-->
+    <div id="thelist" class="uploader-list"></div>
+    <div class="btns">
+        <div id="picker">选择文件</div>
+        <button id="ctlBtn" class="btn btn-default">开始上传</button>
+    </div>
+</div>
+<!--dom结构部分-->
+<div id="uploader-demo">
+    <!--用来存放item-->
+    <div id="fileList" class="uploader-list"></div>
+    <div id="filePicker">选择图片</div>
+</div>
+<!-- ./wrapper -->
+<script th:src="@{/jQuery/jquery-2.2.3.min.js}"></script>
+<script th:src="@{/webuploader/webuploader.js}"></script>
+<script>
+    // 鏂囦欢涓婁紶
+    jQuery(function () {
+        var $ = jQuery,
+            $list = $('#thelist'),
+            $btn = $('#ctlBtn'),
+            state = 'pending',
+            uploader;
+
+        uploader = WebUploader.create({
+
+            // 涓嶅帇缂﹊mage
+            resize: false,
+
+            // swf鏂囦欢璺緞
+            swf: '/webuploader/Uploader.swf',
+
+            // 鏂囦欢鎺ユ敹鏈嶅姟绔€�
+            server: 'card/upload',
+
+            // 閫夋嫨鏂囦欢鐨勬寜閽€傚彲閫夈€�
+            // 鍐呴儴鏍规嵁褰撳墠杩愯鏄垱寤猴紝鍙兘鏄痠nput鍏冪礌锛屼篃鍙兘鏄痜lash.
+            pick: '#picker'
+        });
+
+        // 褰撴湁鏂囦欢娣诲姞杩涙潵鐨勬椂鍊�
+        uploader.on('fileQueued', function (file) {
+            $list.append('<div id="' + file.id + '" class="item">' +
+                '<h4 class="info">' + file.name + '</h4>' +
+                '<p class="state">等待上传...</p>' +
+                '</div>');
+        });
+
+        // 鏂囦欢涓婁紶杩囩▼涓垱寤鸿繘搴︽潯瀹炴椂鏄剧ず銆�
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#' + file.id),
+                $percent = $li.find('.progress .progress-bar');
+
+            // 閬垮厤閲嶅鍒涘缓
+            if (!$percent.length) {
+                $percent = $('<div class="progress progress-striped active">' +
+                    '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                    '</div>' +
+                    '</div>').appendTo($li).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css('width', percentage * 100 + '%');
+        });
+
+        uploader.on('uploadSuccess', function (file) {
+            $('#' + file.id).find('p.state').text('已上传');
+        });
+
+        uploader.on('uploadError', function (file) {
+            $('#' + file.id).find('p.state').text('上传出错');
+        });
+
+        uploader.on('uploadComplete', function (file) {
+            $('#' + file.id).find('.progress').fadeOut();
+        });
+
+        uploader.on('all', function (type) {
+            if (type === 'startUpload') {
+                state = 'uploading';
+            } else if (type === 'stopUpload') {
+                state = 'paused';
+            } else if (type === 'uploadFinished') {
+                state = 'done';
+            }
+
+            if (state === 'uploading') {
+                $btn.text('鏆傚仠涓婁紶');
+            } else {
+                $btn.text('寮€濮嬩笂浼�');
+            }
+        });
+
+        $btn.on('click', function () {
+            if (state === 'uploading') {
+                uploader.stop();
+            } else {
+                uploader.upload();
+            }
+        });
+    });
+
+
+    // 鍥剧墖涓婁紶demo
+    jQuery(function () {
+        var $ = jQuery,
+            $list = $('#fileList'),
+            // 浼樺寲retina, 鍦╮etina涓嬭繖涓€兼槸2
+            ratio = window.devicePixelRatio || 1,
+
+            // 缂╃暐鍥惧ぇ灏�
+            thumbnailWidth = 100 * ratio,
+            thumbnailHeight = 100 * ratio,
+
+            // Web Uploader瀹炰緥
+            uploader;
+
+        // 鍒濆鍖朩eb Uploader
+        uploader = WebUploader.create({
+
+            // 鑷姩涓婁紶銆�
+            auto: true,
+
+            // swf鏂囦欢璺緞
+            swf: '/webuploader/Uploader.swf',
+
+            // 鏂囦欢鎺ユ敹鏈嶅姟绔€�
+            server: '/card/upload',
+
+            // 閫夋嫨鏂囦欢鐨勬寜閽€傚彲閫夈€�
+            // 鍐呴儴鏍规嵁褰撳墠杩愯鏄垱寤猴紝鍙兘鏄痠nput鍏冪礌锛屼篃鍙兘鏄痜lash.
+            pick: '#filePicker',
+
+            // 鍙厑璁搁€夋嫨鏂囦欢锛屽彲閫夈€�
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+
+        // 褰撴湁鏂囦欢娣诲姞杩涙潵鐨勬椂鍊�
+        uploader.on('fileQueued', function (file) {
+            var $li = $(
+                '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img>' +
+                '<div class="info">' + file.name + '</div>' +
+                '</div>'
+                ),
+                $img = $li.find('img');
+
+            $list.append($li);
+
+            // 鍒涘缓缂╃暐鍥�
+            uploader.makeThumb(file, function (error, src) {
+                if (error) {
+                    $img.replaceWith('<span>涓嶈兘棰勮</span>');
+                    return;
+                }
+
+                $img.attr('src', src);
+            }, thumbnailWidth, thumbnailHeight);
+        });
+
+        // 鏂囦欢涓婁紶杩囩▼涓垱寤鸿繘搴︽潯瀹炴椂鏄剧ず銆�
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#' + file.id),
+                $percent = $li.find('.progress span');
+
+            // 閬垮厤閲嶅鍒涘缓
+            if (!$percent.length) {
+                $percent = $('<p class="progress"><span></span></p>')
+                    .appendTo($li)
+                    .find('span');
+            }
+
+            $percent.css('width', percentage * 100 + '%');
+        });
+
+        // 鏂囦欢涓婁紶鎴愬姛锛岀粰item娣诲姞鎴愬姛class, 鐢ㄦ牱寮忔爣璁颁笂浼犳垚鍔熴€�
+        uploader.on('uploadSuccess', function (file) {
+            $('#' + file.id).addClass('upload-state-done');
+        });
+
+        // 鏂囦欢涓婁紶澶辫触锛岀幇瀹炰笂浼犲嚭閿欍€�
+        uploader.on('uploadError', function (file) {
+            var $li = $('#' + file.id),
+                $error = $li.find('div.error');
+
+            // 閬垮厤閲嶅鍒涘缓
+            if (!$error.length) {
+                $error = $('<div class="error"></div>').appendTo($li);
+            }
+
+            $error.text('涓婁紶澶辫触');
+        });
+
+        // 瀹屾垚涓婁紶瀹屼簡锛屾垚鍔熸垨鑰呭け璐ワ紝鍏堝垹闄よ繘搴︽潯銆�
+        uploader.on('uploadComplete', function (file) {
+            $('#' + file.id).find('.progress').remove();
+        });
+    });
+</script>
+</body>
+</html>

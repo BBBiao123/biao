@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeBonusAccountDao">
+    
+	<sql id="mk2PopularizeBonusAccountColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.id_card AS "idCard",
+		a.real_name AS "realName",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="mk2PopularizeBonusAccountJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeBonusAccount">
+		SELECT 
+			<include refid="mk2PopularizeBonusAccountColumns"/>
+		FROM mk2_popularize_bonus_account a
+		<include refid="mk2PopularizeBonusAccountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeBonusAccount">
+		SELECT 
+			<include refid="mk2PopularizeBonusAccountColumns"/>
+		FROM mk2_popularize_bonus_account a
+		<include refid="mk2PopularizeBonusAccountJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeBonusAccount">
+		SELECT 
+			<include refid="mk2PopularizeBonusAccountColumns"/>
+		FROM mk2_popularize_bonus_account a
+		<include refid="mk2PopularizeBonusAccountJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_bonus_account(
+			id,
+			type,
+			user_id,
+			mail,
+			mobile,
+			id_card,
+			real_name,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{type},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{idCard},
+			#{realName},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_bonus_account SET 	
+			type = #{type},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			id_card = #{idCard},
+			real_name = #{realName},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_bonus_account
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

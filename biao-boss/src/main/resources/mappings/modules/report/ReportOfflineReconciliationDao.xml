@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportOfflineReconciliationDao">
+    
+	<sql id="reportOfflineReconciliationColumns">
+		u.mobile AS "mobile",
+		u.mail AS "mail",
+		dayTime AS "dayTime",
+		TRUNCATE (sum(v.in_total), 2) AS "income",
+		TRUNCATE (sum(v.out_total), 2) AS "payout",
+		TRUNCATE (
+			sum(v.in_total) - sum(v.out_total),
+			2
+		) AS "balance",
+		u.tag AS "tag"
+	</sql>
+	
+	<sql id="reportOfflineReconciliationJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportOfflineReconciliation">
+		SELECT 
+			<include refid="reportOfflineReconciliationColumns"/>
+		FROM report_trade_day a
+		<include refid="reportOfflineReconciliationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportOfflineReconciliation">
+		SELECT 
+			<include refid="reportOfflineReconciliationColumns"/>
+		FROM
+		(
+		SELECT
+		user_id,
+		DATE_FORMAT(
+		t.confirm_receipt_date,
+		'%Y-%m-%d'
+		) AS dayTime,
+		t.total_price AS in_total,
+		'0' AS out_total
+		FROM
+		js_plat_offline_order_detail t
+		WHERE
+		t.`status` = '2'
+		AND remarks = 'sell'
+		AND symbol IN ('UES', 'USDT')
+		<if test="beginDayTime != null and beginDayTime != ''">
+			AND t.confirm_receipt_date > #{beginDayTime}
+		</if>
+
+		<if test="endDayTime != null and endDayTime != ''">
+			AND t.confirm_receipt_date &lt; date_sub(#{endDateTimeStr},interval -1 day)
+		</if>
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		<where>
+			<if test="tag != null and tag != '' and tag == 'FM'">
+				AND tag = 'FM'
+			</if>
+			<if test="tag != null and tag != '' and tag == 'YS'">
+				AND tag like concat('','YS','%')
+			</if>
+			<if test="tag != null and tag != '' and tag == 'ALL'">
+				AND (tag = 'FM' OR tag like concat('','YS','%'))
+			</if>
+		</where>
+		)
+		UNION ALL
+		SELECT
+		user_id,
+		DATE_FORMAT(
+		t.confirm_receipt_date,
+		'%Y-%m-%d'
+		) AS dayTime,
+		0 AS in_total,
+		t.total_price AS out_total
+		FROM
+		js_plat_offline_order_detail t
+		WHERE
+		t.`status` = '2'
+		AND remarks = 'buy'
+		AND symbol IN ('UES', 'USDT')
+		<if test="beginDayTime != null and beginDayTime != ''">
+			AND t.confirm_receipt_date > #{beginDayTime}
+		</if>
+
+		<if test="endDayTime != null and endDayTime != ''">
+			AND t.confirm_receipt_date &lt; date_sub(#{endDateTimeStr},interval -1 day)
+		</if>
+
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		<where>
+			<if test="tag != null and tag != '' and tag == 'FM'">
+				AND tag = 'FM'
+			</if>
+			<if test="tag != null and tag != '' and tag == 'YS'">
+				AND tag like concat('','YS','%')
+			</if>
+			<if test="tag != null and tag != '' and tag == 'ALL'">
+				AND (tag = 'FM' OR tag like concat('','YS','%'))
+			</if>
+		</where>
+		)
+		) v,
+		js_plat_user u
+		WHERE
+		v.user_id = u.id
+		GROUP BY
+		u.id,
+		dayTime
+		UNION ALL
+		SELECT
+		'合计' AS mobil,
+		'' AS email,
+		'' AS dayTime,
+		sum(v.in_total) AS income,
+		sum(v.out_total) AS payout,
+		sum(v.in_total) - sum(v.out_total) AS balance,
+		'' AS tag
+		FROM
+		(
+		SELECT
+		t.total_price AS in_total,
+		0 AS out_total,
+		DATE_FORMAT(
+		t.confirm_receipt_date,
+		'%Y-%m-%d'
+		) AS dayTime
+		FROM
+		js_plat_offline_order_detail t
+		WHERE
+		t.`status` = '2'
+		AND remarks = 'sell'
+		AND symbol IN ('UES', 'USDT')
+		<if test="beginDayTime != null and beginDayTime != ''">
+			AND t.confirm_receipt_date > #{beginDayTime}
+		</if>
+
+		<if test="endDayTime != null and endDayTime != ''">
+			AND t.confirm_receipt_date &lt; date_sub(#{endDateTimeStr},interval -1 day)
+		</if>
+
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		<where>
+			<if test="tag != null and tag != '' and tag == 'FM'">
+				AND tag = 'FM'
+			</if>
+			<if test="tag != null and tag != '' and tag == 'YS'">
+				AND tag like concat('','YS','%')
+			</if>
+			<if test="tag != null and tag != '' and tag == 'ALL'">
+				AND (tag = 'FM' OR tag like concat('','YS','%'))
+			</if>
+		</where>
+		)
+		UNION ALL
+		SELECT
+		0 AS in_total,
+		t.total_price AS out_total,
+		DATE_FORMAT(
+		t.confirm_receipt_date,
+		'%Y-%m-%d'
+		) AS dayTime
+		FROM
+		js_plat_offline_order_detail t
+		WHERE
+		t.`status` = '2'
+		AND remarks = 'buy'
+		AND symbol IN ('UES', 'USDT')
+		<if test="beginDayTime != null and beginDayTime != ''">
+			AND t.confirm_receipt_date > #{beginDayTime}
+		</if>
+
+		<if test="endDayTime != null and endDayTime != ''">
+			AND t.confirm_receipt_date &lt; date_sub(#{endDateTimeStr},interval -1 day)
+		</if>
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+
+		<where>
+			<if test="tag != null and tag != '' and tag == 'FM'">
+				AND tag = 'FM'
+			</if>
+			<if test="tag != null and tag != '' and tag == 'YS'">
+				AND tag like concat('','YS','%')
+			</if>
+			<if test="tag != null and tag != '' and tag == 'ALL'">
+				AND (tag = 'FM' OR tag like concat('','YS','%'))
+			</if>
+		</where>
+
+		)
+		) v
+	</select>
+	
+	<select id="findAllList" resultType="ReportOfflineReconciliation">
+		SELECT 
+			<include refid="reportOfflineReconciliationColumns"/>
+		FROM report_trade_day a
+		<include refid="reportOfflineReconciliationJoins"/>
+		<where>
+			
+		</where>		
+
+	</select>
+
+</mapper>

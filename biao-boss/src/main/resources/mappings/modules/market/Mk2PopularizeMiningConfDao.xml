@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeMiningConfDao">
+    
+	<sql id="mk2PopularizeMiningConfColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.total_volume AS "totalVolume",
+		a.grant_volume AS "grantVolume",
+		a.show_multiple AS "showMultiple",
+		a.delay_show_multiple AS "delayShowMultiple",
+		a.per_volume AS "perVolume",
+		a.greater_volume AS "greaterVolume",
+		a.leader_greater_volume AS "leaderGreaterVolume",
+		a.base_volume AS "baseVolume",
+		a.income_hold_ratio AS "incomeHoldRatio",
+		a.base_multiple AS "baseMultiple",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.create_date AS "createDate",
+		a.status AS "status",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeMiningConfJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeMiningConf">
+		SELECT 
+			<include refid="mk2PopularizeMiningConfColumns"/>
+		FROM mk2_popularize_mining_conf a
+		<include refid="mk2PopularizeMiningConfJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeMiningConf">
+		SELECT 
+			<include refid="mk2PopularizeMiningConfColumns"/>
+		FROM mk2_popularize_mining_conf a
+		<include refid="mk2PopularizeMiningConfJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeMiningConf">
+		SELECT 
+			<include refid="mk2PopularizeMiningConfColumns"/>
+		FROM mk2_popularize_mining_conf a
+		<include refid="mk2PopularizeMiningConfJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_mining_conf(
+			id,
+			type,
+			total_volume,
+			grant_volume,
+			show_multiple,
+			delay_show_multiple,
+			per_volume,
+			greater_volume,
+			leader_greater_volume,
+			base_volume,
+			income_hold_ratio,
+			base_multiple,
+			coin_id,
+			coin_symbol,
+			create_date,
+			status,
+			remark
+		) VALUES (
+			#{id},
+			#{type},
+			#{totalVolume},
+			#{grantVolume},
+			#{showMultiple},
+			#{delayShowMultiple},
+			#{perVolume},
+			#{greaterVolume},
+			#{leaderGreaterVolume},
+			#{baseVolume},
+			#{incomeHoldRatio},
+			#{baseMultiple},
+			#{coinId},
+			#{coinSymbol},
+			#{createDate},
+			#{status},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_mining_conf SET 	
+			type = #{type},
+			total_volume = #{totalVolume},
+			show_multiple = #{showMultiple},
+			delay_show_multiple = #{delayShowMultiple},
+			per_volume = #{perVolume},
+			greater_volume = #{greaterVolume},
+			leader_greater_volume = #{leaderGreaterVolume},
+			base_volume = #{baseVolume},
+			base_multiple = #{baseMultiple},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			status = #{status},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_mining_conf
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,50 @@
+# 默认的profile为dev，其他环境通过指定启动参数使用不同的profile，比如：
+#   测试环境：java -jar my-spring-boot.jar --spring.profiles.active=test
+#   生产环境：java -jar my-spring-boot.jar --spring.profiles.active=prod
+
+server:
+  port: 8082
+  address: 0.0.0.0
+
+spring:
+  dev_model: false
+  output:
+    ansi:
+      enabled: always
+  messages:
+    basename: /i18n/message
+  profiles: 
+    active: dev
+  data:
+    mongodb:
+        host: dds-j6c4cb1c77b752a41823-pub.mongodb.rds.aliyuncs.com
+        port: 3717
+        database: photo
+        authentication-database: photo
+        username: photoadmin
+        password: photoadmin
+        reactive-repositories:
+                enabled: true
+images:
+  host: http://images.coceu.com/
+  
+aliyun: 
+   ossclient: 
+      accessKeyId: LTAIeVlMi4NlO4qA
+      accessKeySecret: sM7tcsCdiOyLMvXGa9t6fIKvtTeDyu
+      bucketName: biao-app
+      endpoint: oss-cn-shenzhen-internal.aliyuncs.com
+#日志级别
+logging:
+    level:
+        root: info
+        org.springframework.boot: info
+        org.apache.ibatis: info
+        com.bbex.bonuspoint: info
+        com.bbex.lottery: info
+        com.bbex: info
+        io.netty: info
+
+    path: "./logs"
+    config: classpath:logback.xml
+    

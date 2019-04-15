@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.EthTokenWithdrawDao">
+    
+	<sql id="ethTokenWithdrawColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.volume AS "volume",
+		a.from_address AS "fromAddress",
+		a.to_address AS "toAddress",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="ethTokenWithdrawJoins">
+	</sql>
+    
+	<select id="get" resultType="EthTokenWithdraw">
+		SELECT 
+			<include refid="ethTokenWithdrawColumns"/>
+		FROM eth_token_withdraw a
+		<include refid="ethTokenWithdrawJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="EthTokenWithdraw">
+		SELECT 
+			<include refid="ethTokenWithdrawColumns"/>
+		FROM eth_token_withdraw a
+		<include refid="ethTokenWithdrawJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="fromAddress != null and fromAddress != ''">
+				AND a.from_address = #{fromAddress}
+			</if>
+			<if test="toAddress != null and toAddress != ''">
+				AND a.to_address = #{toAddress}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EthTokenWithdraw">
+		SELECT 
+			<include refid="ethTokenWithdrawColumns"/>
+		FROM eth_token_withdraw a
+		<include refid="ethTokenWithdrawJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO eth_token_withdraw(
+			id,
+			name,
+			volume,
+			from_address,
+			to_address,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		) VALUES (
+			#{id},
+			#{name},
+			#{volume},
+			#{fromAddress},
+			#{toAddress},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE eth_token_withdraw SET 	
+			name = #{name},
+			volume = #{volume},
+			from_address = #{fromAddress},
+			to_address = #{toAddress},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM eth_token_withdraw
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.MkUserRegisterLotteryLimitDao">
+    
+	<sql id="mkUserRegisterLotteryLimitColumns">
+		a.id AS "id",
+		a.lottery_id AS "lotteryId",
+		a.start_count AS "startCount",
+		a.end_count AS "endCount",
+		a.ratio AS "ratio",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		l.name as "lotteryName"
+	</sql>
+	
+	<sql id="mkUserRegisterLotteryLimitJoins">
+		left  join mk_user_register_lottery l  on a.lottery_id = l.id
+	</sql>
+    
+	<select id="get" resultType="MkUserRegisterLotteryLimit">
+		SELECT 
+			<include refid="mkUserRegisterLotteryLimitColumns"/>
+		FROM mk_user_register_lottery_limit a
+		<include refid="mkUserRegisterLotteryLimitJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkUserRegisterLotteryLimit">
+		SELECT 
+			<include refid="mkUserRegisterLotteryLimitColumns"/>
+		FROM mk_user_register_lottery_limit a
+		<include refid="mkUserRegisterLotteryLimitJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkUserRegisterLotteryLimit">
+		SELECT 
+			<include refid="mkUserRegisterLotteryLimitColumns"/>
+		FROM mk_user_register_lottery_limit a
+		<include refid="mkUserRegisterLotteryLimitJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_user_register_lottery_limit(
+			id,
+			lottery_id,
+			start_count,
+			end_count,
+			ratio,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{lotteryId},
+			#{startCount},
+			#{endCount},
+			#{ratio},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_user_register_lottery_limit SET 	
+			lottery_id = #{lotteryId},
+			start_count = #{startCount},
+			end_count = #{endCount},
+			ratio = #{ratio},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_user_register_lottery_limit
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

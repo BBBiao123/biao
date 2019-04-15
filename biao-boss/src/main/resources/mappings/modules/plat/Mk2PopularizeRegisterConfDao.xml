@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.Mk2PopularizeRegisterConfDao">
+    
+	<sql id="mk2PopularizeRegisterConfColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.status AS "status",
+		a.register_volume AS "registerVolume",
+		a.refer_volume AS "referVolume",
+		a.total_volume AS "totalVolume",
+		a.give_volume AS "giveVolume",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeRegisterConfJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeRegisterConf">
+		SELECT 
+			<include refid="mk2PopularizeRegisterConfColumns"/>
+		FROM mk2_popularize_register_conf a
+		<include refid="mk2PopularizeRegisterConfJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findEffective" resultType="Mk2PopularizeRegisterConf">
+		SELECT
+		<include refid="mk2PopularizeRegisterConfColumns"/>
+		FROM mk2_popularize_register_conf a
+		WHERE a.status = '3'
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeRegisterConf">
+		SELECT 
+			<include refid="mk2PopularizeRegisterConfColumns"/>
+		FROM mk2_popularize_register_conf a
+		<include refid="mk2PopularizeRegisterConfJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinSymbol},'%')</if>
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeRegisterConf">
+		SELECT 
+			<include refid="mk2PopularizeRegisterConfColumns"/>
+		FROM mk2_popularize_register_conf a
+		<include refid="mk2PopularizeRegisterConfJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_register_conf(
+			id,
+			name,
+			coin_id,
+			coin_symbol,
+			status,
+			register_volume,
+			refer_volume,
+			total_volume,
+			give_volume,
+			create_by,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{name},
+			#{coinId},
+			#{coinSymbol},
+			#{status},
+			#{registerVolume},
+			#{referVolume},
+			#{totalVolume},
+			#{giveVolume},
+			#{createBy.id},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_register_conf SET 	
+			name = #{name},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			status = #{status},
+			register_volume = #{registerVolume},
+			refer_volume = #{referVolume},
+			total_volume = #{totalVolume},
+			give_volume = #{giveVolume},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_register_conf
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

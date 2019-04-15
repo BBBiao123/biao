@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatOfflineCoinVolumeDayDao">
+    
+	<sql id="jsPlatOfflineCoinVolumeDayColumns">
+		a.user_id AS "userId",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.tag AS "tag",
+		a.count_day AS "countDay",
+		a.buy_total AS "buyTotal",
+		a.sell_total AS "sellTotal",
+		a.surplus_total AS "surplusTotal",
+		a.create_time AS "createTime"
+	</sql>
+	
+	<select id="get" resultType="JsPlatOfflineCoinVolumeDay">
+		SELECT 
+			<include refid="jsPlatOfflineCoinVolumeDayColumns"/>
+		FROM js_plat_offline_coin_volume_day a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatOfflineCoinVolumeDay">
+		SELECT 
+			<include refid="jsPlatOfflineCoinVolumeDayColumns"/>
+		FROM js_plat_offline_coin_volume_day a
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail = #{mail}
+			</if>
+			<if test="tag != null and tag != ''">
+				AND a.tag = #{tag}
+			</if>
+			<if test="countDay != null and countDay != ''">
+				AND a.count_day = #{countDay}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatOfflineCoinVolumeDay">
+		SELECT 
+			<include refid="jsPlatOfflineCoinVolumeDayColumns"/>
+		FROM js_plat_offline_coin_volume_day a
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_coin_volume_day(
+			user_id,
+			mobile,
+			mail,
+			tag,
+			count_day,
+			buy_total,
+			sell_total,
+			surplus_total,
+			create_time
+		) VALUES (
+			#{userId},
+			#{mobile},
+			#{mail},
+			#{tag},
+			#{countDay},
+			#{buyTotal},
+			#{sellTotal},
+			#{surplusTotal},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_coin_volume_day SET 	
+			user_id = #{userId},
+			mobile = #{mobile},
+			mail = #{mail},
+			tag = #{tag},
+			count_day = #{countDay},
+			buy_total = #{buyTotal},
+			sell_total = #{sellTotal},
+			surplus_total = #{surplusTotal},
+			create_time = #{createTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_coin_volume_day
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

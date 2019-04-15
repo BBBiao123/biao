@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.MkUserRegisterLotteryLogDao">
+
+    <sql id="mkUserRegisterLotteryLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.lottery_name AS "lotteryName",
+		a.rule_id AS "ruleId",
+		a.lottery_id AS "lotteryId",
+		a.coin_symbol AS "coinSymbol",
+		a.real_volume AS "realVolume",
+		a.reason AS "reason",
+		a.mail AS "mail",
+		a.phone AS "phone",
+		a.recommend_id AS "recommendId",
+		a.phone_date AS "phoneDate",
+		a.source AS "source",
+		a.create_date AS "createDate"
+	</sql>
+
+    <sql id="mkUserRegisterLotteryLogJoins">
+
+    </sql>
+
+    <select id="get" resultType="MkUserRegisterLotteryLog">
+        SELECT
+        <include refid="mkUserRegisterLotteryLogColumns"/>
+        FROM mk_user_register_lottery_log a
+        <include refid="mkUserRegisterLotteryLogJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="MkUserRegisterLotteryLog">
+        SELECT
+        <include refid="mkUserRegisterLotteryLogColumns"/>
+        FROM mk_user_register_lottery_log a
+        <include refid="mkUserRegisterLotteryLogJoins"/>
+        <where>
+
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="coinSymbol != null and coinSymbol != ''">
+                AND a.coin_symbol = #{coinSymbol}
+            </if>
+            <if test="mail != null and mail != ''">
+                AND a.mail = #{mail}
+            </if>
+            <if test="phone != null and phone != ''">
+                AND a.phone = #{phone}
+            </if>
+
+			<if test="beginPhoneDate != null and endPhoneDate != null and beginPhoneDate != '' and endPhoneDate != ''">
+				AND a.phone_date BETWEEN #{beginPhoneDate} AND #{endPhoneDate}
+			</if>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="MkUserRegisterLotteryLog">
+        SELECT
+        <include refid="mkUserRegisterLotteryLogColumns"/>
+        FROM mk_user_register_lottery_log a
+        <include refid="mkUserRegisterLotteryLogJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO mk_user_register_lottery_log(
+			id,
+			user_id,
+			lottery_name,
+			rule_id,
+			lottery_id,
+			coin_symbol,
+			real_volume,
+			reason,
+			mail,
+			phone,
+			recommend_id,
+			phone_date,
+			source,
+			create_date
+		) VALUES (
+			#{id},
+			#{userId},
+			#{lotteryName},
+			#{ruleId},
+			#{lotteryId},
+			#{coinSymbol},
+			#{realVolume},
+			#{reason},
+			#{mail},
+			#{phone},
+			#{recommendId},
+			#{phoneDate},
+			#{source},
+			#{createDate}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE mk_user_register_lottery_log SET 	
+			user_id = #{userId},
+			lottery_name = #{lotteryName},
+			rule_id = #{ruleId},
+			lottery_id = #{lotteryId},
+			coin_symbol = #{coinSymbol},
+			real_volume = #{realVolume},
+			reason = #{reason},
+			mail = #{mail},
+			phone = #{phone},
+			recommend_id = #{recommendId},
+			phone_date = #{phoneDate},
+			source = #{source}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM mk_user_register_lottery_log
+		WHERE id = #{id}
+	</update>
+
+</mapper>

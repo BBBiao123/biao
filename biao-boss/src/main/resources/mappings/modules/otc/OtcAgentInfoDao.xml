@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.otc.dao.OtcAgentInfoDao">
+    
+	<sql id="otcAgentInfoColumns">
+		a.id AS "id",
+		a.number AS "number",
+		a.name AS "name",
+		a.status AS "status",
+		a.discount AS "discount",
+		a.sys_user_id AS "sysUserId",
+		a.sys_user_name AS "sysUserName",
+		a.sys_user_mail AS "sysUserMail",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="otcAgentInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="OtcAgentInfo">
+		SELECT 
+			<include refid="otcAgentInfoColumns"/>
+		FROM otc_agent_info a
+		<include refid="otcAgentInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getBySysUserId" resultType="OtcAgentInfo">
+		SELECT
+		<include refid="otcAgentInfoColumns"/>
+		FROM otc_agent_info a
+		<include refid="otcAgentInfoJoins"/>
+		WHERE a.sys_user_id = #{sysUserId}
+	</select>
+
+	<select id="getBySysUserName" resultType="OtcAgentInfo">
+		SELECT
+		<include refid="otcAgentInfoColumns"/>
+		FROM otc_agent_info a
+		<include refid="otcAgentInfoJoins"/>
+		WHERE a.sys_user_name = #{sysUserName}
+	</select>
+
+	<select id="getByName" resultType="OtcAgentInfo">
+		SELECT
+		<include refid="otcAgentInfoColumns"/>
+		FROM otc_agent_info a
+		<include refid="otcAgentInfoJoins"/>
+		WHERE a.name = #{name}
+	</select>
+	
+	<select id="findList" resultType="OtcAgentInfo">
+		SELECT 
+			<include refid="otcAgentInfoColumns"/>
+		FROM otc_agent_info a
+		<include refid="otcAgentInfoJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OtcAgentInfo">
+		SELECT 
+			<include refid="otcAgentInfoColumns"/>
+		FROM otc_agent_info a
+		<include refid="otcAgentInfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO otc_agent_info(
+			id,
+			name,
+			status,
+			discount,
+			sys_user_name,
+			sys_user_mail,
+			coin_id,
+			coin_symbol,
+			remark
+		) VALUES (
+			#{id},
+			#{name},
+			#{status},
+			#{discount},
+			#{sysUserName},
+			#{sysUserMail},
+			#{coinId},
+			#{coinSymbol},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE otc_agent_info SET 	
+			name = #{name},
+			status = #{status},
+			discount = #{discount},
+			sys_user_name = #{sysUserName},
+			sys_user_mail = #{sysUserMail},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM otc_agent_info
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

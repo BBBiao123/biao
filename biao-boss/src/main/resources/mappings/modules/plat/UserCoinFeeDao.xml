@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.UserCoinFeeDao">
+
+    <sql id="userCoinFeeColumns">
+		a.id AS "id",
+		a.pair_one AS "pairOne",
+		a.pair_other AS "pairOther",
+		a.ex_pair_id AS "exPairId",
+		a.user_id AS "userId",
+		a.user_name AS "userName",
+		a.real_name AS "realName",
+		a.mail AS "mail",
+		a.mobile as "mobile",
+		a.fee AS "fee",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+
+    <sql id="userCoinFeeJoins">
+    </sql>
+
+    <select id="get" resultType="UserCoinFee">
+        SELECT
+        <include refid="userCoinFeeColumns"/>
+        FROM js_plat_user_coin_fee a
+        <include refid="userCoinFeeJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="UserCoinFee">
+        SELECT
+        <include refid="userCoinFeeColumns"/>
+        FROM js_plat_user_coin_fee a
+        <include refid="userCoinFeeJoins"/>
+        <where>
+
+            <if test="pairOne != null and pairOne != ''">
+                AND a.pair_one = #{pairOne}
+            </if>
+            <if test="pairOther != null and pairOther != ''">
+                AND a.pair_other = #{pairOther}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND a.status = #{status}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="UserCoinFee">
+        SELECT
+        <include refid="userCoinFeeColumns"/>
+        FROM js_plat_user_coin_fee a
+        <include refid="userCoinFeeJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO js_plat_user_coin_fee(
+			id,
+			ex_pair_id,
+			pair_one,
+			pair_other,
+			user_id,
+			user_name,
+			real_name,
+			mail,
+			mobile,
+			fee,
+			status,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{exPairId},
+			#{pairOne},
+			#{pairOther},
+			#{userId},
+			#{userName},
+			#{realName},
+			#{mail},
+			#{mobile},
+			#{fee},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE js_plat_user_coin_fee SET
+		    ex_pair_id = #{exPairId},
+			pair_one = #{pairOne},
+			pair_other = #{pairOther},
+			user_id = #{userId},
+			user_name = #{userName},
+			real_name = #{realName},
+			mail = #{mail},
+			mobile = #{mobile},
+			fee = #{fee},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM js_plat_user_coin_fee
+		WHERE id = #{id}
+	</update>
+
+</mapper>

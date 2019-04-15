@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.JsSysConfDao">
+    
+	<sql id="jsSysConfColumns">
+		a.id AS "id",
+		a.offline_on_off AS "offlineOnOff",
+		a.remarks AS "remarks",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="jsSysConfJoins">
+	</sql>
+    
+	<select id="get" resultType="JsSysConf">
+		SELECT 
+			<include refid="jsSysConfColumns"/>
+		FROM js_sys_conf a
+		<include refid="jsSysConfJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsSysConf">
+		SELECT 
+			<include refid="jsSysConfColumns"/>
+		FROM js_sys_conf a
+		<include refid="jsSysConfJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsSysConf">
+		SELECT 
+			<include refid="jsSysConfColumns"/>
+		FROM js_sys_conf a
+		<include refid="jsSysConfJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_sys_conf(
+			id,
+			offline_on_off,
+			remarks
+		) VALUES (
+			#{id},
+			#{offlineOnOff},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_sys_conf SET 	
+			offline_on_off = #{offlineOnOff},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_sys_conf
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

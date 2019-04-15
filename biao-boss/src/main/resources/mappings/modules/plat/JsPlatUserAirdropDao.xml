@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatUserAirdropDao">
+    
+	<sql id="jsPlatUserAirdropColumns">
+		a.id AS "id",
+		a.coin_symbol AS "coinSymbol",
+		a.coin_id AS "coinId",
+		a.user_type AS "userType",
+		a.number AS "number",
+		a.create_time AS "createTime",
+		a.mark AS "mark",
+		a.end_time AS "endTime",
+		a.start_time AS "startTime",
+		a.status AS "status"
+	</sql>
+	
+	<sql id="jsPlatUserAirdropJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatUserAirdrop">
+		SELECT 
+			<include refid="jsPlatUserAirdropColumns"/>
+		FROM js_plat_user_airdrop a
+		<include refid="jsPlatUserAirdropJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatUserAirdrop">
+		SELECT 
+			<include refid="jsPlatUserAirdropColumns"/>
+		FROM js_plat_user_airdrop a
+		<include refid="jsPlatUserAirdropJoins"/>
+		<where>
+			
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+			<if test="userType != null and userType != ''">
+				AND a.user_type = #{userType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			    ORDER BY create_time
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatUserAirdrop">
+		SELECT 
+			<include refid="jsPlatUserAirdropColumns"/>
+		FROM js_plat_user_airdrop a
+		<include refid="jsPlatUserAirdropJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			    ORDER BY create_time
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_user_airdrop(
+			id,
+			coin_symbol,
+			coin_id,
+			user_type,
+			number,
+			create_time,
+			mark,
+			end_time,
+			start_time,
+			status
+		) VALUES (
+			#{id},
+			#{coinSymbol},
+			#{coinId},
+			#{userType},
+			#{number},
+			#{createTime},
+			#{mark},
+			#{endTime},
+			#{startTime},
+			#{status}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_user_airdrop SET 	
+			coin_symbol = #{coinSymbol},
+			coin_id = #{coinId},
+			user_type = #{userType},
+			number = #{number},
+			create_time = #{createTime},
+			mark = #{mark},
+			end_time = #{endTime},
+			start_time = #{startTime},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_user_airdrop
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

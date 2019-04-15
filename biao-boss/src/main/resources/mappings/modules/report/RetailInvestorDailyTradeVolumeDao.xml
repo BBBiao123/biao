@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.RetailInvestorDailyTradeVolumeDao">
+    
+	<sql id="retailInvestorDailyTradeVolumeColumns">
+		a.id AS "id",
+		a.snap_date AS "snapDate",
+		a.user_id AS "userId",
+		a.user_tag AS "userTag",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.trade_volume AS "tradeVolume",
+		a.offline_volume AS "offlineVolume",
+		a.lock_volume AS "lockVolume",
+		a.total_volume AS "totalVolume",
+		a.bill_sum_volume AS "billSumVolume",
+		a.balance AS "balance",
+		a.bobi_volume AS "bobiVolume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy"
+	</sql>
+	
+	<sql id="retailInvestorDailyTradeVolumeJoins">
+		LEFT JOIN sys_user u3 ON u3.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="RetailInvestorDailyTradeVolume">
+		SELECT 
+			<include refid="retailInvestorDailyTradeVolumeColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="retailInvestorDailyTradeVolumeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RetailInvestorDailyTradeVolume">
+		SELECT
+			date(o.create_date) AS 'tradeDate',
+
+			IF (
+			u.tag IS NULL
+			OR u.tag LIKE 'OTC%',
+			'散户',
+			u.tag
+			) AS 'userTag',
+
+			IF (
+			ex_type = 0,
+			'买入',
+			'卖出'
+			) AS 'exType',
+			coin_symbol AS 'coinSymbol',
+			sum(o.spent_volume) AS 'spentVolume',
+			to_coin_symbol AS 'toCoinSymbol',
+			sum(to_coin_volume) AS 'earnVolume',
+			to_coin_symbol AS 'feeCoinSymbol',
+			sum(o.ex_fee) AS 'feeVolume'
+			FROM
+			js_plat_ex_order o,
+			js_plat_user u
+		<where>
+
+			o.user_id = u.id
+			AND o.`status` IN ('1', '2', '3')
+			<if test="tradeDate != null and tradeDate != ''">
+				AND date(o.create_date) = #{tradeDate}
+			</if>
+
+			<if test="coinSymbol != null and coinSymbol != '' and toCoinSymbol != null and toCoinSymbol != ''">
+				AND (
+				(
+				o.coin_symbol = #{coinSymbol}
+				AND o.to_coin_symbol = #{toCoinSymbol}
+				)
+				OR (
+				o.coin_symbol = #{toCoinSymbol}
+				AND o.to_coin_symbol = #{coinSymbol}
+				)
+				)
+			</if>
+
+
+			<if test="userTag != null and userTag != ''">
+
+				<if test="userTag == 'UES-RETAIL'">
+					AND (
+					u.tag IS NULL
+					OR u.tag LIKE 'OTC%'
+					)
+				</if>
+				<if test="userTag != 'UES-RETAIL'">
+					AND u.tag = #{userTag}
+				</if>
+			</if>
+
+			GROUP BY
+			date(o.create_date),
+			coin_symbol,
+			to_coin_symbol,
+			o.ex_type,
+			IF (
+			u.tag IS NULL
+			OR u.tag LIKE 'OTC%',
+			'散户',
+			u.tag
+			)
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RetailInvestorDailyTradeVolume">
+		SELECT 
+			<include refid="retailInvestorDailyTradeVolumeColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="retailInvestorDailyTradeVolumeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_trader_volume_snapshot(
+			id,
+			snap_date,
+			user_id,
+			user_tag,
+			coin_id,
+			coin_symbol,
+			trade_volume,
+			offline_volume,
+			lock_volume,
+			total_volume,
+			bill_sum_volume,
+			balance,
+			bobi_volume,
+			remark,
+			create_date,
+			create_by
+		) VALUES (
+			#{id},
+			#{snapDate},
+			#{userId},
+			#{userTag},
+			#{coinId},
+			#{coinSymbol},
+			#{tradeVolume},
+			#{offlineVolume},
+			#{lockVolume},
+			#{totalVolume},
+			#{billSumVolume},
+			#{balance},
+			#{bobiVolume},
+			#{remark},
+			#{createDate},
+			#{createBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_trader_volume_snapshot SET 	
+			snap_date = #{snapDate},
+			user_id = #{userId},
+			user_tag = #{userTag},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			trade_volume = #{tradeVolume},
+			offline_volume = #{offlineVolume},
+			lock_volume = #{lockVolume},
+			total_volume = #{totalVolume},
+			bill_sum_volume = #{billSumVolume},
+			balance = #{balance},
+			bobi_volume = #{bobiVolume},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_trader_volume_snapshot
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

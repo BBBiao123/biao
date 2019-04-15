@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.Mk2PopularizeTaskLogDao">
+    
+	<sql id="mk2PopularizeTaskLogColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.type_name AS "typeName",
+		a.day_give_colume AS "dayGiveColume",
+		a.param_task_date AS "paramTaskDate",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.status AS "status",
+		a.reason AS "reason",
+		a.execute_time AS "executeTime"
+	</sql>
+	
+	<sql id="mk2PopularizeTaskLogJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeTaskLogColumns"/>
+		FROM mk2_popularize_task_log a
+		<include refid="mk2PopularizeTaskLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeTaskLogColumns"/>
+		FROM mk2_popularize_task_log a
+		<include refid="mk2PopularizeTaskLogJoins"/>
+		<where>
+			
+			<if test="typeName != null and typeName != ''">
+				AND a.type_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{typeName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{typeName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{typeName},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeTaskLogColumns"/>
+		FROM mk2_popularize_task_log a
+		<include refid="mk2PopularizeTaskLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_task_log(
+			id,
+			type,
+			type_name,
+			day_give_colume,
+			param_task_date,
+			create_date,
+			update_date,
+			status,
+			reason
+		) VALUES (
+			#{id},
+			#{type},
+			#{typeName},
+			#{dayGiveColume},
+			#{paramTaskDate},
+			#{createDate},
+			#{updateDate},
+			#{status},
+			#{reason}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_task_log SET 	
+			type = #{type},
+			type_name = #{typeName},
+			param_task_date = #{paramTaskDate},
+			update_date = #{updateDate},
+			status = #{status},
+			reason = #{reason}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_task_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatUserOplogDao">
+    
+	<sql id="jsPlatUserOplogColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.real_name AS "realName",
+		a.content AS "content",
+		a.reason AS "reason",
+		a.send_status AS "sendStatus",
+		a.template_code AS "templateCode",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.create_by_name AS "createBy.loginName",
+		a.update_by AS "updateBy.id",
+		a.update_by_name AS "updateBy.loginName"
+	</sql>
+	
+	<sql id="jsPlatUserOplogJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatUserOplog">
+		SELECT 
+			<include refid="jsPlatUserOplogColumns"/>
+		FROM js_plat_user_oplog a
+		<include refid="jsPlatUserOplogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatUserOplog">
+		SELECT 
+			<include refid="jsPlatUserOplogColumns"/>
+		FROM js_plat_user_oplog a
+		<include refid="jsPlatUserOplogJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatUserOplog">
+		SELECT 
+			<include refid="jsPlatUserOplogColumns"/>
+		FROM js_plat_user_oplog a
+		<include refid="jsPlatUserOplogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_user_oplog(
+			id,
+			type,
+			user_id,
+			mail,
+			mobile,
+			real_name,
+			content,
+			reason,
+			send_status,
+			template_code,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by,
+			create_by_name,
+			update_by_name
+		) VALUES (
+			#{id},
+			#{type},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{realName},
+			#{content},
+			#{reason},
+			#{sendStatus},
+			#{templateCode},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createBy.loginName},
+			#{updateBy.loginName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_user_oplog SET 	
+			type = #{type},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			real_name = #{realName},
+			content = #{content},
+			reason = #{reason},
+			send_status = #{sendStatus},
+			template_code = #{templateCode},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			update_by_name = #{updateBy.loginName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_user_oplog
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

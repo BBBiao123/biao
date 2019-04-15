@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkRelayPrizeCandidateDao">
+    
+	<sql id="mkRelayPrizeCandidateColumns">
+		a.id AS "id",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.real_name AS "realName",
+		a.refer_id AS "referId",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.achieve_date AS "achieveDate",
+		a.is_prize AS "isPrize",
+		a.prize_volume AS "prizeVolume",
+		a.lost_time AS "lostTime",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkRelayPrizeCandidateJoins">
+	</sql>
+    
+	<select id="get" resultType="MkRelayPrizeCandidate">
+		SELECT 
+			<include refid="mkRelayPrizeCandidateColumns"/>
+		FROM mk_relay_prize_candidate a
+		<include refid="mkRelayPrizeCandidateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkRelayPrizeCandidate">
+		SELECT 
+			<include refid="mkRelayPrizeCandidateColumns"/>
+		FROM mk_relay_prize_candidate a
+		<include refid="mkRelayPrizeCandidateJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail = #{mail}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="beginAchieveDate != null and endAchieveDate != null and beginAchieveDate != '' and endAchieveDate != ''">
+				AND a.achieve_date BETWEEN #{beginAchieveDate} AND #{endAchieveDate}
+			</if>
+			<if test="isPrize != null and isPrize != ''">
+				AND a.is_prize = #{isPrize}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.achieve_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkRelayPrizeCandidate">
+		SELECT 
+			<include refid="mkRelayPrizeCandidateColumns"/>
+		FROM mk_relay_prize_candidate a
+		<include refid="mkRelayPrizeCandidateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.achieve_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_relay_prize_candidate(
+			id,
+			status,
+			user_id,
+			mail,
+			mobile,
+			real_name,
+			refer_id,
+			coin_id,
+			coin_symbol,
+			volume,
+			achieve_date,
+			is_prize,
+			prize_volume,
+			lost_time,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{status},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{realName},
+			#{referId},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{achieveDate},
+			#{isPrize},
+			#{prizeVolume},
+			#{lostTime},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_relay_prize_candidate SET 	
+			status = #{status},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			real_name = #{realName},
+			refer_id = #{referId},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			achieve_date = #{achieveDate},
+			is_prize = #{isPrize},
+			prize_volume = #{prizeVolume},
+			lost_time = #{lostTime},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+
+	<update id="lose">
+		UPDATE mk_relay_prize_candidate SET
+			status = '2',
+			lost_time = NOW()
+		WHERE status = '0'
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_relay_prize_candidate
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

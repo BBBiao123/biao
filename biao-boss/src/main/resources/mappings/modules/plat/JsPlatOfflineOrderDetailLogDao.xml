@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatOfflineOrderDetailLogDao">
+    
+	<sql id="jsPlatOfflineOrderDetailLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_id AS "coinId",
+		a.symbol AS "symbol",
+		a.buy_total AS "buyTotal",
+		a.sell_total AS "sellTotal",
+		a.surplus_total AS "surplusTotal",
+		a.count_date AS "countDate"
+	</sql>
+	
+	<select id="get" resultType="JsPlatOfflineOrderDetailLog">
+		SELECT 
+			<include refid="jsPlatOfflineOrderDetailLogColumns"/>
+		FROM js_plat_offline_order_detail_log a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatOfflineOrderDetailLog">
+		SELECT 
+			<include refid="jsPlatOfflineOrderDetailLogColumns"/>
+		FROM js_plat_offline_order_detail_log a
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+			<if test="symbol != null and symbol != ''">
+				AND a.symbol = #{symbol}
+			</if>
+			<if test="countDate != null and countDate != ''">
+				AND a.count_date = #{countDate}
+			</if>
+			<if test="countLessDate != null and countLessDate != ''">
+				<![CDATA[ AND a.count_date >= #{countLessDate}]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatOfflineOrderDetailLog">
+		SELECT 
+			<include refid="jsPlatOfflineOrderDetailLogColumns"/>
+		FROM js_plat_offline_order_detail_log a
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_order_detail_log(
+			user_id,
+			coin_id,
+			symbol,
+			count_date,
+			sell_total,
+			buy_total,
+			surplus_total
+		) 
+		<![CDATA[
+			SELECT 
+			user_id,coin_id,symbol,#{countDate} count_date,
+			SUM(CASE remarks 
+			WHEN 'sell' THEN volume
+			ELSE 0 END) sell_total,
+			SUM(CASE remarks 
+			WHEN 'buy' THEN volume
+			ELSE 0 END) buy_total,
+			(SUM(CASE remarks 
+			WHEN 'buy' THEN volume
+			ELSE 0 END)-SUM(CASE remarks 
+			WHEN 'sell' THEN volume
+			ELSE 0 END)) surplus_total
+			FROM js_plat_offline_order_detail WHERE STATUS = 2 
+			AND create_date <= #{countDate}
+			GROUP BY user_id,coin_id,symbol
+			]]>
+	</insert>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_order_detail_log
+		WHERE id = #{id}
+	</update>
+	
+	<update id="batchDelete">
+		<![CDATA[
+		DELETE FROM js_plat_offline_order_detail
+		WHERE STATUS in (2,9) AND create_date <= #{countDate} ]]>
+	</update>
+	
+</mapper>

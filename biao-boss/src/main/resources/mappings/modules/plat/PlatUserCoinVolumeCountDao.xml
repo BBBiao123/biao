@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.PlatUserCoinVolumeCountDao">
+
+	<select id="findList" resultType="PlatUserCoinVolumeCount">
+	<![CDATA[
+		select 'UES流通数量' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES'
+		union all
+		select '小于500' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume < 500
+		union all
+		select '大于等于500小于1000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 500 and volume < 1000
+		union all
+		select '大于等于1000小于2000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 1000 and volume < 2000
+		union all
+		select '大于等于2000小于5000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 2000 and volume < 5000
+		union all
+		select '大于5000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 5000
+	]]>
+</select>
+	
+	<select id="findAllList" resultType="PlatUserCoinVolumeCount">
+	<![CDATA[
+		select 'UES流通数量' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES'
+		union all
+		select '小于500' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume < 500
+		union all
+		select '大于等于500小于1000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 500 and volume < 1000
+		union all
+		select '大于等于1000小于2000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 1000 and volume < 2000
+		union all
+		select '大于等于2000小于5000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 2000 and volume < 5000
+		union all
+		select '大于5000' as type, count(*) as personCount, sum(volume) as holdCoinVolume from js_plat_user_coin_volume where coin_symbol = 'UES' and volume >= 5000
+	]]>
+	</select>
+
+	<select id="queryByDate" resultType="PlatUserCoinVolumeCount">
+		SELECT t.id,
+				t.coin_symbol AS "coinSymbol",
+				t.type AS "type",
+				t.type_desc AS "typeDesc",
+				t.person_count AS "personCount",
+				t.hold_coin_volume AS "holdCoinVolume",
+				date_format(t.count_date, '%Y-%m-%d') AS "countDateStr"
+		  FROM js_plat_user_coin_volume_count t
+		  <where>
+			<if test="beginDate != null and beginDate != ''">
+				AND t.count_date <![CDATA[ >= ]]> #{beginDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND t.count_date <![CDATA[ <= ]]> #{endDate}
+			</if>
+		</where>
+		ORDER BY t.count_date, t.type ASC
+	</select>
+	
+</mapper>

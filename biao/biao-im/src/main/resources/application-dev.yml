@@ -1,0 +1,33 @@
+spring:
+    kafka:
+        producer:
+          value-serializer: com.biao.kafka.interceptor.CustomerJsonSerializer
+          properties:
+              interceptor.classes: com.biao.kafka.interceptor.KafkaMessageIdGenerator
+        bootstrap-servers:
+            - 47.52.67.6:9092
+        consumer:
+          value-deserializer: com.biao.kafka.interceptor.CustomerJsonDeserializer
+          group-id: im
+          auto-offset-reset: earliest
+          properties:
+            partitioner.expair : 0-7,8-15,16-23,24-31,32-39,40-47,48-55,56-63
+            spring:
+              json:
+                trusted:
+                  packages: com.biao.listener.kafka,com.biao.kafka.interceptor,com.biao.pojo
+
+jimFile: jim.properties
+logging:
+    level:
+        root: info
+        org.springframework.boot: info
+        org.apache.ibatis: info
+        com.bbex.bonuspoint: info
+        com.bbex.lottery: info
+        com.bbex: debug
+        io.netty: info
+    path: "./logs"
+    config: classpath:logback.xml
+
+    

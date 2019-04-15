@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatOfflineTransferLogDao">
+    
+	<sql id="jsPlatOfflineTransferLogColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.type AS "type",
+		a.source_volume AS "sourceVolume",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		u2.real_name AS "user.name"
+	</sql>
+	
+	<sql id="jsPlatOfflineTransferLogJoins">
+		LEFT JOIN js_plat_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="JsPlatOfflineTransferLog">
+		SELECT 
+			<include refid="jsPlatOfflineTransferLogColumns"/>
+		FROM js_plat_offline_transfer_log a
+		<include refid="jsPlatOfflineTransferLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatOfflineTransferLog">
+		SELECT 
+			<include refid="jsPlatOfflineTransferLogColumns"/>
+		FROM js_plat_offline_transfer_log a
+		<include refid="jsPlatOfflineTransferLogJoins"/>
+		<where>
+			
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="coinId != null and coinId != ''">
+				AND a.coin_id = #{coinId}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatOfflineTransferLog">
+		SELECT 
+			<include refid="jsPlatOfflineTransferLogColumns"/>
+		FROM js_plat_offline_transfer_log a
+		<include refid="jsPlatOfflineTransferLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_transfer_log(
+			id,
+			user_id,
+			coin_id,
+			coin_symbol,
+			volume,
+			type,
+			source_volume,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{type},
+			#{sourceVolume},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+
+
+	<insert id="insertByLog">
+		INSERT INTO js_plat_offline_transfer_log(
+			id,
+			user_id,
+			coin_id,
+			coin_symbol,
+			volume,
+			type,
+			source_volume,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{type},
+			#{sourceVolume},
+			#{createDate},
+			#{updateDate},
+			#{mark},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_transfer_log SET 	
+			user_id = #{user.id},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			source_volume = #{sourceVolume},
+			type = #{type},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_transfer_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatUserCoinVolumeBillDao">
+    
+	<sql id="jsPlatUserCoinVolumeBillColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.coin_symbol AS "coinSymbol",
+		a.priority AS "priority",
+		a.ref_key AS "refKey",
+		a.op_sign AS "opSign",
+		a.op_lock_volume AS "opLockVolume",
+		a.op_volume AS "opVolume",
+		a.source AS "source",
+		a.mark AS "mark",
+		a.status AS "status",
+		a.force_lock AS "forceLock",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.hash AS "hash"
+	</sql>
+	
+	<sql id="jsPlatUserCoinVolumeBillColumnsSimple">
+		id ,
+		user_id ,
+		coin_symbol ,
+		priority ,
+		ref_key ,
+		op_sign ,
+		op_lock_volume ,
+		op_volume ,
+		source ,
+		mark ,
+		status ,
+		force_lock ,
+		create_date ,
+		update_date ,
+		hash
+	</sql>
+	
+	<sql id="jsPlatUserCoinVolumeBillJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatUserCoinVolumeBill">
+		SELECT 
+			<include refid="jsPlatUserCoinVolumeBillColumns"/>
+		FROM js_plat_user_coin_volume_bill a
+		<include refid="jsPlatUserCoinVolumeBillJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatUserCoinVolumeBill">
+		SELECT 
+			<include refid="jsPlatUserCoinVolumeBillColumns"/>
+		FROM (SELECT 
+		<include refid="jsPlatUserCoinVolumeBillColumnsSimple"/>
+		FROM  js_plat_user_coin_volume_bill
+		UNION ALL
+		SELECT
+		<include refid="jsPlatUserCoinVolumeBillColumnsSimple"/>
+		FROM  js_plat_user_coin_volume_bill_history
+		) a
+		<include refid="jsPlatUserCoinVolumeBillJoins"/>
+		<where>
+			
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="refKey != null and refKey != ''">
+				AND a.ref_key = #{refKey}
+			</if>
+			<if test="opVolume != null and opVolume != ''">
+				AND a.op_volume = #{opVolume}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatUserCoinVolumeBill">
+		SELECT 
+			<include refid="jsPlatUserCoinVolumeBillColumns"/>
+		FROM js_plat_user_coin_volume_bill a
+		<include refid="jsPlatUserCoinVolumeBillJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_user_coin_volume_bill(
+			id,
+			user_id,
+			coin_symbol,
+			priority,
+			ref_key,
+			op_sign,
+			op_lock_volume,
+			op_volume,
+			source,
+			mark,
+			status,
+			force_lock,
+			create_date,
+			update_date,
+			hash
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{coinSymbol},
+			#{priority},
+			#{refKey},
+			#{opSign},
+			#{opLockVolume},
+			#{opVolume},
+			#{source},
+			#{mark},
+			#{status},
+			#{forceLock},
+			#{createDate},
+			#{updateDate},
+			#{hash}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_user_coin_volume_bill SET 	
+			user_id = #{user.id},
+			coin_symbol = #{coinSymbol},
+			priority = #{priority},
+			ref_key = #{refKey},
+			op_sign = #{opSign},
+			op_lock_volume = #{opLockVolume},
+			op_volume = #{opVolume},
+			source = #{source},
+			mark = #{mark},
+			status = #{status},
+			force_lock = #{forceLock},
+			update_date = #{updateDate},
+			hash = #{hash}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_user_coin_volume_bill
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

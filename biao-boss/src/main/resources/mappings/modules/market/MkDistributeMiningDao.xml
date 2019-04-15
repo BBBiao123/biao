@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkDistributeMiningDao">
+    
+	<sql id="mkDistributeMiningColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.status AS "status",
+		a.percentage AS "percentage",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.grant_volume AS "grantVolume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="mkDistributeMiningJoins">
+	</sql>
+    
+	<select id="get" resultType="MkDistributeMining">
+		SELECT 
+			<include refid="mkDistributeMiningColumns"/>
+		FROM mk_distribute_mining a
+		<include refid="mkDistributeMiningJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkDistributeMining">
+		SELECT 
+			<include refid="mkDistributeMiningColumns"/>
+		FROM mk_distribute_mining a
+		<include refid="mkDistributeMiningJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkDistributeMining">
+		SELECT 
+			<include refid="mkDistributeMiningColumns"/>
+		FROM mk_distribute_mining a
+		<include refid="mkDistributeMiningJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_distribute_mining(
+			id,
+			name,
+			status,
+			percentage,
+			coin_id,
+			coin_symbol,
+			volume,
+			remark,
+			create_date
+		) VALUES (
+			#{id},
+			#{name},
+			#{status},
+			#{percentage},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{remark},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_distribute_mining SET 	
+			name = #{name},
+			status = #{status},
+			percentage = #{percentage},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_distribute_mining
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

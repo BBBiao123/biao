@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportPlatUserInviteDao">
+	<resultMap id="TreeMap" type="ReportPlatUserInvite">
+		<id column="invite_code" property="inviteCode" jdbcType="INTEGER" />
+		<result column="id" property="userId"
+				jdbcType="VARCHAR" />
+
+		<result column="refer_invite_code" property="referInviteCode"
+				jdbcType="INTEGER" />
+
+		<collection property="childList" column="invite_code"
+					ofType="ReportPlatUserInvite" select="findList"></collection>
+	</resultMap>
+	<select id="findList" resultMap="TreeMap">
+        select
+        *
+        from js_plat_user
+        where   refer_invite_code=#{userId}
+    </select>
+
+
+</mapper>

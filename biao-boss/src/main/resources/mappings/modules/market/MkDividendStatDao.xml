@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkDividendStatDao">
+    
+	<sql id="mkDividendStatColumns">
+		a.id AS "id",
+		a.stat_date AS "statDate",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.usdt_volume AS "usdtVolume",
+		a.btc_volume AS "btcVolume",
+		a.eth_volume AS "ethVolume",
+		a.usdt_real_volume AS "usdtRealVolume",
+		a.btc_real_volume AS "btcRealVolume",
+		a.eth_real_volume AS "ethRealVolume",
+		a.usdt_per_volume AS "usdtPerVolume",
+		a.btc_per_volume AS "btcPerVolume",
+		a.eth_per_volume AS "ethPerVolume",
+		a.per AS "per",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkDividendStatJoins">
+	</sql>
+    
+	<select id="get" resultType="MkDividendStat">
+		SELECT 
+			<include refid="mkDividendStatColumns"/>
+		FROM mk_distribute_dividend_stat a
+		<include refid="mkDividendStatJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkDividendStat">
+		SELECT 
+			<include refid="mkDividendStatColumns"/>
+		FROM mk_distribute_dividend_stat a
+		<include refid="mkDividendStatJoins"/>
+		<where>
+			
+			<if test="beginTaskDate != null and endTaskDate != null and beginTaskDate != '' and endTaskDate != ''">
+				AND a.stat_date BETWEEN #{beginTaskDate} AND #{endTaskDate}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinSymbol},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkDividendStat">
+		SELECT 
+			<include refid="mkDividendStatColumns"/>
+		FROM mk_distribute_dividend_stat a
+		<include refid="mkDividendStatJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_distribute_dividend_stat(
+			id,
+			stat_date,
+			coin_id,
+			coin_symbol,
+			volume,
+			usdt_volume,
+			btc_volume,
+			eth_volume,
+			usdt_real_volume,
+			btc_real_volume,
+			eth_real_volume,
+			usdt_per_volume,
+			btc_per_volume,
+			eth_per_volume,
+			per,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{statDate},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{usdtVolume},
+			#{btcVolume},
+			#{ethVolume},
+			#{usdtRealVolume},
+			#{btcRealVolume},
+			#{ethRealVolume},
+			#{usdtPerVolume},
+			#{btcPerVolume},
+			#{ethPerVolume},
+			#{per},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_distribute_dividend_stat SET 	
+			stat_date = #{statDate},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			usdt_volume = #{usdtVolume},
+			btc_volume = #{btcVolume},
+			eth_volume = #{ethVolume},
+			usdt_real_volume = #{usdtRealVolume},
+			btc_real_volume = #{btcRealVolume},
+			eth_real_volume = #{ethRealVolume},
+			usdt_per_volume = #{usdtPerVolume},
+			btc_per_volume = #{btcPerVolume},
+			eth_per_volume = #{ethPerVolume},
+			per = #{per},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_distribute_dividend_stat
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

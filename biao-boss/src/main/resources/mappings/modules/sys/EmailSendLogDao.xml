@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.EmailSendLogDao">
+    
+	<sql id="emailSendLogColumns">
+		a.id AS "id",
+		a.email AS "email",
+		a.subject AS "subject",
+		a.content AS "content",
+		a.template_id AS "templateId",
+		a.response_date AS "responseDate",
+		a.business_type AS "businessType",
+		a.del_flag AS "delFlag",
+		a.status AS "status",
+		a.msg AS "msg",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.expire_time AS "expireTime"
+	</sql>
+	
+	<sql id="emailSendLogJoins">
+	</sql>
+    
+	<select id="get" resultType="EmailSendLog">
+		SELECT 
+			<include refid="emailSendLogColumns"/>
+		FROM email_send_log a
+		<include refid="emailSendLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="EmailSendLog">
+		SELECT 
+			<include refid="emailSendLogColumns"/>
+		FROM email_send_log a
+		<include refid="emailSendLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EmailSendLog">
+		SELECT 
+			<include refid="emailSendLogColumns"/>
+		FROM email_send_log a
+		<include refid="emailSendLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO email_send_log(
+			id,
+			email,
+			subject,
+			content,
+			template_id,
+			response_date,
+			business_type,
+			del_flag,
+			status,
+			msg,
+			remarks,
+			create_by,
+			update_by,
+			create_date,
+			update_date,
+			expire_time
+		) VALUES (
+			#{id},
+			#{email},
+			#{subject},
+			#{content},
+			#{templateId},
+			#{responseDate},
+			#{businessType},
+			#{delFlag},
+			#{status},
+			#{msg},
+			#{remarks},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createDate},
+			#{updateDate},
+			#{expireTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE email_send_log SET 	
+			email = #{email},
+			subject = #{subject},
+			content = #{content},
+			template_id = #{templateId},
+			response_date = #{responseDate},
+			business_type = #{businessType},
+			status = #{status},
+			msg = #{msg},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			expire_time = #{expireTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE email_send_log SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

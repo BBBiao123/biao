@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeBonusAccountLogDao">
+    
+	<sql id="mk2PopularizeBonusAccountLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.id_card AS "idCard",
+		a.real_name AS "realName",
+		a.bonus_date_begin AS "bonusDateBegin",
+		a.bonus_date_end AS "bonusDateEnd",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.income_volume AS "incomeVolume",
+		a.befor_income_volume AS "beforIncomeVolume",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeBonusAccountLogJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeBonusAccountLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusAccountLogColumns"/>
+		FROM mk2_popularize_bonus_account_log a
+		<include refid="mk2PopularizeBonusAccountLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeBonusAccountLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusAccountLogColumns"/>
+		FROM mk2_popularize_bonus_account_log a
+		<include refid="mk2PopularizeBonusAccountLogJoins"/>
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail = #{mail}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeBonusAccountLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusAccountLogColumns"/>
+		FROM mk2_popularize_bonus_account_log a
+		<include refid="mk2PopularizeBonusAccountLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_bonus_account_log(
+			id,
+			user_id,
+			mail,
+			mobile,
+			id_card,
+			real_name,
+			bonus_date_begin,
+			bonus_date_end,
+			coin_id,
+			coin_symbol,
+			income_volume,
+			befor_income_volume,
+			status,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{idCard},
+			#{realName},
+			#{bonusDateBegin},
+			#{bonusDateEnd},
+			#{coinId},
+			#{coinSymbol},
+			#{incomeVolume},
+			#{beforIncomeVolume},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_bonus_account_log SET 	
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			id_card = #{idCard},
+			real_name = #{realName},
+			bonus_date_begin = #{bonusDateBegin},
+			bonus_date_end = #{bonusDateEnd},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			income_volume = #{incomeVolume},
+			befor_income_volume = #{beforIncomeVolume},
+			status = #{status},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_bonus_account_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

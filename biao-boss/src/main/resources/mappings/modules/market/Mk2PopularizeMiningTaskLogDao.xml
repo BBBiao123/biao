@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeMiningTaskLogDao">
+    
+	<sql id="mk2PopularizeMiningTaskLogColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.mining_volume AS "miningVolume",
+		a.grant_volume AS "grantVolume",
+		a.count_date AS "countDate",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeMiningTaskLogJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeMiningTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeMiningTaskLogColumns"/>
+		FROM mk2_popularize_mining_task_log a
+		<include refid="mk2PopularizeMiningTaskLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeMiningTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeMiningTaskLogColumns"/>
+		FROM mk2_popularize_mining_task_log a
+		<include refid="mk2PopularizeMiningTaskLogJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeMiningTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeMiningTaskLogColumns"/>
+		FROM mk2_popularize_mining_task_log a
+		<include refid="mk2PopularizeMiningTaskLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_mining_task_log(
+			id,
+			type,
+			coin_id,
+			coin_symbol,
+			mining_volume,
+			grant_volume,
+			count_date,
+			status,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{type},
+			#{coinId},
+			#{coinSymbol},
+			#{miningVolume},
+			#{grantVolume},
+			#{countDate},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_mining_task_log SET 	
+			type = #{type},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			mining_volume = #{miningVolume},
+			grant_volume = #{grantVolume},
+			count_date = #{countDate},
+			status = #{status},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_mining_task_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

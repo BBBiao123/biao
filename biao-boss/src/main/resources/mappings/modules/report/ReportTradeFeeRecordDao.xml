@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportTradeFeeRecordDao">
+    
+	<sql id="reportTradeFeeRecordColumns">
+		a.id AS "id",
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		a.main_free AS "mainFree",
+		a.other_free AS "otherFree",
+		a.count_time AS "countTime",
+		a.create_time AS "createTime"
+	</sql>
+	
+	<sql id="reportTradeFeeRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportTradeFeeRecord">
+		SELECT 
+			<include refid="reportTradeFeeRecordColumns"/>
+		FROM report_trade_fee_record a
+		<include refid="reportTradeFeeRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportTradeFeeRecord">
+		SELECT 
+			<include refid="reportTradeFeeRecordColumns"/>
+		FROM report_trade_fee_record a
+		<include refid="reportTradeFeeRecordJoins"/>
+		<where>
+			
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+			<if test="countTime != null and countTime != ''">
+				AND a.count_time = #{countTime}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				AND a.create_time = #{createTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListCount" resultType="ReportTradeFeeRecord">
+		SELECT 
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		sum(a.main_free) AS "mainFree",
+		sum(a.other_free) AS "otherFree"
+		FROM report_trade_fee_record a
+		<where>
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND a.count_time >= #{startTime}]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND a.count_time < #{endTime}]]>
+			</if>
+		</where>
+		group by coinMain,coinOther
+	</select>
+	
+	<select id="findAllList" resultType="ReportTradeFeeRecord">
+		SELECT 
+			<include refid="reportTradeFeeRecordColumns"/>
+		FROM report_trade_fee_record a
+		<include refid="reportTradeFeeRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO report_trade_fee_record(
+			id,
+			coin_main,
+			coin_other,
+			main_free,
+			other_free,
+			count_time,
+			create_time
+		) VALUES (
+			#{id},
+			#{coinMain},
+			#{coinOther},
+			#{mainFree},
+			#{otherFree},
+			#{countTime},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE report_trade_fee_record SET 	
+			coin_main = #{coinMain},
+			coin_other = #{coinOther},
+			main_free = #{mainFree},
+			other_free = #{otherFree},
+			count_time = #{countTime},
+			create_time = #{createTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM report_trade_fee_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

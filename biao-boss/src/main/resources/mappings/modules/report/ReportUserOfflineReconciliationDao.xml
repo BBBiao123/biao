@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportUserOfflineReconciliationDao">
+    
+	<sql id="reportUserOfflineReconciliationColumns">
+	user_mobile as "userMobile",
+	volume as "volume",
+	price as "price",
+	total_price as "totalPrice",
+	create_date as "createDate",
+	confirm_receipt_date as "confirmReceiptDate",
+	IF (
+		(
+			date(create_date) = date(confirm_receipt_date)
+		),
+		'',
+		'非当天结算'
+	) AS "meno"
+	</sql>
+	
+	<sql id="reportUserOfflineReconciliationJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportUserOfflineReconciliation">
+		SELECT 
+			<include refid="reportUserOfflineReconciliationColumns"/>
+		FROM report_trade_day a
+		<include refid="reportUserOfflineReconciliationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportUserOfflineReconciliation">
+		SELECT 
+			<include refid="reportUserOfflineReconciliationColumns"/>
+		FROM js_plat_offline_order_detail
+		<where>
+			<if test="userMobile != null and userMobile != ''">
+				AND user_mobile = #{userMobile}
+			</if>
+			<if test="beginDayTime != null and beginDayTime != ''">
+				AND confirm_receipt_date > #{beginDayTime}
+			</if>
+
+			<if test="endDayTime != null and endDayTime != ''">
+				AND confirm_receipt_date &lt; date_sub(#{endDateTimeStr},interval -1 day)
+			</if>
+			AND STATUS = 2
+		</where>
+		ORDER BY confirm_receipt_date
+	</select>
+	
+	<select id="findAllList" resultType="ReportUserOfflineReconciliation">
+		SELECT 
+			<include refid="reportUserOfflineReconciliationColumns"/>
+		FROM report_trade_day a
+		<include refid="reportUserOfflineReconciliationJoins"/>
+		<where>
+			
+		</where>		
+
+	</select>
+
+</mapper>

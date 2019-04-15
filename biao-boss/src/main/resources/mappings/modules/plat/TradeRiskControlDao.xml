@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.TradeRiskControlDao">
+    
+	<sql id="tradeRiskControlColumns">
+		a.id AS "id",
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		a.ex_pair_id AS "exPairId",
+		a.user_ids AS "userIds",
+		a.risk_ratio AS "riskRatio",
+		a.fixed_volume as "fixedVolume",
+		a.source_user as "sourceUser",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+
+	</sql>
+
+	<select id="get" resultType="TradeRiskControl">
+		SELECT 
+			<include refid="tradeRiskControlColumns"/>
+		FROM trade_risk_control a
+
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TradeRiskControl">
+		SELECT 
+			<include refid="tradeRiskControlColumns"/>
+		FROM trade_risk_control a
+		<where>
+			
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TradeRiskControl">
+		SELECT 
+			<include refid="tradeRiskControlColumns"/>
+		FROM trade_risk_control a
+
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO trade_risk_control(
+			id,
+			coin_main,
+			coin_other,
+			ex_pair_id,
+			user_ids,
+			risk_ratio,
+			fixed_volume,
+			source_user,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{coinMain},
+			#{coinOther},
+			#{exPairId},
+			#{userIds},
+			#{riskRatio},
+			#{fixedVolume},
+			#{sourceUser},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE trade_risk_control SET 	
+			coin_main = #{coinMain},
+			coin_other = #{coinOther},
+			ex_pair_id = #{exPairId},
+			user_ids = #{userIds},
+			risk_ratio = #{riskRatio},
+			fixed_volume = #{fixedVolume},
+			source_user = #{sourceUser},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM trade_risk_control
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

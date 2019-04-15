@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.OfflineCoinDao">
+
+    <sql id="offlineCoinColumns">
+		a.id AS "id",
+		a.symbol AS "symbol",
+		a.coin_id AS "coinId",
+		a.max_price AS "maxPrice",
+		a.min_price AS "minPrice",
+		a.point_price AS "pointPrice",
+		a.max_volume  AS "maxVolume",
+		a.min_volume AS "minVolume",
+		a.point_volume AS "pointVolume",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.disable AS  "disable",
+		a.buy_fee AS  "buyFee",
+		a.sell_fee AS  "sellFee",
+		a.buy_fee_step AS  "buyFeeStep",
+		a.sell_fee_step AS  "sellFeeStep",
+		a.fee_type AS  "feeType",
+		a.day_inc_price AS "dayIncPrice",
+		a.is_change_account AS  "isChangeAccount",
+		a.real_day_limit AS  "realDayLimit",
+		a.non_real_day_limit AS  "nonRealDayLimit",
+		a.change_fee_type AS  "changeFeeType",
+		a.change_fee_step AS  "changeFeeStep",
+		a.change_fee AS  "changeFee",
+		a.change_min_volume AS "changeMinVolume",
+		a.is_volume AS  "isVolume"
+	</sql>
+
+    <sql id="offlineCoinJoins">
+    </sql>
+
+    <select id="get" resultType="OfflineCoin">
+        SELECT
+        <include refid="offlineCoinColumns"/>
+        FROM js_plat_offline_coin a
+        <include refid="offlineCoinJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+	<select id="getByCoinId" resultType="OfflineCoin">
+		SELECT
+		<include refid="offlineCoinColumns"/>
+		FROM js_plat_offline_coin a
+		<include refid="offlineCoinJoins"/>
+		WHERE a.coin_id = #{coinId}
+	</select>
+
+
+	<select id="findList" resultType="OfflineCoin">
+        SELECT
+        <include refid="offlineCoinColumns"/>
+        FROM js_plat_offline_coin a
+        <include refid="offlineCoinJoins"/>
+        <where>
+
+            <if test="symbol != null and symbol != ''">
+                AND a.symbol = #{symbol}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="OfflineCoin">
+        SELECT
+        <include refid="offlineCoinColumns"/>
+        FROM js_plat_offline_coin a
+        <include refid="offlineCoinJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO js_plat_offline_coin(
+			id,
+			symbol,
+			coin_id,
+			create_date,
+			update_date,
+			create_by,
+			update_by,
+		    max_price,
+		    min_price,
+		    point_price,
+			max_volume,
+			min_volume,
+			point_volume,
+			buy_fee,
+			sell_fee,
+			buy_fee_step,
+			sell_fee_step,
+			fee_type,
+			day_inc_price,
+			is_change_account,
+			real_day_limit,
+			non_real_day_limit,
+			change_fee_type,
+			change_fee_step,
+			change_fee,
+			change_min_volume
+		) VALUES (
+			#{id},
+			#{symbol},
+			#{coinId},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{maxPrice},
+			#{minPrice},
+			#{pointPrice},
+			#{maxVolume},
+			#{minVolume},
+			#{pointVolume},
+			#{buyFee},
+			#{sellFee},
+			#{buyFeeStep},
+			#{sellFeeStep},
+			#{feeType},
+			#{dayIncPrice},
+			#{isChangeAccount},
+			#{realDayLimit},
+			#{nonRealDayLimit},
+			#{changeFeeType},
+			#{changeFeeStep},
+			#{changeFee},
+			#{changeMinVolume}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE js_plat_offline_coin SET 	
+			symbol = #{symbol},
+			coin_id = #{coinId},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			max_price = #{maxPrice},
+			min_price = #{minPrice},
+			point_price = #{pointPrice},
+			min_volume = #{minVolume},
+			max_volume = #{maxVolume},
+			point_volume= #{pointVolume},
+			buy_fee = #{buyFee},
+			sell_fee = #{sellFee},
+			buy_fee_step = #{buyFeeStep},
+			sell_fee_step = #{sellFeeStep},
+			fee_type = #{feeType},
+			day_inc_price = #{dayIncPrice},
+			is_change_account = #{isChangeAccount},
+			real_day_limit = #{realDayLimit},
+			non_real_day_limit = #{nonRealDayLimit},
+			change_fee_type = #{changeFeeType},
+			change_fee_step = #{changeFeeStep},
+			change_fee = #{changeFee},
+			change_min_volume = #{changeMinVolume}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM js_plat_offline_coin
+		WHERE id = #{id}
+	</update>
+
+    <update id="disable">
+		UPDATE js_plat_offline_coin SET
+		disable = #{disable}
+		WHERE id = #{id}
+	</update>
+
+	<update id="isVolume">
+		UPDATE js_plat_offline_coin SET
+		is_volume = #{isVolume}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

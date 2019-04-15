@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.ExOrderDao">
+    
+	<sql id="exOrderColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.ask_volume AS "askVolume",
+		a.price AS "price",
+		a.success_volume AS "successVolume",
+		a.coin_symbol AS "coinSymbol",
+		a.ex_fee AS "exFee",
+		a.status AS "status",
+		a.to_coin_symbol AS "toCoinSymbol",
+		a.to_coin_volume AS "toCoinVolume",
+		a.ex_type AS "exType",
+		a.coin_id AS "coinId",
+		a.ask_coin_id AS "askCoinId",
+		a.flag AS "flag",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="exOrderJoins">
+	</sql>
+    
+	<select id="get" resultType="ExOrder">
+		SELECT 
+			<include refid="exOrderColumns"/>
+		FROM js_plat_ex_order a
+		<include refid="exOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ExOrder">
+		SELECT 
+			<include refid="exOrderColumns"/>
+		FROM js_plat_ex_order a
+		<include refid="exOrderJoins"/>
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="exType != null and exType != ''">
+				AND a.ex_type = #{exType}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ExOrder">
+		SELECT 
+			<include refid="exOrderColumns"/>
+		FROM js_plat_ex_order a
+		<include refid="exOrderJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_ex_order(
+			id,
+			user_id,
+			ask_volume,
+			success_volume,
+			coin_symbol,
+			ex_fee,
+			status,
+			to_coin_symbol,
+			to_coin_volume,
+			ex_type,
+			coin_id,
+			ask_coin_id,
+			flag,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{askVolume},
+			#{successVolume},
+			#{coinSymbol},
+			#{exFee},
+			#{status},
+			#{toCoinSymbol},
+			#{toCoinVolume},
+			#{exType},
+			#{coinId},
+			#{askCoinId},
+			#{flag},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_ex_order SET 	
+			user_id = #{userId},
+			ask_volume = #{askVolume},
+			success_volume = #{successVolume},
+			coin_symbol = #{coinSymbol},
+			ex_fee = #{exFee},
+			status = #{status},
+			to_coin_symbol = #{toCoinSymbol},
+			to_coin_volume = #{toCoinVolume},
+			ex_type = #{exType},
+			coin_id = #{coinId},
+			ask_coin_id = #{askCoinId},
+			flag = #{flag},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_ex_order
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.DestroyAccountLogDao">
+    
+	<sql id="destroyAccountLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.volume AS "volume",
+		a.type AS "type",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="destroyAccountLogJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="DestroyAccountLog">
+		SELECT 
+			<include refid="destroyAccountLogColumns"/>
+		FROM js_plat_destroy_account_log a
+		<include refid="destroyAccountLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DestroyAccountLog">
+		SELECT 
+			<include refid="destroyAccountLogColumns"/>
+		FROM js_plat_destroy_account_log a
+		<include refid="destroyAccountLogJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DestroyAccountLog">
+		SELECT 
+			<include refid="destroyAccountLogColumns"/>
+		FROM js_plat_destroy_account_log a
+		<include refid="destroyAccountLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_destroy_account_log(
+			id,
+			user_id,
+			coin_id,
+			coin_symbol,
+			mobile,
+			mail,
+			volume,
+			type,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{coinId},
+			#{coinSymbol},
+			#{mobile},
+			#{mail},
+			#{volume},
+			#{type},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_destroy_account_log SET 	
+			user_id = #{userId},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			mobile = #{mobile},
+			mail = #{mail},
+			volume = #{volume},
+			type = #{type},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_destroy_account_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

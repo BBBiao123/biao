@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.ExPairDao">
+    
+	<sql id="exPairColumns">
+		a.id AS "id",
+		a.other_coin_id AS "otherCoinId",
+		a.pair_other AS "pairOther",
+		a.coin_id AS "coinId",
+		a.pair_one AS "pairOne",
+		a.status AS "status",
+		a.last_price AS "lastPrice",
+		a.change AS "change",
+		a.high AS "high",
+		a.low AS "low",
+		a.volume AS "volume",
+		a.type AS "type",
+		a.fee AS "fee",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.sort AS "sort",
+		a.max_volume AS "maxVolume",
+		a.min_volume AS "minVolume",
+		a.price_precision AS pricePrecision,
+		a.volume_precision AS volumePrecision,
+		a.volume_percent AS "volumePercent"
+	</sql>
+	
+	<sql id="exPairJoins">
+	</sql>
+    
+	<select id="get" resultType="ExPair">
+		SELECT 
+			<include refid="exPairColumns"/>
+		FROM js_plat_ex_pair a
+		<include refid="exPairJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ExPair">
+		SELECT 
+			<include refid="exPairColumns"/>
+		FROM js_plat_ex_pair a
+		<include refid="exPairJoins"/>
+		<where>
+			<if test="pairOne != null and pairOne != ''">
+				AND a.pair_one LIKE CONCAT('%',#{pairOne},'%')
+			</if>
+
+			<if test="pairOther != null and pairOther != ''">
+				AND a.pair_other LIKE CONCAT('%',#{pairOther},'%')
+			</if>
+
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ExPair">
+		SELECT 
+			<include refid="exPairColumns"/>
+		FROM js_plat_ex_pair a
+		<include refid="exPairJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_ex_pair(
+			id,
+			other_coin_id,
+			pair_other,
+			coin_id,
+			pair_one,
+			status,
+			type,
+			fee,
+			create_date,
+			update_date,
+			create_by,
+			update_by,
+			remarks,
+			sort,
+			max_volume,
+			min_volume,
+			price_precision,
+			volume_precision,
+			volume_percent
+		) VALUES (
+			#{id},
+			#{otherCoinId},
+			#{pairOther},
+			#{coinId},
+			#{pairOne},
+			#{status},
+			#{type},
+			#{fee},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{remarks},
+			#{sort},
+			#{maxVolume},
+			#{minVolume},
+			#{pricePrecision},
+			#{volumePrecision},
+			#{volumePercent}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_ex_pair SET 	
+			other_coin_id = #{otherCoinId},
+			pair_other = #{pairOther},
+			coin_id = #{coinId},
+			pair_one = #{pairOne},
+			status = #{status},
+			type = #{type},
+			fee = #{fee},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks},
+			sort = #{sort},
+			min_volume = #{minVolume},
+			max_volume = #{maxVolume},
+			price_precision = #{pricePrecision},
+			volume_precision= #{volumePrecision},
+			volume_percent =  #{volumePercent}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_ex_pair
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

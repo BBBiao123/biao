@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.JsSysAppVersionDao">
+    
+	<sql id="jsSysAppVersionColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.version AS "version",
+		a.address AS "address",
+		a.is_upgrade AS "isUpgrade",
+		a.remarks AS "remarks",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="jsSysAppVersionJoins">
+	</sql>
+    
+	<select id="get" resultType="JsSysAppVersion">
+		SELECT 
+			<include refid="jsSysAppVersionColumns"/>
+		FROM js_sys_app_version a
+		<include refid="jsSysAppVersionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsSysAppVersion">
+		SELECT 
+			<include refid="jsSysAppVersionColumns"/>
+		FROM js_sys_app_version a
+		<include refid="jsSysAppVersionJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsSysAppVersion">
+		SELECT 
+			<include refid="jsSysAppVersionColumns"/>
+		FROM js_sys_app_version a
+		<include refid="jsSysAppVersionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_sys_app_version(
+			id,
+			type,
+			version,
+			address,
+			is_upgrade,
+			remarks,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{type},
+			#{version},
+			#{address},
+			#{isUpgrade},
+			#{remarks},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_sys_app_version SET 	
+			type = #{type},
+			version = #{version},
+			address = #{address},
+			is_upgrade = #{isUpgrade},
+			remarks = #{remarks},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_sys_app_version
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

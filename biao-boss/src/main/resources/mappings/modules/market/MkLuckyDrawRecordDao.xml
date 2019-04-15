@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkLuckyDrawRecordDao">
+    
+	<sql id="mkLuckyDrawRecordColumns">
+		a.id AS "id",
+		a.status AS "status",
+		a.periods AS "periods",
+		a.volume AS "volume",
+		a.grant_volume AS "grantVolume",
+		a.pool_volume AS "poolVolume",
+		a.player_number AS "playerNumber",
+		a.lucky_volume AS "luckyVolume",
+		a.deduct_fee AS "deductFee",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.real_name AS "realName",
+		a.lucky_number AS "luckyNumber",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkLuckyDrawRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="MkLuckyDrawRecord">
+		SELECT 
+			<include refid="mkLuckyDrawRecordColumns"/>
+		FROM mk_lucky_draw_record a
+		<include refid="mkLuckyDrawRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkLuckyDrawRecord">
+		SELECT 
+			<include refid="mkLuckyDrawRecordColumns"/>
+		FROM mk_lucky_draw_record a
+		<include refid="mkLuckyDrawRecordJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="periods != null and periods != ''">
+				AND a.periods = #{periods}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkLuckyDrawRecord">
+		SELECT 
+			<include refid="mkLuckyDrawRecordColumns"/>
+		FROM mk_lucky_draw_record a
+		<include refid="mkLuckyDrawRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_lucky_draw_record(
+			id,
+			status,
+			periods,
+			volume,
+			grant_volume,
+			pool_volume,
+			player_number,
+			lucky_volume,
+			deduct_fee,
+			coin_id,
+			coin_symbol,
+			user_id,
+			mail,
+			mobile,
+			real_name,
+			lucky_number,
+			remark,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{status},
+			#{periods},
+			#{volume},
+			#{grantVolume},
+			#{poolVolume},
+			#{playerNumber},
+			#{luckyVolume},
+			#{deductFee},
+			#{coinId},
+			#{coinSymbol},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{realName},
+			#{luckyNumber},
+			#{remark},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_lucky_draw_record SET 	
+			status = #{status},
+			periods = #{periods},
+			volume = #{volume},
+			grant_volume = #{grantVolume},
+			pool_volume = #{poolVolume},
+			player_number = #{playerNumber},
+			lucky_volume = #{luckyVolume},
+			deduct_fee = #{deductFee},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			real_name = #{realName},
+			lucky_number = #{luckyNumber},
+			remark = #{remark},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_lucky_draw_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,4 @@
+ALTER TABLE `bbex-eco`.eth_token_withdraw ADD tx_id varchar(100) NOT NULL;
+
+## 更新用户资产表创建时间的默认值为当前时间dong
+ALTER TABLE js_plat_user_coin_volume MODIFY COLUMN create_date timestamp not null DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间';

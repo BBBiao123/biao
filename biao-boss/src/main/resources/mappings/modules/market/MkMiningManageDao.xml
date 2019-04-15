@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkMiningManageDao">
+    
+	<sql id="mkMiningManageColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.status AS "status",
+		a.remark AS "remark",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="mkMiningManageJoins">
+	</sql>
+    
+	<select id="get" resultType="MkMiningManage">
+		SELECT 
+			<include refid="mkMiningManageColumns"/>
+		FROM mk_distribute_mining_manage a
+		<include refid="mkMiningManageJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkMiningManage">
+		SELECT 
+			<include refid="mkMiningManageColumns"/>
+		FROM mk_distribute_mining_manage a
+		<include refid="mkMiningManageJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkMiningManage">
+		SELECT 
+			<include refid="mkMiningManageColumns"/>
+		FROM mk_distribute_mining_manage a
+		<include refid="mkMiningManageJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_distribute_mining_manage(
+			id,
+			type,
+			status,
+			remark,
+			start_date,
+			end_date
+		) VALUES (
+			#{id},
+			#{type},
+			#{status},
+			#{remark},
+			#{startDate},
+			#{endDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_distribute_mining_manage SET 	
+			id = #{id},
+			type = #{type},
+			status = #{status},
+			remark = #{remark},
+			start_date = #{startDate},
+			end_date = #{endDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_distribute_mining_manage
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

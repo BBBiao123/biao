@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeReleaseLogDao">
+    
+	<sql id="mk2PopularizeReleaseLogColumns">
+		a.id AS "id",
+		a.relation_id AS "relationId",
+		a.type AS "type",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.release_volume AS "releaseVolume",
+		a.release_cycle_date AS "releaseCycleDate",
+		a.release_status AS "releaseStatus",
+		a.release_cycle_ratio AS "releaseCycleRatio",
+		a.area_name AS "areaName",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeReleaseLogJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeReleaseLog">
+		SELECT 
+			<include refid="mk2PopularizeReleaseLogColumns"/>
+		FROM mk2_popularize_release_log a
+		<include refid="mk2PopularizeReleaseLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeReleaseLog">
+		SELECT 
+			<include refid="mk2PopularizeReleaseLogColumns"/>
+		FROM mk2_popularize_release_log a
+		<include refid="mk2PopularizeReleaseLogJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="beginReleaseCycleDate != null and endReleaseCycleDate != null and beginReleaseCycleDate != '' and endReleaseCycleDate != ''">
+				AND a.release_cycle_date BETWEEN #{beginReleaseCycleDate} AND #{endReleaseCycleDate}
+			</if>
+			<if test="areaName != null and areaName != ''">
+				AND a.area_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{areaName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{areaName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{areaName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeReleaseLog">
+		SELECT 
+			<include refid="mk2PopularizeReleaseLogColumns"/>
+		FROM mk2_popularize_release_log a
+		<include refid="mk2PopularizeReleaseLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_release_log(
+			id,
+			relation_id,
+			type,
+			user_id,
+			mail,
+			mobile,
+			coin_id,
+			coin_symbol,
+			release_volume,
+			release_cycle_date,
+			release_status,
+			release_source,
+			area_name,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{relationId},
+			#{type},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{coinId},
+			#{coinSymbol},
+			#{releaseVolume},
+			#{releaseCycleDate},
+			#{releaseStatus},
+			#{releaseSource},
+			#{areaName},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_release_log SET 	
+			relation_id = #{relationId},
+			type = #{type},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			release_volume = #{releaseVolume},
+			release_cycle_date = #{releaseCycleDate},
+			release_status = #{releaseStatus},
+			area_name = #{areaName},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_release_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

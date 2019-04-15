@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkAutoTradeSettingDao">
+	<sql id="mkAutoTradeSettingColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.pass AS "pass",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.real_name AS "realName",
+		a.id_card AS "idCard",
+		a.ex_pair_id AS "exPairId",
+		a.ex_pair_symbol AS "exPairSymbol",
+		a.coin_main_id AS "coinMainId",
+		a.coin_main_symbol AS "coinMainSymbol",
+		a.coin_other_id AS "coinOtherId",
+		a.coin_other_symbol AS "coinOtherSymbol",
+		a.begin_date AS "beginDate",
+		a.end_date AS "endDate",
+		a.min_volume AS "minVolume",
+		a.max_volume AS "maxVolume",
+		a.min_price AS "minPrice",
+		a.max_price AS "maxPrice",
+		a.price_precision AS "pricePrecision",
+		a.volume_precision AS "volumePrecision",
+		a.ex_min_volume AS "exMinVolume",
+		a.ex_max_volume AS "exMaxVolume",
+		a.frequency AS "frequency",
+		a.time_unit AS "timeUnit",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.create_by_name AS "createByName",
+		a.update_by AS "updateBy",
+		a.update_by AS "updateByName"
+	</sql>
+	
+	<sql id="mkAutoTradeSettingJoins">
+		LEFT JOIN sys_user u4 ON u4.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="MkAutoTradeSetting">
+		SELECT 
+			<include refid="mkAutoTradeSettingColumns"/>
+		FROM mk_auto_trade_setting a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkAutoTradeSetting">
+		SELECT 
+			<include refid="mkAutoTradeSettingColumns"/>
+		FROM mk_auto_trade_setting a
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+
+			<if test="coinMainSymbol != null and coinMainSymbol != ''">
+				AND a.coin_main_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinMainSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinMainSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinMainSymbol},'%')</if>
+			</if>
+
+			<if test="coinOtherSymbol != null and coinOtherSymbol != ''">
+				AND a.coin_other_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinOtherSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinOtherSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinOtherSymbol},'%')</if>
+			</if>
+
+			<if test="createByName != null and createByName != ''">
+				AND a.create_by_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{createByName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{createByName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{createByName},'%')</if>
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkAutoTradeSetting">
+		SELECT 
+			<include refid="mkAutoTradeSettingColumns"/>
+		FROM mk_auto_trade_setting a
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_auto_trade_setting(
+			id,
+			type,
+			status,
+			user_id,
+			username,
+			pass,
+			mail,
+			mobile,
+			real_name,
+			id_card,
+			ex_pair_id,
+			ex_pair_symbol,
+			coin_main_id,
+			coin_main_symbol,
+			coin_other_id,
+			coin_other_symbol,
+			begin_date,
+			end_date,
+			min_volume,
+			max_volume,
+			min_price,
+			max_price,
+			price_precision,
+		    volume_precision,
+			ex_min_volume,
+			ex_max_volume,
+			frequency,
+			time_unit,
+			remark,
+			create_by,
+			create_by_name
+		) VALUES (
+			#{id},
+			#{type},
+			#{status},
+			#{userId},
+			#{username},
+			#{pass},
+			#{mail},
+			#{mobile},
+			#{realName},
+			#{idCard},
+			#{exPairId},
+			#{exPairSymbol},
+			#{coinMainId},
+			#{coinMainSymbol},
+			#{coinOtherId},
+			#{coinOtherSymbol},
+			#{beginDate},
+			#{endDate},
+			#{minVolume},
+			#{maxVolume},
+			#{minPrice},
+			#{maxPrice},
+			#{pricePrecision},
+			#{volumePrecision},
+			#{exMinVolume},
+			#{exMaxVolume},
+			#{frequency},
+			#{timeUnit},
+			#{remark},
+			#{createBy.id},
+			#{createBy.name}
+		);
+
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_auto_trade_setting SET 	
+			type = #{type},
+			status = #{status},
+			user_id = #{userId},
+			username = #{username},
+			pass = #{pass},
+			mail = #{mail},
+			mobile = #{mobile},
+			real_name = #{realName},
+			id_card = #{idCard},
+			ex_pair_id = #{exPairId},
+			ex_pair_symbol = #{exPairSymbol},
+			coin_main_id = #{coinMainId},
+			coin_main_symbol = #{coinMainSymbol},
+			coin_other_id = #{coinOtherId},
+			coin_other_symbol = #{coinOtherSymbol},
+			begin_date = #{beginDate},
+			end_date = #{endDate},
+			min_volume = #{minVolume},
+			max_volume = #{maxVolume},
+			min_price = #{minPrice},
+			max_price = #{maxPrice},
+			price_precision = #{pricePrecision},
+			volume_precision = #{volumePrecision},
+			ex_min_volume = #{exMinVolume},
+			ex_max_volume = #{exMaxVolume},
+			frequency = #{frequency},
+			time_unit = #{timeUnit},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_auto_trade_setting
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

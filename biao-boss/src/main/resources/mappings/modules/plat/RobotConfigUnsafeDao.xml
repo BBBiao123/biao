@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.RobotConfigUnsafeDao">
+    
+	<sql id="robotConfigUnsafeColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		a.user_id AS "user.id",
+		a.user_name AS "userName",
+		a.password AS "password",
+		a.volume_range AS "volumeRange",
+		a.price_range AS "priceRange",
+		a.status AS "status",
+		a.is_init AS "isInit"
+	</sql>
+	
+	<select id="get" resultType="RobotConfigUnsafe">
+		SELECT 
+			<include refid="robotConfigUnsafeColumns"/>
+		FROM robot_config_unsafe a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RobotConfigUnsafe">
+		SELECT 
+			<include refid="robotConfigUnsafeColumns"/>
+		FROM robot_config_unsafe a
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="isInit != null and isInit != ''">
+				AND a.is_init = #{isInit}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RobotConfigUnsafe">
+		SELECT 
+			<include refid="robotConfigUnsafeColumns"/>
+		FROM robot_config_unsafe a
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO robot_config_unsafe(
+			id,
+			type,
+			coin_main,
+			coin_other,
+			user_id,
+			user_name,
+			password,
+			volume_range,
+			price_range,
+			status,
+			is_init
+		) VALUES (
+			#{id},
+			#{type},
+			#{coinMain},
+			#{coinOther},
+			#{user.id},
+			#{userName},
+			#{password},
+			#{volumeRange},
+			#{priceRange},
+			#{status},
+			#{isInit}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE robot_config_unsafe SET 	
+			type = #{type},
+			coin_main = #{coinMain},
+			coin_other = #{coinOther},
+			user_id = #{user.id},
+			user_name = #{userName},
+			password = #{password},
+			volume_range = #{volumeRange},
+			price_range = #{priceRange},
+			status = #{status},
+			is_init = #{isInit}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM robot_config_unsafe
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

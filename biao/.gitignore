@@ -1,0 +1,62 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+.mvn
+mvnw
+mvnw.cmd
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+*~
+
+# eclipse ignore
+.settings
+.project
+.classpath
+.tomcatplugin
+logPath_IS_UNDEFINED
+*.gz
+disconf
+
+# idea ignore
+.idea
+*.iml
+
+# maven ignore
+target
+
+# other ignore
+*.log
+*.tmp
+Thumbs.db
+*.DS_Store

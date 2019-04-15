@@ -1,0 +1,147 @@
+# 默认的profile为dev，其他环境通过指定启动参数使用不同的profile，比如：
+#   测试环境：java -jar my-spring-boot.jar --spring.profiles.active=test
+#   生产环境：java -jar my-spring-boot.jar --spring.profiles.active=prod
+
+server:
+  port: 8075
+management:
+  health:
+    mail:
+      enabled: false
+info:
+  app:
+    name: "@project.name@" #从pom.xml中获取
+    description: "@project.description@"
+    version: "@project.version@"
+    spring-boot-version: "@project.parent.version@"
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbbex-test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    username: photoadmin
+    password: Photo123456
+    hikari:
+      maxLifetime: 1765000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上
+      maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+  data:
+    mongodb:
+        host: dds-j6c4cb1c77b752a41823-pub.mongodb.rds.aliyuncs.com
+        port: 3717
+        database: photo
+        authentication-database: photo
+        username: photoadmin
+        password: photoadmin
+        reactive-repositories:
+                enabled: true
+
+  redis:
+#    password: foobaredbbexONE123
+    host: 47.244.153.103
+    port: 6800
+
+  kafka:
+    producer:
+      value-serializer: com.biao.kafka.interceptor.CustomerJsonSerializer
+      properties: 
+          interceptor.classes: com.biao.kafka.interceptor.KafkaMessageIdGenerator
+    bootstrap-servers:
+            - 47.52.67.6:9092
+    consumer:
+      value-deserializer: com.biao.kafka.interceptor.CustomerJsonDeserializer
+      group-id: task
+      auto-offset-reset: earliest
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.biao.listener.kafka,com.biao.kafka.interceptor
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      
+biao:
+  mail[0]:
+    password: Service123456
+    username: service@coceu.com
+    alias: coceu
+    sendname: service@coceu.com
+    auth: true
+    host: smtp.coceu.com
+    openssl: true
+    port: 25
+
+mybatis:
+    typeAliasesPackage: com.biao.entity
+    configLocation: classpath:mybatis/mybatis-config.xml
+
+maincoin:  ETH, USDT, BTC
+maincoinC2c:  USDT
+
+mk2GiveCoin: UES
+
+relayPrizeTime: 20
+
+statisticsExeTime: 10000
+incrementExeTime: 10000
+
+inviteCodes:
+
+aliyun: 
+   ossclient: 
+      accessKeyId: LTAIeVlMi4NlO4qA
+      accessKeySecret: sM7tcsCdiOyLMvXGa9t6fIKvtTeDyu
+      bucketName: biao-app
+      endpoint: oss-cn-shenzhen.aliyuncs.com
+   cardcheck:
+      appKey:
+      appSecret:
+      verifyKey:
+      userId:
+      maxCheckTime: 3
+
+
+userSynDir: userSynDiru
+
+neo4j:
+    uri: bolt://172.31.20.148:7687
+    username: neo4j
+    password: zhoury
+
+binance:
+    kline:
+       enabled: true
+       proxy : true
+       time : 10
+kline:
+    stat :
+       time : 10
+user:
+  coin-volume-bill:
+    #     执行的节点数量
+    needs: 1
+    #      当前是几号节点，不要重复哦.
+    need: 1
+    #      执行时间S
+    time: 5
+    #是否启动task;
+    taskFlag: false
+
+
+
+#总资产对账风控接受邮件列表,多个邮箱以逗号隔开，如：123@qq.com,456@qq.com
+riskMgt:
+  mailList: james.jing168@gmail.com
+
+
+logging:
+    level:
+        root: info
+        org.springframework.boot: info
+        org.apache.ibatis: info
+        com.bbex.bonuspoint: info
+        com.bbex.lottery: debug
+        com.bbex: debug
+        io.netty: info
+    path: "./logs"
+    config: classpath:logback.xml

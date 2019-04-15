@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.BalanceSheetSnapshotDao">
+    
+	<sql id="balanceSheetSnapshotColumns">
+		a.id AS "id",
+		a.snap_date AS "snapDate",
+		a.coin_symbol AS "coinSymbol",
+		a.total_volume AS "totalVolume",
+		a.income AS "income",
+		a.trade_fee AS "tradeFee",
+		a.deposit_volume AS "depositVolume",
+		a.offline_fee AS "offlineFee",
+		a.deduct_volume AS "deductVolume",
+		a.withdraw_fee AS "withdrawFee",
+		a.expense AS "expense",
+		a.withdraw_volume AS "withdrawVolume",
+		a.withdraw_block_fee AS "withdrawBlockFee",
+		a.deposit_allocation_fee AS "depositAllocationFee",
+		a.remit_volume AS "remitVolume",
+		a.mining_volume AS "miningVolume",
+		a.register_volume AS "registerVolume",
+		a.relay_volume AS "relayVolume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy"
+	</sql>
+	
+	<sql id="balanceSheetSnapshotJoins">
+	</sql>
+    
+	<select id="get" resultType="BalanceSheetSnapshot">
+		SELECT 
+			<include refid="balanceSheetSnapshotColumns"/>
+		FROM js_plat_balance_sheet_snapshot a
+		<include refid="balanceSheetSnapshotJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BalanceSheetSnapshot">
+		SELECT 
+			<include refid="balanceSheetSnapshotColumns"/>
+		FROM js_plat_balance_sheet_snapshot a
+		<include refid="balanceSheetSnapshotJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="beginSnapDate != null and endSnapDate != null and beginSnapDate != '' and endSnapDate != ''">
+				AND a.snap_date BETWEEN #{beginSnapDate} AND #{endSnapDate}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BalanceSheetSnapshot">
+		SELECT 
+			<include refid="balanceSheetSnapshotColumns"/>
+		FROM js_plat_balance_sheet_snapshot a
+		<include refid="balanceSheetSnapshotJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_balance_sheet_snapshot(
+			id,
+			snap_date,
+			coin_symbol,
+			total_volume,
+			income,
+			trade_fee,
+			deposit_volume,
+			offline_fee,
+			deduct_volume,
+			withdraw_fee,
+			expense,
+			withdraw_volume,
+			withdraw_block_fee,
+			deposit_allocation_fee,
+			remit_volume,
+			mining_volume,
+			register_volume,
+			relay_volume,
+			remark,
+			create_date,
+			create_by
+		) VALUES (
+			#{id},
+			#{snapDate},
+			#{coinSymbol},
+			#{totalVolume},
+			#{income},
+			#{tradeFee},
+			#{depositVolume},
+			#{offlineFee},
+			#{deductVolume},
+			#{withdrawFee},
+			#{expense},
+			#{withdrawVolume},
+			#{withdrawBlockFee},
+			#{depositAllocationFee},
+			#{remitVolume},
+			#{miningVolume},
+			#{registerVolume},
+			#{relayVolume},
+			#{remark},
+			#{createDate},
+			#{createBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_balance_sheet_snapshot SET 	
+			snap_date = #{snapDate},
+			coin_symbol = #{coinSymbol},
+			total_volume = #{totalVolume},
+			income = #{income},
+			trade_fee = #{tradeFee},
+			deposit_volume = #{depositVolume},
+			offline_fee = #{offlineFee},
+			deduct_volume = #{deductVolume},
+			withdraw_fee = #{withdrawFee},
+			expense = #{expense},
+			withdraw_volume = #{withdrawVolume},
+			withdraw_block_fee = #{withdrawBlockFee},
+			deposit_allocation_fee = #{depositAllocationFee},
+			remit_volume = #{remitVolume},
+			mining_volume = #{miningVolume},
+			register_volume = #{registerVolume},
+			relay_volume = #{relayVolume},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_balance_sheet_snapshot
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

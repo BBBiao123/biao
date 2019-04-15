@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.MkUserRegisterLotteryDao">
+
+    <sql id="mkUserRegisterLotteryColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.start_date AS "startDate",
+		a.coin_symbol AS "coinSymbol",
+		a.status AS "status",
+		a.total_prize AS "totalPrize",
+		a.recommend_min_volume AS "recommendMinVolume",
+		a.recommend_ratio AS "recommendRatio",
+		a.recommend_day_count AS "recommendDayCount",
+		a.recommend_total_count AS "recommendTotalCount",
+		a.recommend_count_limit  AS "recommendCountLimit",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+
+
+    <select id="get" resultType="MkUserRegisterLottery">
+        SELECT
+        <include refid="mkUserRegisterLotteryColumns"/>
+        FROM mk_user_register_lottery a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="MkUserRegisterLottery">
+        SELECT
+        <include refid="mkUserRegisterLotteryColumns"/>
+        FROM mk_user_register_lottery a
+        <where>
+
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+            <if test="coinSymbol != null and coinSymbol != ''">
+                AND a.coin_symbol = #{coinSymbol}
+            </if>
+			<if test="status != null ">
+				AND a.status = #{status}
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="MkUserRegisterLottery">
+        SELECT
+        <include refid="mkUserRegisterLotteryColumns"/>
+        FROM mk_user_register_lottery a
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO mk_user_register_lottery(
+			id,
+			name,
+			start_date,
+			coin_symbol,
+			status,
+			total_prize,
+			recommend_min_volume,
+			recommend_ratio,
+			recommend_day_count,
+		  	recommend_total_count,
+		    recommend_count_limit,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{name},
+			#{startDate},
+			#{coinSymbol},
+			#{status},
+			#{totalPrize},
+			#{recommendMinVolume},
+			#{recommendRatio},
+			#{recommendDayCount},
+			#{recommendTotalCount},
+			#{recommendCountLimit}  ,
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE mk_user_register_lottery SET 	
+			name = #{name},
+			start_date=#{startDate},
+		    status = #{status},
+			coin_symbol = #{coinSymbol},
+			total_prize = #{totalPrize},
+			recommend_min_volume = #{recommendMinVolume},
+			recommend_ratio = #{recommendRatio},
+			recommend_day_count = #{recommendDayCount},
+			recommend_total_count = #{recommendTotalCount},
+			recommend_count_limit = #{recommendCountLimit},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM mk_user_register_lottery
+		WHERE id = #{id}
+	</update>
+
+    <update id="updateStatus">
+		update  mk_user_register_lottery
+		set status = #{status},
+		WHERE id = #{id}
+	</update>
+
+</mapper>

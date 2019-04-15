@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeBonusTaskLogDao">
+    
+	<sql id="mk2PopularizeBonusTaskLogColumns">
+		a.id AS "id",
+		a.status AS "status",
+		a.bonus_volume AS "bonusVolume",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.begin_date AS "beginDate",
+		a.end_date AS "endDate",
+		a.create_date AS "createDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mk2PopularizeBonusTaskLogJoins">
+	</sql>
+    
+	<select id="get" resultType="Mk2PopularizeBonusTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusTaskLogColumns"/>
+		FROM mk2_popularize_bonus_task_log a
+		<include refid="mk2PopularizeBonusTaskLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mk2PopularizeBonusTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusTaskLogColumns"/>
+		FROM mk2_popularize_bonus_task_log a
+		<include refid="mk2PopularizeBonusTaskLogJoins"/>
+		<where>
+			
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mk2PopularizeBonusTaskLog">
+		SELECT 
+			<include refid="mk2PopularizeBonusTaskLogColumns"/>
+		FROM mk2_popularize_bonus_task_log a
+		<include refid="mk2PopularizeBonusTaskLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk2_popularize_bonus_task_log(
+			id,
+			status,
+			bonus_volume,
+			coin_id,
+			coin_symbol,
+			begin_date,
+			end_date,
+			create_date,
+			remark
+		) VALUES (
+			#{id},
+			#{status},
+			#{bonusVolume},
+			#{coinId},
+			#{coinSymbol},
+			#{beginDate},
+			#{endDate},
+			#{createDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk2_popularize_bonus_task_log SET 	
+			status = #{status},
+			bonus_volume = #{bonusVolume},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			begin_date = #{beginDate},
+			end_date = #{endDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk2_popularize_bonus_task_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.UserDepositLogDao">
+
+    <sql id="userDepositLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_id AS "coinId",
+		a.address AS "address",
+		a.coin_symbol AS "coinSymbol",
+		a.tx_id AS "txId",
+		a.volume AS "volume",
+		a.status AS "status",
+		a.raise_status AS "raiseStatus",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+
+    <sql id="userDepositLogJoins">
+    </sql>
+
+    <select id="get" resultType="UserDepositLog">
+        SELECT
+        <include refid="userDepositLogColumns"/>
+        FROM js_plat_user_deposit_log a
+        <include refid="userDepositLogJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+
+    <select id="findListByUserIdAndSymbol" resultType="UserDepositLog">
+        SELECT
+        <include refid="userDepositLogColumns"/>
+        FROM js_plat_user_deposit_log a
+        <where>
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="coinSymbol != null and coinSymbol != ''">
+                AND a.coin_symbol = #{coinSymbol}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findList" resultType="UserDepositLog">
+        SELECT
+        <include refid="userDepositLogColumns"/>
+        FROM js_plat_user_deposit_log a
+        <include refid="userDepositLogJoins"/>
+        <where>
+
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="coinSymbol != null and coinSymbol != ''">
+                AND a.coin_symbol = #{coinSymbol}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="raiseStatus != null">
+                AND a.raise_status = #{raiseStatus}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <select id="findListCount" resultType="UserDepositLog">
+        select v.coinSymbol,v.coinId,sum(v.depositVolume) as depositVolume,sum(v.withdrawVolume) as withdrawVolume from
+        (
+        SELECT SUM(a.volume) AS depositVolume,a.coin_symbol AS coinSymbol,a.coin_id AS coinId, 0 AS withdrawVolume
+        FROM js_plat_user_deposit_log a
+        <where>
+            a.status = 1
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="coinId != null and coinId != ''">
+                AND a.coin_id = #{coinId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[AND a.create_date >= #{startTime}]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[AND a.create_date < #{endTime}]]>
+            </if>
+        </where>
+        GROUP BY a.coin_symbol,a.coin_id
+
+        UNION ALL
+
+        SELECT 0 AS depositVolume,a.coin_symbol AS coinSymbol,a.coin_id AS coinId,SUM(a.real_volume) AS withdrawVolume
+        FROM js_plat_user_withdraw_log a
+        <where>
+            a.status = 3
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="coinId != null and coinId != ''">
+                AND a.coin_id = #{coinId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[AND a.create_date >= #{startTime}]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[AND a.create_date < #{endTime}]]>
+            </if>
+        </where>
+        GROUP BY a.coin_symbol,a.coin_id
+        ) v GROUP BY v.coinSymbol,v.coinId
+    </select>
+
+
+    <select id="findAllList" resultType="UserDepositLog">
+        SELECT
+        <include refid="userDepositLogColumns"/>
+        FROM js_plat_user_deposit_log a
+        <include refid="userDepositLogJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO js_plat_user_deposit_log(
+			id,
+			user_id,
+			coin_id,
+			address,
+			coin_symbol,
+			tx_id,
+			volume,
+			status,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{userId},
+			#{coinId},
+			#{address},
+			#{coinSymbol},
+			#{txId},
+			#{volume},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE js_plat_user_deposit_log SET 	
+			user_id = #{userId},
+			coin_id = #{coinId},
+			address = #{address},
+			coin_symbol = #{coinSymbol},
+			tx_id = #{txId},
+			volume = #{volume},
+			status = #{status},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM js_plat_user_deposit_log
+		WHERE id = #{id}
+	</update>
+
+</mapper>

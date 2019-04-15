@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.MkUserRegisterLotteryRuleDao">
+
+    <sql id="mkUserRegisterLotteryRuleColumns">
+		a.id AS "id",
+		a.lottery_id AS "lotteryId",
+		a.name AS "name",
+		a.min_count AS "minCount",
+		a.max_count AS "maxCount",
+		a.ratio AS "ratio",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		l.name as "lotteryName"
+	</sql>
+
+    <sql id="mkUserRegisterLotteryRuleJoins">
+		left  join mk_user_register_lottery l  on a.lottery_id = l.id
+	</sql>
+
+    <select id="get" resultType="MkUserRegisterLotteryRule">
+        SELECT
+        <include refid="mkUserRegisterLotteryRuleColumns"/>
+        FROM mk_user_register_lottery_rule a
+        <include refid="mkUserRegisterLotteryRuleJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="MkUserRegisterLotteryRule">
+        SELECT
+        <include refid="mkUserRegisterLotteryRuleColumns"/>
+        FROM mk_user_register_lottery_rule a
+        <include refid="mkUserRegisterLotteryRuleJoins"/>
+        <where>
+
+            <if test="lotteryId != null and lotteryId != ''">
+                AND a.lottery_id = #{lotteryId}
+            </if>
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="MkUserRegisterLotteryRule">
+        SELECT
+        <include refid="mkUserRegisterLotteryRuleColumns"/>
+        FROM mk_user_register_lottery_rule a
+        <include refid="mkUserRegisterLotteryRuleJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO mk_user_register_lottery_rule(
+			id,
+			lottery_id,
+			name,
+			min_count,
+			max_count,
+			ratio,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{lotteryId},
+			#{name},
+			#{minCount},
+			#{maxCount},
+			#{ratio},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE mk_user_register_lottery_rule SET 	
+			lottery_id = #{lotteryId},
+			name = #{name},
+			min_count = #{minCount},
+			max_count = #{maxCount},
+			ratio = #{ratio},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM mk_user_register_lottery_rule
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MobileTemplateDao">
+    
+	<sql id="mobileTemplateColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.access_key AS "accessKey",
+		a.access_secret AS "accessSecret",
+		a.sign_name AS "signName",
+		a.template_param AS "templateParam",
+		a.template_code AS "templateCode",
+		a.work_sign AS "workSign",
+		a.remark AS "remark",
+		a.expand_json AS "expandJson",
+		a.time_out AS "timeOut"
+	</sql>
+	
+	<sql id="mobileTemplateJoins">
+	</sql>
+    
+	<select id="get" resultType="MobileTemplate">
+		SELECT 
+			<include refid="mobileTemplateColumns"/>
+		FROM mobile_template a
+		<include refid="mobileTemplateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MobileTemplate">
+		SELECT 
+			<include refid="mobileTemplateColumns"/>
+		FROM mobile_template a
+		<include refid="mobileTemplateJoins"/>
+		<where>
+			
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="accessKey != null and accessKey != ''">
+				AND a.access_key = #{accessKey}
+			</if>
+			<if test="accessSecret != null and accessSecret != ''">
+				AND a.access_secret = #{accessSecret}
+			</if>
+			<if test="templateParam != null and templateParam != ''">
+				AND a.template_param = #{templateParam}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MobileTemplate">
+		SELECT 
+			<include refid="mobileTemplateColumns"/>
+		FROM mobile_template a
+		<include refid="mobileTemplateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mobile_template(
+			id,
+			code,
+			access_key,
+			access_secret,
+			sign_name,
+			template_param,
+			template_code,
+			work_sign,
+			remark,
+			expand_json,
+			time_out
+		) VALUES (
+			#{id},
+			#{code},
+			#{accessKey},
+			#{accessSecret},
+			#{signName},
+			#{templateParam},
+			#{templateCode},
+			#{workSign},
+			#{remark},
+			#{expandJson},
+			#{timeOut}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mobile_template SET 	
+			code = #{code},
+			access_key = #{accessKey},
+			access_secret = #{accessSecret},
+			sign_name = #{signName},
+			template_param = #{templateParam},
+			template_code = #{templateCode},
+			work_sign = #{workSign},
+			remark = #{remark},
+			expand_json = #{expandJson},
+			time_out = #{timeOut}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mobile_template
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

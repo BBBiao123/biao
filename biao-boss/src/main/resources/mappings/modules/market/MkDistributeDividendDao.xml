@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkDistributeDividendDao">
+    
+	<sql id="mkDistributeDividendColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.status AS "status",
+		a.percentage AS "percentage",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.plat_coin_id AS "platCoinId",
+		a.plat_coin_symbol AS "platCoinSymbol",
+		a.grant_volume AS "grantVolume",
+		a.usdt_grant_volume AS "usdtGrantVolume",
+		a.btc_grant_volume AS "btcGrantVolume",
+		a.eth_grant_volume AS "ethGrantVolume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="mkDistributeDividendJoins">
+	</sql>
+    
+	<select id="get" resultType="MkDistributeDividend">
+		SELECT 
+			<include refid="mkDistributeDividendColumns"/>
+		FROM mk_distribute_dividend a
+		<include refid="mkDistributeDividendJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkDistributeDividend">
+		SELECT 
+			<include refid="mkDistributeDividendColumns"/>
+		FROM mk_distribute_dividend a
+		<include refid="mkDistributeDividendJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkDistributeDividend">
+		SELECT 
+			<include refid="mkDistributeDividendColumns"/>
+		FROM mk_distribute_dividend a
+		<include refid="mkDistributeDividendJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_distribute_dividend(
+			id,
+			name,
+			status,
+			percentage,
+			user_id,
+			username,
+			coin_id,
+			coin_symbol,
+			plat_coin_id,
+			plat_coin_symbol,
+			grant_volume,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{name},
+			#{status},
+			#{percentage},
+			#{userId},
+			#{username},
+			#{coinId},
+			#{coinSymbol},
+			#{platCoinId},
+			#{platCoinSymbol},
+			#{grantVolume},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_distribute_dividend SET 	
+			name = #{name},
+			status = #{status},
+			percentage = #{percentage},
+			user_id = #{userId},
+			username = #{username},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			plat_coin_id = #{platCoinId},
+			plat_coin_symbol = #{platCoinSymbol},
+			grant_volume = #{grantVolume},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_distribute_dividend
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

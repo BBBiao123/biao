@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.AreaSellDao">
+    
+	<sql id="areaSellColumns">
+		a.id AS "id",
+		a.area_id AS "area.id",
+		a.area_name AS "areaName",
+		a.area_paraent_id AS "areaParaentId",
+		a.area_paraent_name AS "areaParaentName",
+		a.sell_price AS "sellPrice",
+		a.sold AS "sold",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="areaSellJoins">
+	</sql>
+    
+	<select id="get" resultType="AreaSell">
+		SELECT 
+			<include refid="areaSellColumns"/>
+		FROM js_plat_area_sell a
+		<include refid="areaSellJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AreaSell">
+		SELECT 
+			<include refid="areaSellColumns"/>
+		FROM js_plat_area_sell a
+		<include refid="areaSellJoins"/>
+		<where>
+			
+			<if test="area != null and area.id != null and area.id != ''">
+				AND a.area_id = #{area.id}
+			</if>
+			<if test="areaName != null and areaName != ''">
+				AND a.area_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{areaName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{areaName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{areaName},'%')</if>
+			</if>
+			<if test="areaParaentId != null and areaParaentId != ''">
+				AND a.area_paraent_id = #{areaParaentId}
+			</if>
+			<if test="areaParaentName != null and areaParaentName != ''">
+				AND a.area_paraent_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{areaParaentName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{areaParaentName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{areaParaentName},'%')</if>
+			</if>
+			<if test="sold != null and sold != ''">
+				AND a.sold = #{sold}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AreaSell">
+		SELECT 
+			<include refid="areaSellColumns"/>
+		FROM js_plat_area_sell a
+		<include refid="areaSellJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_area_sell(
+			id,
+			area_id,
+			area_name,
+			area_paraent_id,
+			area_paraent_name,
+			sell_price,
+			sold,
+			remarks,
+			create_by,
+			update_by,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{area.id},
+			#{areaName},
+			#{areaParaentId},
+			#{areaParaentName},
+			#{sellPrice},
+			#{sold},
+			#{remarks},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_area_sell SET 	
+			area_id = #{area.id},
+			area_name = #{areaName},
+			area_paraent_id = #{areaParaentId},
+			area_paraent_name = #{areaParaentName},
+			sell_price = #{sellPrice},
+			sold = #{sold},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_area_sell
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,71 @@
+#
+#server:
+#  port: 8083
+management:
+  health:
+    mail:
+      enabled: false
+info:
+  app:
+    name: "@project.name@" #从pom.xml中获取
+    description: "@project.description@"
+    version: "@project.version@"
+    spring-boot-version: "@project.parent.version@"
+
+spring:
+  output:
+    ansi:
+      enabled: always
+  profiles: 
+    active: dev
+  datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbbex-test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+        username: photoadmin
+        password: Photo123456
+        hikari:
+            maxLifetime: 1765000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上
+            maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+  redis:
+#    password: foobaredbbexONE123
+    host: 47.244.153.103
+    port: 6800
+
+
+
+#url: http://47.74.159.134:8545/
+fromAddress:
+url: http://127.0.0.1:5555/
+password: 123123123
+path:
+web3j:
+  admin-client: true
+  httpTimeoutSeconds: 600
+mybatis:
+    typeAliasesPackage: com.biao.entity
+    configLocation: classpath:mybatis/mybatis-config.xml
+generateAddress: 1
+inviteCodes:
+user:
+  config:
+    lockLength: 24
+  coin-volume-bill:
+    #     执行的节点数量
+    needs: 1
+    #      当前是几号节点，不要重复哦.
+    need: 1
+    #      执行时间S
+    time: 5
+    #是否启动task;
+    taskFlag: false
+logging:
+    level:
+        root: info
+        org.springframework.boot: info
+        org.apache.ibatis: debug
+        com.bbex.bonuspoint: debug
+        com.bbex.lottery: debug
+        com.bbex: debug
+        io.netty: debug
+    path: "./logs"
+    config: classpath:logback.xml

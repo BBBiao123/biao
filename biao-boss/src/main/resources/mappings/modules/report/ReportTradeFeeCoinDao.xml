@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportTradeFeeCoinDao">
+    
+	<sql id="reportTradeFeeCoinColumns">
+		a.id AS "id",
+		a.sum_fee AS "sumFee",
+		a.coin AS "coin",
+		a.count_time AS "countTime",
+		a.create_time AS "createTime"
+	</sql>
+	
+	<sql id="reportTradeFeeCoinJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportTradeFeeCoin">
+		SELECT 
+			<include refid="reportTradeFeeCoinColumns"/>
+		FROM report_trade_fee_coin a
+		<include refid="reportTradeFeeCoinJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportTradeFeeCoin">
+		SELECT 
+			<include refid="reportTradeFeeCoinColumns"/>
+		FROM report_trade_fee_coin a
+		<include refid="reportTradeFeeCoinJoins"/>
+		<where>
+			
+			<if test="coin != null and coin != ''">
+				AND a.coin = #{coin}
+			</if>
+			<if test="countTime != null and countTime != ''">
+				AND a.count_time = #{countTime}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				AND a.create_time = #{createTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListCount" resultType="ReportTradeFeeCoin">
+		SELECT a.coin AS "coin",
+			sum(a.sum_fee) AS "sumFee"
+		FROM report_trade_fee_coin a
+		<where>
+			<if test="coin != null and coin != ''">
+				AND a.coin = #{coin}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND a.count_time >= #{startTime}]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND a.count_time < #{endTime}]]>
+			</if>
+		</where>
+		group by coin
+	</select>
+	
+	<select id="findAllList" resultType="ReportTradeFeeCoin">
+		SELECT 
+			<include refid="reportTradeFeeCoinColumns"/>
+		FROM report_trade_fee_coin a
+		<include refid="reportTradeFeeCoinJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO report_trade_fee_coin(
+			id,
+			sum_fee,
+			coin,
+			count_time,
+			create_time
+		) VALUES (
+			#{id},
+			#{sumFee},
+			#{coin},
+			#{countTime},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE report_trade_fee_coin SET 	
+			sum_fee = #{sumFee},
+			coin = #{coin},
+			count_time = #{countTime},
+			create_time = #{createTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM report_trade_fee_coin
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkDistributeAccountDao">
+    
+	<sql id="mkDistributeAccountColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.name AS "name",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.id_card AS "idCard",
+		a.real_name AS "realName",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.release_volume AS "releaseVolume",
+		a.lock_volume AS "lockVolume",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+	
+	<sql id="mkDistributeAccountJoins">
+	</sql>
+    
+	<select id="get" resultType="MkDistributeAccount">
+		SELECT 
+			<include refid="mkDistributeAccountColumns"/>
+		FROM mk_common_distribute_account a
+		<include refid="mkDistributeAccountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkDistributeAccount">
+		SELECT 
+			<include refid="mkDistributeAccountColumns"/>
+		FROM mk_common_distribute_account a
+		<include refid="mkDistributeAccountJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE
+				<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkDistributeAccount">
+		SELECT 
+			<include refid="mkDistributeAccountColumns"/>
+		FROM mk_common_distribute_account a
+		<include refid="mkDistributeAccountJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_common_distribute_account(
+			id,
+			type,
+			name,
+			status,
+			user_id,
+			username,
+			mail,
+			mobile,
+			id_card,
+			real_name,
+			coin_id,
+			coin_symbol,
+			lock_volume,
+			create_date
+		) VALUES (
+			#{id},
+			#{type},
+			#{name},
+			#{status},
+			#{userId},
+			#{username},
+			#{mail},
+			#{mobile},
+			#{idCard},
+			#{realName},
+			#{coinId},
+			#{coinSymbol},
+			#{lockVolume},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_common_distribute_account SET 	
+			type = #{type},
+			name = #{name},
+			status = #{status},
+			user_id = #{userId},
+			username = #{username},
+			mail = #{mail},
+			mobile = #{mobile},
+			id_card = #{idCard},
+			real_name = #{realName},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			lock_volume = #{lockVolume}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_common_distribute_account
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

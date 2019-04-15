@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkAutoTradeMonitorDao">
+    
+	<sql id="mkAutoTradeMonitorColumns">
+		a.id AS "id",
+		a.setting_id AS "settingId",
+		a.type AS "type",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.coin_main_symbol AS "coinMainSymbol",
+		a.coin_other_symbol AS "coinOtherSymbol",
+		a.begin_date AS "beginDate",
+		a.end_date AS "endDate",
+		a.min_volume AS "minVolume",
+		a.max_volume AS "maxVolume",
+		a.min_price AS "minPrice",
+		a.max_price AS "maxPrice",
+		a.frequency AS "frequency",
+		a.time_unit AS "timeUnit",
+		a.order_number AS "orderNumber",
+		a.order_volume AS "orderVolume",
+		a.order_price AS "orderPrice",
+		a.order_begin_date AS "orderBeginDate",
+		a.order_end_date AS "orderEndDate",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.create_by_name AS "createByName",
+		a.update_by AS "updateBy",
+		a.update_by AS "updateByName"
+	</sql>
+	
+	<sql id="mkAutoTradeMonitorJoins">
+	</sql>
+    
+	<select id="get" resultType="MkAutoTradeMonitor">
+		SELECT 
+			<include refid="mkAutoTradeMonitorColumns"/>
+		FROM mk_auto_trade_monitor a
+		<include refid="mkAutoTradeMonitorJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkAutoTradeMonitor">
+		SELECT 
+			<include refid="mkAutoTradeMonitorColumns"/>
+		FROM mk_auto_trade_monitor a
+		<include refid="mkAutoTradeMonitorJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="coinMainSymbol != null and coinMainSymbol != ''">
+				AND a.coin_main_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinMainSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinMainSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinMainSymbol},'%')</if>
+			</if>
+			<if test="coinOtherSymbol != null and coinOtherSymbol != ''">
+				AND a.coin_other_symbol LIKE 
+					<if test="dbName == 'oracle'">'%'||#{coinOtherSymbol}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{coinOtherSymbol}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{coinOtherSymbol},'%')</if>
+			</if>
+			<if test="createByName != null and createByName != ''">
+				AND a.create_by_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{createByName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{createByName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{createByName},'%')</if>
+			</if>
+			<if test="busType != null and busType != ''">
+				AND a.status in ('0','1')
+			</if>
+
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkAutoTradeMonitor">
+		SELECT 
+			<include refid="mkAutoTradeMonitorColumns"/>
+		FROM mk_auto_trade_monitor a
+		<include refid="mkAutoTradeMonitorJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_auto_trade_monitor(
+			id,
+			setting_id,
+			type,
+			status,
+			user_id,
+			username,
+			mail,
+			mobile,
+			coin_main_symbol,
+			coin_other_symbol,
+			begin_date,
+			end_date,
+			min_volume,
+			max_volume,
+			min_price,
+			max_price,
+			frequency,
+			time_unit,
+			order_number,
+			order_volume,
+			order_price,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{settingId},
+			#{type},
+			#{status},
+			#{userId},
+			#{username},
+			#{mail},
+			#{mobile},
+			#{coinMainSymbol},
+			#{coinOtherSymbol},
+			#{beginDate},
+			#{endDate},
+			#{minVolume},
+			#{maxVolume},
+			#{minPrice},
+			#{maxPrice},
+			#{frequency},
+			#{timeUnit},
+			#{orderNumber},
+			#{orderVolume},
+			#{orderPrice},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_auto_trade_monitor SET 	
+			setting_id = #{settingId},
+			type = #{type},
+			status = #{status},
+			user_id = #{userId},
+			username = #{username},
+			mail = #{mail},
+			mobile = #{mobile},
+			coin_main_symbol = #{coinMainSymbol},
+			coin_other_symbol = #{coinOtherSymbol},
+			begin_date = #{beginDate},
+			end_date = #{endDate},
+			min_volume = #{minVolume},
+			max_volume = #{maxVolume},
+			min_price = #{minPrice},
+			max_price = #{maxPrice},
+			frequency = #{frequency},
+			time_unit = #{timeUnit},
+			order_number = #{orderNumber},
+			order_volume = #{orderVolume},
+			order_price = #{orderPrice},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_auto_trade_monitor
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

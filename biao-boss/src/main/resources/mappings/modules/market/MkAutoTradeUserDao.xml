@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkAutoTradeUserDao">
+    
+	<sql id="mkAutoTradeUserColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.real_name AS "realName",
+		a.id_card AS "idCard",
+		a.source AS "source",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+
+	<sql id="platUserColumns">
+		a.id AS "id",
+		a.username AS "username",
+		a.password AS "password",
+		a.user_type AS "userType",
+		a.status AS "status",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.ex_password AS "exPassword",
+		a.google_auth AS "googleAuth",
+		a.sex AS "sex",
+		a.age AS "age",
+		a.invite_code AS "inviteCode",
+		a.refer_invite_code AS "referInviteCode",
+		a.real_name AS "realName",
+		a.id_card AS "idCard",
+		a.card_up_id AS "cardUpId",
+		a.card_down_id AS "cardDownId",
+		a.card_face_id AS "cardFaceId",
+		a.card_status AS "cardStatus",
+		a.card_status_reason AS "cardStatusReason",
+		a.open_discount AS "openDiscount",
+		a.remarks AS "remarks",
+		a.country_id AS "countryId",
+		a.country_code AS "countryCode",
+		a.wechat_no AS "wechatNo",
+		a.wechat_qrcode_id AS "wechatQrcodeId",
+		a.alipay_no AS "alipayNo",
+		a.alipay_qrcode_id AS "alipayQrcodeId",
+		a.refer_id AS "referId",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.c2c_in AS c2cIn,
+		a.coin_out AS  coinOut
+	</sql>
+	
+	<sql id="mkAutoTradeUserJoins">
+	</sql>
+    
+	<select id="get" resultType="MkAutoTradeUser">
+		SELECT 
+			<include refid="mkAutoTradeUserColumns"/>
+		FROM mk_auto_trade_user a
+		<include refid="mkAutoTradeUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkAutoTradeUser">
+		SELECT 
+			<include refid="mkAutoTradeUserColumns"/>
+		FROM mk_auto_trade_user a
+		<include refid="mkAutoTradeUserJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkAutoTradeUser">
+		SELECT 
+			<include refid="mkAutoTradeUserColumns"/>
+		FROM mk_auto_trade_user a
+		<include refid="mkAutoTradeUserJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getPlatUser" resultType="PlatUser">
+		SELECT DISTINCT
+		<include refid="platUserColumns"/>
+		FROM mk_auto_trade_user u inner join js_plat_user a on u.user_id = a.id
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_auto_trade_user(
+			id,
+			user_id,
+			username,
+			mobile,
+			mail,
+			real_name,
+			id_card,
+			source,
+			remark,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{userId},
+			#{username},
+			#{mobile},
+			#{mail},
+			#{realName},
+			#{idCard},
+			#{source},
+			#{remark},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+
+	<insert id="refresh">
+		INSERT INTO mk_auto_trade_user (
+			`id`,
+			`user_id`,
+			`username`,
+			`mobile`,
+			`mail`,
+			`real_name`,
+			`id_card`,
+			`source`,
+			`remark`,
+			`create_date`,
+			`update_date`,
+			`create_by`,
+			`update_by`
+		) SELECT
+			REPLACE (uuid(), '-', ''),
+			b.user_id,
+			b.username,
+			b.mobile,
+			b.mail,
+			b.real_name,
+			b.id_card,
+			'grant',
+			'',
+			NOW(),
+			NOW(),
+			NULL,
+			NULL
+		FROM
+			(
+				SELECT DISTINCT
+					user_id,
+					username,
+					mobile,
+					mail,
+					real_name,
+					id_card
+				FROM
+					mk_sys_user_ex_pair
+				WHERE
+					user_id IS NOT NULL
+			) AS b;
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_auto_trade_user SET 	
+			user_id = #{userId},
+			username = #{username},
+			mobile = #{mobile},
+			mail = #{mail},
+			real_name = #{realName},
+			id_card = #{idCard},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_auto_trade_user
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteAll">
+		DELETE FROM mk_auto_trade_user where source = 'grant'
+	</update>
+	
+</mapper>

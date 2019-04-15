@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkTaskRecordDao">
+    
+	<sql id="mkTaskRecordColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.task_date AS "taskDate",
+		a.execute_time AS "executeTime",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.status AS "status",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkTaskRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="MkTaskRecord">
+		SELECT 
+			<include refid="mkTaskRecordColumns"/>
+		FROM mk_common_task_record a
+		<include refid="mkTaskRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkTaskRecord">
+		SELECT 
+			<include refid="mkTaskRecordColumns"/>
+		FROM mk_common_task_record a
+		<include refid="mkTaskRecordJoins"/>
+		<where>
+			
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="beginTaskDate != null and endTaskDate != null and beginTaskDate != '' and endTaskDate != ''">
+				AND a.task_date BETWEEN #{beginTaskDate} AND #{endTaskDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkTaskRecord">
+		SELECT 
+			<include refid="mkTaskRecordColumns"/>
+		FROM mk_common_task_record a
+		<include refid="mkTaskRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_common_task_record(
+			id,
+			type,
+			task_date,
+			coin_id,
+			coin_symbol,
+			volume,
+			status,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{type},
+			#{taskDate},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_common_task_record SET 	
+			type = #{type},
+			task_date = #{taskDate},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			status = #{status},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_common_task_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

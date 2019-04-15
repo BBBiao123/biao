@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportTradeDayDao">
+    
+	<sql id="reportTradeDayColumns">
+		a.id AS "id",
+		a.coin_main AS "coinMain",
+		a.coin_other AS "coinOther",
+		a.latest_price AS "latestPrice",
+		a.first_price AS "firstPrice",
+		a.highest_price AS "highestPrice",
+		a.lower_price AS "lowerPrice",
+		a.day_count AS "dayCount",
+		a.count_time AS "countTime",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="reportTradeDayJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportTradeDay">
+		SELECT 
+			<include refid="reportTradeDayColumns"/>
+		FROM report_trade_day a
+		<include refid="reportTradeDayJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportTradeDay">
+		SELECT 
+			<include refid="reportTradeDayColumns"/>
+		FROM report_trade_day a
+		<include refid="reportTradeDayJoins"/>
+		<where>
+			
+			<if test="coinMain != null and coinMain != ''">
+				AND a.coin_main = #{coinMain}
+			</if>
+			<if test="coinOther != null and coinOther != ''">
+				AND a.coin_other = #{coinOther}
+			</if>
+			<if test="countTime != null and countTime != ''">
+				AND a.count_time = #{countTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ReportTradeDay">
+		SELECT 
+			<include refid="reportTradeDayColumns"/>
+		FROM report_trade_day a
+		<include refid="reportTradeDayJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO report_trade_day(
+			id,
+			coin_main,
+			coin_other,
+			latest_price,
+			first_price,
+			highest_price,
+			lower_price,
+			day_count,
+			count_time,
+			create_by,
+			update_by,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{coinMain},
+			#{coinOther},
+			#{latestPrice},
+			#{firstPrice},
+			#{highestPrice},
+			#{lowerPrice},
+			#{dayCount},
+			#{countTime},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE report_trade_day SET 	
+			coin_main = #{coinMain},
+			coin_other = #{coinOther},
+			latest_price = #{latestPrice},
+			first_price = #{firstPrice},
+			highest_price = #{highestPrice},
+			lower_price = #{lowerPrice},
+			day_count = #{dayCount},
+			count_time = #{countTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM report_trade_day
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

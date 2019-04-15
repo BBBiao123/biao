@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkCommonPlatIncomeLogDao">
+    
+	<sql id="mkCommonPlatIncomeLogColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.id_card AS "idCard",
+		a.real_name AS "realName",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.begin_date AS "beginDate",
+		a.end_date AS "endDate",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="mkCommonPlatIncomeLogJoins">
+	</sql>
+    
+	<select id="get" resultType="MkCommonPlatIncomeLog">
+		SELECT 
+			<include refid="mkCommonPlatIncomeLogColumns"/>
+		FROM mk_common_plat_income_log a
+		<include refid="mkCommonPlatIncomeLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkCommonPlatIncomeLog">
+		SELECT 
+			<include refid="mkCommonPlatIncomeLogColumns"/>
+		FROM mk_common_plat_income_log a
+		<include refid="mkCommonPlatIncomeLogJoins"/>
+		<where>
+			
+			<if test="mail != null and mail != ''">
+				AND a.mail = #{mail}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol = #{coinSymbol}
+			</if>
+			<if test="beginBeginDate != null and endBeginDate != null and beginBeginDate != '' and endBeginDate != ''">
+				AND a.begin_date BETWEEN #{beginBeginDate} AND #{endBeginDate}
+			</if>
+			<if test="beginEndDate != null and endEndDate != null and beginEndDate != '' and endEndDate != ''">
+				AND a.end_date BETWEEN #{beginEndDate} AND #{endEndDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkCommonPlatIncomeLog">
+		SELECT 
+			<include refid="mkCommonPlatIncomeLogColumns"/>
+		FROM mk_common_plat_income_log a
+		<include refid="mkCommonPlatIncomeLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_common_plat_income_log(
+			id,
+			user_id,
+			mail,
+			mobile,
+			id_card,
+			real_name,
+			coin_id,
+			coin_symbol,
+			volume,
+			begin_date,
+			end_date,
+			status,
+			create_date,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{idCard},
+			#{realName},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{beginDate},
+			#{endDate},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_common_plat_income_log SET 	
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			id_card = #{idCard},
+			real_name = #{realName},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			begin_date = #{beginDate},
+			end_date = #{endDate},
+			status = #{status},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_common_plat_income_log
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

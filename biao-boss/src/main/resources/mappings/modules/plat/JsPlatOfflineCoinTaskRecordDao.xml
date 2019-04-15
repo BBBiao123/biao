@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.JsPlatOfflineCoinTaskRecordDao">
+    
+	<sql id="jsPlatOfflineCoinTaskRecordColumns">
+		a.id AS "id",
+		a.status AS "status",
+		a.symbol AS "symbol",
+		a.coin_id AS "coinId",
+		a.before_max_price AS "beforeMaxPrice",
+		a.before_min_price AS "beforeMinPrice",
+		a.day_inc_price AS "dayIncPrice",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="jsPlatOfflineCoinTaskRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="JsPlatOfflineCoinTaskRecord">
+		SELECT 
+			<include refid="jsPlatOfflineCoinTaskRecordColumns"/>
+		FROM js_plat_offline_coin_task_record a
+		<include refid="jsPlatOfflineCoinTaskRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JsPlatOfflineCoinTaskRecord">
+		SELECT 
+			<include refid="jsPlatOfflineCoinTaskRecordColumns"/>
+		FROM js_plat_offline_coin_task_record a
+		<include refid="jsPlatOfflineCoinTaskRecordJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JsPlatOfflineCoinTaskRecord">
+		SELECT 
+			<include refid="jsPlatOfflineCoinTaskRecordColumns"/>
+		FROM js_plat_offline_coin_task_record a
+		<include refid="jsPlatOfflineCoinTaskRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_offline_coin_task_record(
+			id,
+			status,
+			symbol,
+			coin_id,
+			before_max_price,
+			before_min_price,
+			day_inc_price,
+			remark,
+			create_date,
+			update_date,
+			create_by,
+			update_by
+		) VALUES (
+			#{id},
+			#{status},
+			#{symbol},
+			#{coinId},
+			#{beforeMaxPrice},
+			#{beforeMinPrice},
+			#{dayIncPrice},
+			#{remark},
+			#{createDate},
+			#{updateDate},
+			#{createBy},
+			#{updateBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_offline_coin_task_record SET 	
+			status = #{status},
+			symbol = #{symbol},
+			coin_id = #{coinId},
+			before_max_price = #{beforeMaxPrice},
+			before_min_price = #{beforeMinPrice},
+			day_inc_price = #{dayIncPrice},
+			remark = #{remark},
+			update_date = #{updateDate},
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_offline_coin_task_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

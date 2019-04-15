@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportPlatUserFinanceDao">
+
+	<sql id="reportPlatUserReconciliationColumns">
+
+		coin_symbol AS "coin_symbol",
+		 cbvolume as "cbvolume",
+		user_id as "user_id",
+		 tbvolume  as "tbvolume",
+		  yingkui  as "yingkui",
+		  real_name as "realName",
+		  mail as "mail",
+		  mobile as "mobile",
+		  id_card as "idCard"
+
+
+
+	</sql>
+	
+	<sql id="reportPlatUserReconciliationJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportPlatUserFinance">
+		SELECT 
+			<include refid="reportPlatUserReconciliationColumns"/>
+		FROM report_trade_day a
+		<include refid="reportPlatUserReconciliationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportPlatUserFinance">
+		SELECT
+			<include refid="reportPlatUserReconciliationColumns"/>
+		FROM
+		(
+		SELECT
+		t1.cbvolume,
+		0 AS tbvolume,
+		user_id,
+		coin_symbol
+		FROM
+		(
+		SELECT
+		coin_symbol,
+		sum(volume) AS cbvolume,
+		user_id
+		FROM
+		js_plat_user_deposit_log
+		WHERE
+		STATUS = 1
+		AND user_id IN  ( #{userId}) #查提币
+		GROUP BY
+		coin_symbol,
+		user_id
+		) t1
+		UNION
+		SELECT
+		0 AS cbvolume,
+		t2.tbvolume,
+		user_id,
+		coin_symbol
+		FROM
+		(
+		SELECT
+		coin_symbol,
+		sum(volume) AS tbvolume,
+		user_id
+		FROM
+		js_plat_user_withdraw_log
+		WHERE
+		STATUS = 3
+		AND user_id IN ( #{userId}) #查赠币
+		GROUP BY
+		coin_symbol,
+		user_id
+		) t2) t
+		GROUP BY
+		coin_symbol,
+		user_id
+	</select>
+	<!--<select id="addList" parameterType="hashmap" resultType="ReportPlatUserFinance" >-->
+
+		<!--SELECT-->
+		<!--<include refid="reportPlatUserReconciliationColumns"/>-->
+		<!--FROM-->
+		<!--(-->
+		<!--SELECT-->
+		<!--t1.cbvolume,-->
+		<!--0 AS tbvolume,-->
+		<!--user_id,-->
+		<!--coin_symbol-->
+		<!--FROM-->
+		<!--(-->
+		<!--SELECT-->
+		<!--coin_symbol,-->
+		<!--sum(volume) AS cbvolume,-->
+		<!--user_id-->
+		<!--FROM-->
+		<!--js_plat_user_deposit_log-->
+		<!--WHERE-->
+		<!--STATUS = 1-->
+		<!--AND user_id IN  <foreach collection="list" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>-->
+		<!--GROUP BY-->
+		<!--coin_symbol,-->
+		<!--user_id-->
+		<!--) t1-->
+		<!--UNION-->
+		<!--SELECT-->
+		<!--0 AS cbvolume,-->
+		<!--t2.tbvolume,-->
+		<!--user_id,-->
+		<!--coin_symbol-->
+		<!--FROM-->
+		<!--(-->
+		<!--SELECT-->
+		<!--coin_symbol,-->
+		<!--sum(volume) AS tbvolume,-->
+		<!--user_id-->
+		<!--FROM-->
+		<!--js_plat_user_withdraw_log-->
+		<!--WHERE-->
+		<!--STATUS = 3-->
+		<!--AND user_id IN <foreach collection="list" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>-->
+		<!--GROUP BY-->
+		<!--coin_symbol,-->
+		<!--user_id-->
+		<!--) t2) t-->
+		<!--GROUP BY-->
+		<!--coin_symbol,-->
+		<!--user_id-->
+		<!--<choose>-->
+			<!--<when test="page !=null and page.orderBy != null and page.orderBy != ''">-->
+				<!--ORDER BY ${page.orderBy}-->
+			<!--</when>-->
+			<!--<otherwise>-->
+
+			<!--</otherwise>-->
+		<!--</choose>-->
+    <!--</select>-->
+	<select id="addList" parameterType="hashmap" resultType="ReportPlatUserFinance" >
+
+		SELECT
+		<include refid="reportPlatUserReconciliationColumns"/>
+		FROM
+		(SELECT
+		coin_symbol AS "coin_symbol",
+		SUM(cbvolume) AS "cbvolume",
+		user_id AS "user_id",
+		SUM(tbvolume) AS "tbvolume",
+		SUM(cbvolume - tbvolume) yingkui
+		FROM
+		(
+		SELECT
+		coin_symbol,
+		volume AS cbvolume,
+		0 AS tbvolume,
+		user_id
+		FROM
+		js_plat_user_deposit_log
+		WHERE
+		STATUS = 1
+		AND user_id IN   <foreach collection="list" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+		UNION ALL
+		SELECT
+		coin_symbol,
+		0 AS cbvolume,
+		volume  AS tbvolume,
+		user_id
+		FROM
+		js_plat_user_withdraw_log
+		WHERE
+		STATUS = 3
+		AND user_id IN <foreach collection="list" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+		) t
+		GROUP BY
+		coin_symbol,
+		user_id) tt ,js_plat_user tt2 where tt.user_id=tt2.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

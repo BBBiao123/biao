@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.MkDistributeDividendDetailDao">
+    
+	<sql id="mkDistributeDividendDetailColumns">
+		a.id AS "id",
+		a.dividend_id AS "dividendId",
+		a.percentage AS "percentage",
+		a.account_type AS "accountType",
+		a.user_id AS "userId",
+		a.username AS "username",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="mkDistributeDividendDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="MkDistributeDividendDetail">
+		SELECT 
+			<include refid="mkDistributeDividendDetailColumns"/>
+		FROM mk_distribute_dividend_detail a
+		<include refid="mkDistributeDividendDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MkDistributeDividendDetail">
+		SELECT 
+			<include refid="mkDistributeDividendDetailColumns"/>
+		FROM mk_distribute_dividend_detail a
+		<include refid="mkDistributeDividendDetailJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MkDistributeDividendDetail">
+		SELECT 
+			<include refid="mkDistributeDividendDetailColumns"/>
+		FROM mk_distribute_dividend_detail a
+		<include refid="mkDistributeDividendDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mk_distribute_dividend_detail(
+			id,
+			dividend_id,
+			percentage,
+			account_type,
+			user_id,
+			username,
+			remark
+		) VALUES (
+			#{id},
+			#{dividendId},
+			#{percentage},
+			#{accountType},
+			#{userId},
+			#{username},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mk_distribute_dividend_detail SET 	
+			id = #{id},
+			dividend_id = #{dividendId},
+			percentage = #{percentage},
+			account_type = #{accountType},
+			user_id = #{userId},
+			username = #{username},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mk_distribute_dividend_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

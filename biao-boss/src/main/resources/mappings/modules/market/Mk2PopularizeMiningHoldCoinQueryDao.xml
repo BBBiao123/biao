@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.market.dao.Mk2PopularizeMiningHoldCoinQueryDao">
+
+	<select id="findListByUserId" resultType="Mk2PopularizeMiningHoldCoinQuery">
+		SELECT '个人持币量' AS type, c.volume AS holdVolume, (SELECT l.count_date FROM mk2_popularize_mining_task_log l ORDER BY l.count_date DESC LIMIT 1) AS countDate
+		  FROM mk2_popularize_mining_user_coin_bak c
+		 WHERE c.user_id = #{userId}
+
+		UNION ALL
+
+		SELECT '团队持币量' AS type, sum(c.volume) AS holdVolume, (SELECT l.count_date FROM mk2_popularize_mining_task_log l ORDER BY l.count_date DESC LIMIT 1) AS countDate
+		  FROM mk_common_user_relation t, mk2_popularize_mining_user_coin_bak c
+		 WHERE t.user_id = c.user_id AND t.tree_id = CONCAT(#{userId},',') AND t.user_id != #{userId}
+	</select>
+
+</mapper>

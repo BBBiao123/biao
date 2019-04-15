@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportTradePriceRangeDao">
+    
+	<sql id="reportOfflineFeeColumns">
+		type AS "type",
+		sum(number) AS "number",
+		truncate(sum(fee),2) AS "fee"
+	</sql>
+	
+	<sql id="reportOfflineFeeJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportTradePriceRange">
+		SELECT 
+			<include refid="reportOfflineFeeColumns"/>
+		FROM report_trade_day a
+		<include refid="reportOfflineFeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportTradePriceRange">
+SELECT
+	'卖' AS "type",
+	t.price_range AS "priceRange",
+	sum(
+		t.ask_volume - t.success_volume
+	) AS "volume"
+FROM
+	(
+		SELECT
+			CASE
+		WHEN price >= 0.02
+		AND Price &lt; 0.03 THEN
+			'0.03'
+		WHEN price >= 0.03
+		AND Price &lt; 0.04 THEN
+			'0.04'
+		WHEN price >= 0.04
+		AND Price &lt; 0.05 THEN
+			'0.05'
+		WHEN price >= 0.05
+		AND Price &lt; 0.06 THEN
+			'0.06'
+		WHEN price >= 0.06
+		AND Price &lt; 0.07 THEN
+			'0.07'
+		WHEN Price >= 0.07
+		AND Price &lt; 0.08 THEN
+			'0.08'
+		WHEN Price >= 0.08
+		AND Price &lt; 0.09 THEN
+			'0.09'
+		WHEN Price >= 0.09
+		AND Price &lt; 0.10 THEN
+			'0.10'
+		WHEN price >= 0.10
+		AND Price &lt; 0.11 THEN
+			'0.11'
+		WHEN price >= 0.11
+		AND Price &lt; 0.12 THEN
+			'0.12'
+		WHEN price >= 0.12
+		AND Price &lt; 0.13 THEN
+			'0.13'
+		WHEN price >= 0.13
+		AND Price &lt; 0.14 THEN
+			'0.14'
+		WHEN price >= 0.14
+		AND Price &lt; 0.15 THEN
+			'0.15'
+		WHEN price >= 0.15
+		AND Price &lt; 0.16 THEN
+			'0.16'
+		WHEN price >= 0.16
+		AND Price &lt; 0.17 THEN
+			'0.17'
+		WHEN Price >= 0.17
+		AND Price &lt; 0.18 THEN
+			'0.18'
+		WHEN Price >= 0.18
+		AND Price &lt; 0.19 THEN
+			'0.19'
+		WHEN Price >= 0.19
+		AND Price &lt; 0.20 THEN
+			'0.20'
+		ELSE
+			'0.20+'
+		END AS price_range,
+		o.*
+	FROM
+		js_plat_ex_order o
+	WHERE
+		ex_type = 1
+	AND `status` IN (0, 1)
+	AND user_id NOT IN (
+		SELECT
+			id
+		FROM
+			js_plat_user
+		WHERE
+			tag = 'FM'
+		OR tag = 'YS001'
+		OR tag = 'UES-TRADER'
+	)
+	AND coin_symbol = 'UES'
+	) t
+GROUP BY
+	t.price_range
+UNION ALL
+	SELECT
+		'买' AS "type",
+		t.price_range AS "priceRange",
+		sum(
+			t.ask_volume - t.success_volume
+		) AS "volume"
+	FROM
+		(
+			SELECT
+				CASE
+			WHEN price >= 0.02
+			AND Price &lt; 0.03 THEN
+				'0.03'
+			WHEN price >= 0.03
+			AND Price &lt; 0.04 THEN
+				'0.04'
+			WHEN price >= 0.04
+			AND Price &lt; 0.05 THEN
+				'0.05'
+			WHEN price >= 0.05
+			AND Price &lt; 0.06 THEN
+				'0.06'
+			WHEN price >= 0.06
+			AND Price &lt; 0.07 THEN
+				'0.07'
+			WHEN Price >= 0.07
+			AND Price &lt; 0.08 THEN
+				'0.08'
+			WHEN Price >= 0.08
+			AND Price &lt; 0.09 THEN
+				'0.09'
+			WHEN Price >= 0.09
+			AND Price &lt; 0.10 THEN
+				'0.10'
+			WHEN price >= 0.10
+			AND Price &lt; 0.11 THEN
+				'0.11'
+			WHEN price >= 0.11
+			AND Price &lt; 0.12 THEN
+				'0.12'
+			WHEN price >= 0.12
+			AND Price &lt; 0.13 THEN
+				'0.13'
+			WHEN price >= 0.13
+			AND Price &lt; 0.14 THEN
+				'0.14'
+			WHEN price >= 0.14
+			AND Price &lt; 0.15 THEN
+				'0.15'
+			WHEN price >= 0.15
+			AND Price &lt; 0.16 THEN
+				'0.16'
+			WHEN price >= 0.16
+			AND Price &lt; 0.17 THEN
+				'0.17'
+			WHEN Price >= 0.17
+			AND Price &lt; 0.18 THEN
+				'0.18'
+			WHEN Price >= 0.18
+			AND Price &lt; 0.19 THEN
+				'0.19'
+			WHEN Price >= 0.19
+			AND Price &lt; 0.20 THEN
+				'0.20'
+			ELSE
+				'0.20+'
+			END AS price_range,
+			o.*
+		FROM
+			js_plat_ex_order o
+		WHERE
+			ex_type = 0
+		AND `status` IN (0, 1)
+		AND user_id NOT IN (
+			SELECT
+				id
+			FROM
+				js_plat_user
+			WHERE
+				tag = 'FM'
+			OR tag = 'YS001'
+			OR tag = 'UES-TRADER'
+		)
+		AND coin_symbol = 'EUC'
+		) t
+	GROUP BY
+		t.price_range
+	</select>
+	
+	<select id="findAllList" resultType="ReportTradePriceRange">
+		SELECT 
+			<include refid="reportOfflineFeeColumns"/>
+		FROM report_trade_day a
+		<include refid="reportOfflineFeeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY dayTime DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.PlatUserDao">
+
+    <sql id="platUserColumns">
+		a.id AS "id",
+		a.username AS "username",
+		a.password AS "password",
+		a.user_type AS "userType",
+		a.status AS "status",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.ex_password AS "exPassword",
+		a.google_auth AS "googleAuth",
+		a.sex AS "sex",
+		a.age AS "age",
+		a.invite_code AS "inviteCode",
+		a.refer_invite_code AS "referInviteCode",
+		a.real_name AS "realName",
+		a.id_card AS "idCard",
+		a.card_up_id AS "cardUpId",
+		a.card_down_id AS "cardDownId",
+		a.card_face_id AS "cardFaceId",
+		a.card_status AS "cardStatus",
+		a.card_status_reason AS "cardStatusReason",
+		a.open_discount AS "openDiscount",
+		a.remarks AS "remarks",
+		a.country_id AS "countryId",
+		a.country_code AS "countryCode",
+		a.wechat_no AS "wechatNo",
+		a.wechat_qrcode_id AS "wechatQrcodeId",
+		a.alipay_no AS "alipayNo",
+		a.alipay_qrcode_id AS "alipayQrcodeId",
+		a.refer_id AS "referId",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.c2c_in AS c2cIn,
+		a.c2c_out AS c2cOut,
+		a.coin_out AS  coinOut,
+		a.c2c_publish as c2cPublish,
+		a.tag as tag,
+		a.card_level as cardLevel,
+		a.card_status_check_time as cardStatusCheckTime,
+		a.source as source,
+		a.c2c_change as c2cChange,
+		a.c2c_switch as c2cSwitch,
+		a.trade_switch as tradeSwitch,
+		a.lock_date as lockDate
+	</sql>
+
+    <sql id="platUserJoins">
+    </sql>
+
+    <select id="get" resultType="PlatUser">
+        SELECT
+        <include refid="platUserColumns"/>
+        FROM js_plat_user a
+        <include refid="platUserJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+	<select id="findBySource" resultType="PlatUser">
+		SELECT
+		<include refid="platUserColumns"/>
+		FROM js_plat_user a
+		WHERE a.source = #{source}
+		and a.status = 0
+	</select>
+
+    <select id="findList" resultType="PlatUser">
+        SELECT
+        <include refid="platUserColumns"/>
+        FROM js_plat_user a
+        <include refid="platUserJoins"/>
+        <where>
+
+            <if test="username != null and username != ''">
+                AND a.username = #{username}
+            </if>
+            <if test="mobile != null and mobile != ''">
+                AND a.mobile like concat('%',#{mobile},'%')
+            </if>
+            <if test="realName != null and realName != ''">
+                AND a.real_name like concat('%',#{realName},'%')
+            </if>
+            <if test="cardStatus != null and cardStatus != ''">
+                AND a.card_status like concat('%',#{cardStatus},'%')
+            </if>
+            <if test="mail != null and mail != ''">
+                AND a.mail like concat('%',#{mail},'%')
+            </if>
+            <if test="startTime != null">
+                <![CDATA[AND a.create_date >= #{startTime}]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[AND a.create_date <= #{endTime}]]>
+            </if>
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    
+    
+    <select id="findOne" resultType="PlatUser">
+        SELECT
+        <include refid="platUserColumns"/>
+        FROM js_plat_user a
+        <include refid="platUserJoins"/>
+        <where>
+            <if test="username != null and username != ''">
+                AND a.username = #{username}
+            </if>
+            <if test="mobile != null and mobile != ''">
+                AND a.mobile = #{mobile}
+            </if>
+            <if test="mail != null and mail != ''">
+                AND a.mail = #{mail}
+            </if>
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="PlatUser">
+        SELECT
+        <include refid="platUserColumns"/>
+        FROM js_plat_user a
+        <include refid="platUserJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO js_plat_user(
+			id,
+			username,
+			password,
+			user_type,
+			status,
+			mobile,
+			mail,
+			ex_password,
+			google_auth,
+			sex,
+			age,
+			invite_code,
+			real_name,
+			id_card,
+			card_up_id,
+			card_down_id,
+			card_face_id,
+			card_status,
+			card_status_reason,
+			open_discount,
+			remarks,
+			country_id,
+			country_code,
+			wechat_no,
+			wechat_qrcode_id,
+			alipay_no,
+			alipay_qrcode_id,
+			refer_id,
+			create_date,
+			update_date,
+			create_by,
+			update_by,
+			c2c_in,
+			c2c_out,
+			coin_out,
+			c2c_publish,
+			source,
+			c2c_change,
+			c2c_switch,
+			trade_switch,
+			lock_date
+		) VALUES (
+			#{id},
+			#{username},
+			#{password},
+			#{userType},
+			#{status},
+			#{mobile},
+			#{mail},
+			#{exPassword},
+			#{googleAuth},
+			#{sex},
+			#{age},
+			#{inviteCode},
+			#{realName},
+			#{idCard},
+			#{cardUpId},
+			#{cardDownId},
+			#{cardFaceId},
+			#{cardStatus},
+			#{cardStatusReason},
+			#{openDiscount},
+			#{remarks},
+			#{countryId},
+			#{countryCode},
+			#{wechatNo},
+			#{wechatQrcodeId},
+			#{alipayNo},
+			#{alipayQrcodeId},
+			#{referId},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{c2cIn},
+			#{c2cOut},
+			#{coinOut},
+			#{c2cPublish},
+			#{source},
+			#{c2cChange},
+			#{c2cSwitch},
+			#{tradeSwitch},
+			#{lockDate}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE js_plat_user SET 	
+			username = #{username},
+			password = #{password},
+			user_type = #{userType},
+			status = #{status},
+			mobile = #{mobile},
+			mail = #{mail},
+			ex_password = #{exPassword},
+			google_auth = #{googleAuth},
+			sex = #{sex},
+			age = #{age},
+			invite_code = #{inviteCode},
+			real_name = #{realName},
+			<choose>
+		        <when test="idCard !=null and idCard != '' ">
+		            id_card = #{idCard},
+		        </when>
+		        <otherwise>
+		            id_card = null,
+		        </otherwise>
+		    </choose>
+			card_up_id = #{cardUpId},
+			card_down_id = #{cardDownId},
+			card_face_id = #{cardFaceId},
+			card_status = #{cardStatus},
+			card_status_reason = #{cardStatusReason},
+			card_level = #{cardLevel},
+			card_status_check_time = #{cardStatusCheckTime},
+			open_discount = #{openDiscount},
+			remarks = #{remarks},
+			country_id = #{countryId},
+			country_code = #{countryCode},
+			wechat_no = #{wechatNo},
+			wechat_qrcode_id = #{wechatQrcodeId},
+			alipay_no = #{alipayNo},
+			alipay_qrcode_id = #{alipayQrcodeId},
+			refer_id = #{referId},
+			update_date = #{updateDate},
+			audit_date = #{auditDate},
+			update_by = #{updateBy.id},
+			c2c_in    = #{c2cIn},
+			c2c_Out    = #{c2cOut},
+			coin_out  = #{coinOut},
+			c2c_publish = #{c2cPublish},
+			source = #{source},
+			tag = #{tag},
+			c2c_change = #{c2cChange},
+			c2c_switch = #{c2cSwitch},
+			trade_switch = #{tradeSwitch},
+			lock_date = #{lockDate}
+		WHERE id = #{id}
+	</update>
+
+
+    <update id="delete">
+		DELETE FROM js_plat_user
+		WHERE id = #{id}
+	</update>
+
+</mapper>

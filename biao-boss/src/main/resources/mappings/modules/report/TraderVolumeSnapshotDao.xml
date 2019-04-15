@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.TraderVolumeSnapshotDao">
+    
+	<sql id="traderVolumeSnapshotColumns">
+		a.id AS "id",
+		a.snap_date AS "snapDate",
+		a.user_id AS "userId",
+		a.user_tag AS "userTag",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.trade_volume AS "tradeVolume",
+		a.offline_volume AS "offlineVolume",
+		a.lock_volume AS "lockVolume",
+		a.total_volume AS "totalVolume",
+		a.bill_sum_volume AS "billSumVolume",
+		a.balance AS "balance",
+		a.bobi_volume AS "bobiVolume",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy"
+	</sql>
+	
+	<sql id="traderVolumeSnapshotJoins">
+		LEFT JOIN sys_user u3 ON u3.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="TraderVolumeSnapshot">
+		SELECT 
+			<include refid="traderVolumeSnapshotColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="traderVolumeSnapshotJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TraderVolumeSnapshot">
+		SELECT 
+			<include refid="traderVolumeSnapshotColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="traderVolumeSnapshotJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="userTag != null and userTag != ''">
+				AND a.user_tag = #{userTag}
+			</if>
+			<if test="snapDate != null and snapDate != ''">
+				AND a.snap_date = #{snapDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TraderVolumeSnapshot">
+		SELECT 
+			<include refid="traderVolumeSnapshotColumns"/>
+		FROM js_plat_trader_volume_snapshot a
+		<include refid="traderVolumeSnapshotJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO js_plat_trader_volume_snapshot(
+			id,
+			snap_date,
+			user_id,
+			user_tag,
+			coin_id,
+			coin_symbol,
+			trade_volume,
+			offline_volume,
+			lock_volume,
+			total_volume,
+			bill_sum_volume,
+			balance,
+			bobi_volume,
+			remark,
+			create_date,
+			create_by
+		) VALUES (
+			#{id},
+			#{snapDate},
+			#{userId},
+			#{userTag},
+			#{coinId},
+			#{coinSymbol},
+			#{tradeVolume},
+			#{offlineVolume},
+			#{lockVolume},
+			#{totalVolume},
+			#{billSumVolume},
+			#{balance},
+			#{bobiVolume},
+			#{remark},
+			#{createDate},
+			#{createBy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE js_plat_trader_volume_snapshot SET 	
+			snap_date = #{snapDate},
+			user_id = #{userId},
+			user_tag = #{userTag},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			trade_volume = #{tradeVolume},
+			offline_volume = #{offlineVolume},
+			lock_volume = #{lockVolume},
+			total_volume = #{totalVolume},
+			bill_sum_volume = #{billSumVolume},
+			balance = #{balance},
+			bobi_volume = #{bobiVolume},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM js_plat_trader_volume_snapshot
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

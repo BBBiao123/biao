@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.otc.dao.OtcAgentApplyUserDao">
+    
+	<sql id="otcAgentApplyUserColumns">
+		a.id AS "id",
+		a.agent_id AS "agentId",
+		a.agent_name AS "agentName",
+		a.apply_id AS "applyId",
+		a.status AS "status",
+		a.percentage AS "percentage",
+		a.coin_id AS "coinId",
+		a.coin_symbol AS "coinSymbol",
+		a.volume AS "volume",
+		a.user_id AS "userId",
+		a.mail AS "mail",
+		a.mobile AS "mobile",
+		a.real_name AS "realName",
+		a.remark AS "remark",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy",
+		a.update_by AS "updateBy"
+	</sql>
+	
+	<sql id="otcAgentApplyUserJoins">
+		LEFT JOIN sys_user u10 ON u10.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="OtcAgentApplyUser">
+		SELECT 
+			<include refid="otcAgentApplyUserColumns"/>
+		FROM otc_agent_apply_user a
+		<include refid="otcAgentApplyUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByApplyIdAndUserId" resultType="OtcAgentApplyUser">
+		SELECT
+		<include refid="otcAgentApplyUserColumns"/>
+		FROM otc_agent_apply_user a
+		<include refid="otcAgentApplyUserJoins"/>
+		WHERE a.apply_id = #{applyId}
+		  AND a.user_id = #{userId}
+	</select>
+	
+	<select id="findList" resultType="OtcAgentApplyUser">
+		SELECT 
+			<include refid="otcAgentApplyUserColumns"/>
+		FROM otc_agent_apply_user a
+		<include refid="otcAgentApplyUserJoins"/>
+		<where>
+
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="agentName != null and agentName != ''">
+				AND a.agent_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{agentName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{agentName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{agentName},'%')</if>
+			</if>
+			<if test="applyId != null and applyId != ''">
+				AND a.apply_id = #{applyId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mail}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mail}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mail},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OtcAgentApplyUser">
+		SELECT 
+			<include refid="otcAgentApplyUserColumns"/>
+		FROM otc_agent_apply_user a
+		<include refid="otcAgentApplyUserJoins"/>
+		<where>
+			<if test="applyId != null and applyId != ''">
+				AND a.apply_id = #{applyId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO otc_agent_apply_user(
+			id,
+			agent_id,
+			agent_name,
+			apply_id,
+			status,
+			percentage,
+			coin_id,
+			coin_symbol,
+			volume,
+			user_id,
+			mail,
+			mobile,
+			real_name,
+			remark,
+			create_date,
+			update_date
+		) VALUES (
+			#{id},
+			#{agentId},
+			#{agentName},
+			#{applyId},
+			#{status},
+			#{percentage},
+			#{coinId},
+			#{coinSymbol},
+			#{volume},
+			#{userId},
+			#{mail},
+			#{mobile},
+			#{realName},
+			#{remark},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE otc_agent_apply_user SET 	
+			agent_id = #{agentId},
+			agent_name = #{agentName},
+			apply_id = #{applyId},
+			status = #{status},
+			percentage = #{percentage},
+			coin_id = #{coinId},
+			coin_symbol = #{coinSymbol},
+			volume = #{volume},
+			user_id = #{userId},
+			mail = #{mail},
+			mobile = #{mobile},
+			real_name = #{realName},
+			remark = #{remark},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM otc_agent_apply_user
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

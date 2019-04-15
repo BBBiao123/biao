@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportOfflineFeeDao">
+    
+	<sql id="reportOfflineFeeColumns">
+		type AS "type",
+		sum(number) AS "number",
+		truncate(sum(fee),2) AS "fee"
+	</sql>
+	
+	<sql id="reportOfflineFeeJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportOfflineFee">
+		SELECT 
+			<include refid="reportOfflineFeeColumns"/>
+		FROM report_trade_day a
+		<include refid="reportOfflineFeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReportOfflineFee">
+		SELECT 
+			<include refid="reportOfflineFeeColumns"/>
+		FROM
+		(
+		SELECT
+		'会员' AS type,
+		count(*) AS number,
+		sum(fee_volume) AS fee
+		FROM
+		js_plat_offline_order
+		WHERE
+		fee_volume > 0
+		<if test="beginCreateDate != null and beginCreateDate != ''">
+			AND create_date > #{beginCreateDate}
+		</if>
+		<if test="endCreateDate != null and endCreateDate != ''">
+			AND create_date &lt; date_sub(#{endCreateDateStr},interval -1 day)
+		</if>
+		UNION ALL
+		SELECT
+		'银商' AS type,
+		count(*) AS number,
+		count(*) * 20 AS fee
+		FROM
+		js_plat_offline_order
+		WHERE
+		volume &lt;= 10000
+		<if test="beginCreateDate != null and beginCreateDate != ''">
+			AND create_date > #{beginCreateDate}
+		</if>
+		<if test="endCreateDate != null and endCreateDate != ''">
+			AND create_date &lt; date_sub(#{endCreateDateStr},interval -1 day)
+		</if>
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		WHERE
+		tag = 'FM'
+		OR tag like concat('','YS','%')
+		)
+		UNION ALL
+		SELECT
+		'银商' AS type,
+		count(*) AS number,
+		count(*) * 40 AS fee
+		FROM
+		js_plat_offline_order
+		WHERE
+		volume > 10000
+		<if test="beginCreateDate != null and beginCreateDate != ''">
+			AND create_date > #{beginCreateDate}
+		</if>
+		<if test="endCreateDate != null and endCreateDate != ''">
+			AND create_date &lt; date_sub(#{endCreateDateStr},interval -1 day)
+		</if>
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		WHERE
+		tag = 'FM'
+		OR tag like concat('','YS','%')
+		)
+		) t
+		GROUP BY
+		type
+		UNION ALL
+		SELECT
+		'合计' AS type,
+		sum(number) AS number,
+		TRUNCATE (sum(fee), 2) AS fee
+		FROM
+		(
+		SELECT
+		'会员' AS type,
+		count(*) AS number,
+		sum(fee_volume) AS fee
+		FROM
+		js_plat_offline_order
+		WHERE
+		fee_volume > 0
+		<if test="beginCreateDate != null and beginCreateDate != ''">
+			AND create_date > #{beginCreateDate}
+		</if>
+		<if test="endCreateDate != null and endCreateDate != ''">
+			AND create_date &lt; date_sub(#{endCreateDateStr},interval -1 day)
+		</if>
+
+		UNION ALL
+		SELECT
+		'银商' AS type,
+		count(*) AS number,
+		count(*) * 20 AS fee
+		FROM
+		js_plat_offline_order
+		WHERE
+		volume &lt;= 10000
+		<if test="beginCreateDate != null and beginCreateDate != ''">
+			AND create_date > #{beginCreateDate}
+		</if>
+		<if test="endCreateDate != null and endCreateDate != ''">
+			AND create_date &lt; date_sub(#{endCreateDateStr},interval -1 day)
+		</if>
+
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		WHERE
+		tag = 'FM'
+		OR tag like concat('','YS','%')
+		)
+		UNION ALL
+		SELECT
+		'银商' AS type,
+		count(*) AS number,
+		count(*) * 40 AS fee
+		FROM
+		js_plat_offline_order
+		WHERE
+		volume > 10000
+		<if test="beginCreateDate != null and beginCreateDate != ''">
+			AND create_date > #{beginCreateDate}
+		</if>
+		<if test="endCreateDate != null and endCreateDate != ''">
+			AND create_date &lt; date_sub(#{endCreateDateStr},interval -1 day)
+		</if>
+		AND user_id IN (
+		SELECT
+		id
+		FROM
+		js_plat_user
+		WHERE
+		tag = 'FM'
+		OR tag like concat('','YS','%')
+		)
+		) t
+
+	</select>
+	
+	<select id="findAllList" resultType="ReportOfflineFee">
+		SELECT 
+			<include refid="reportOfflineFeeColumns"/>
+		FROM report_trade_day a
+		<include refid="reportOfflineFeeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY dayTime DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

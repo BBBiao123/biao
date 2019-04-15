@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.EmailTemplateDao">
+    
+	<sql id="emailTemplateColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.code AS "code",
+		a.business_type AS "businessType",
+		a.template_subject AS "templateSubject",
+		a.template_content AS "templateContent",
+		a.remarks AS "remarks",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.del_flag AS "delFlag",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.expire_time AS "expireTime"
+	</sql>
+	
+	<sql id="emailTemplateJoins">
+	</sql>
+    
+	<select id="get" resultType="EmailTemplate">
+		SELECT 
+			<include refid="emailTemplateColumns"/>
+		FROM email_template a
+		<include refid="emailTemplateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="EmailTemplate">
+		SELECT 
+			<include refid="emailTemplateColumns"/>
+		FROM email_template a
+		<include refid="emailTemplateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EmailTemplate">
+		SELECT 
+			<include refid="emailTemplateColumns"/>
+		FROM email_template a
+		<include refid="emailTemplateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO email_template(
+			id,
+			name,
+			code,
+			business_type,
+			template_subject,
+			template_content,
+			remarks,
+			update_by,
+			create_date,
+			del_flag,
+			create_by,
+			update_date,
+			expire_time
+		) VALUES (
+			#{id},
+			#{name},
+			#{code},
+			#{businessType},
+			#{templateSubject},
+			#{templateContent},
+			#{remarks},
+			#{updateBy.id},
+			#{createDate},
+			#{delFlag},
+			#{createBy.id},
+			#{updateDate},
+			#{expireTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE email_template SET 	
+			name = #{name},
+			code = #{code},
+			business_type = #{businessType},
+			template_subject = #{templateSubject},
+			template_content = #{templateContent},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			expire_time = #{expireTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE email_template SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
