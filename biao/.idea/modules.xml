@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/biao/biao.iml" filepath="$PROJECT_DIR$/biao/biao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-bomb/biao-bomb.iml" filepath="$PROJECT_DIR$/biao/biao-bomb/biao-bomb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-common/biao-common.iml" filepath="$PROJECT_DIR$/biao/biao-common/biao-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-configuration/biao-configuration.iml" filepath="$PROJECT_DIR$/biao/biao-configuration/biao-configuration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-etracker/biao-etracker.iml" filepath="$PROJECT_DIR$/biao/biao-etracker/biao-etracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-im/biao-im.iml" filepath="$PROJECT_DIR$/biao/biao-im/biao-im.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-kline/biao-kline.iml" filepath="$PROJECT_DIR$/biao/biao-kline/biao-kline.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-mysql/biao-mysql.iml" filepath="$PROJECT_DIR$/biao/biao-mysql/biao-mysql.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-neo4j/biao-neo4j.iml" filepath="$PROJECT_DIR$/biao/biao-neo4j/biao-neo4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-photo/biao-photo.iml" filepath="$PROJECT_DIR$/biao/biao-photo/biao-photo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-plat/biao-plat.iml" filepath="$PROJECT_DIR$/biao/biao-plat/biao-plat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-reactive-data/biao-reactive-data.iml" filepath="$PROJECT_DIR$/biao/biao-reactive-data/biao-reactive-data.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-robot-unsafe/biao-robot-unsafe.iml" filepath="$PROJECT_DIR$/biao/biao-robot-unsafe/biao-robot-unsafe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-task/biao-task.iml" filepath="$PROJECT_DIR$/biao/biao-task/biao-task.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-trade/biao-trade.iml" filepath="$PROJECT_DIR$/biao/biao-trade/biao-trade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-usdtTracker/biao-usdtTracker.iml" filepath="$PROJECT_DIR$/biao/biao-usdtTracker/biao-usdtTracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/biao/biao-websocket/biao-websocket.iml" filepath="$PROJECT_DIR$/biao/biao-websocket/biao-websocket.iml" />
+    </modules>
+  </component>
+</project>

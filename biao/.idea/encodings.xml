@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" addBOMForNewFiles="with NO BOM">
+    <file url="file://$PROJECT_DIR$/biao" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-bomb" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-configuration" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-etracker" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-im" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-kline" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-mysql" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-neo4j" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-photo" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-plat" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-reactive-data" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-robot-unsafe" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-task" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-trade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-usdtTracker" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/biao/biao-websocket" charset="UTF-8" />
+  </component>
+</project>

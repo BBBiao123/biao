@@ -1,0 +1,1061 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="773eb77d-f37b-41c3-adb5-66753ec6bded" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/biao/biao-bomb/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-bomb/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-common/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-common/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-common/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-common/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-etracker/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-etracker/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-im/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-im/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-im/src/main/resources/jim.properties" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-im/src/main/resources/jim.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-kline/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-kline/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-photo/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-photo/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/CustomerTradeAccessDeniedHandlerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/CustomerTradeAccessDeniedHandlerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-plat/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-plat/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-robot-unsafe/src/main/resources/config/robot.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-robot-unsafe/src/main/resources/config/robot.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-task/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-task/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/TradeApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/TradeApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-trade/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-trade/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-trade/src/main/test/com/bbex/previous/BuyTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-trade/src/main/test/com/bbex/previous/BuyTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-usdtTracker/src/main/java/com/biao/UsdtTrackerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-usdtTracker/src/main/java/com/biao/UsdtTrackerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-usdtTracker/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-usdtTracker/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-websocket/src/main/java/com/biao/handler/PlatDataHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-websocket/src/main/java/com/biao/handler/PlatDataHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/biao-websocket/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/biao/biao-websocket/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biao/jeesite-biao.properties" beforeDir="false" afterPath="$PROJECT_DIR$/biao/jeesite-biao.properties" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/biao/biao-websocket/target/" />
+    <ignored path="$PROJECT_DIR$/biao/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-reactive-data/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-neo4j/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-kline/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-photo/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-im/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-trade/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-configuration/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-usdtTracker/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-bomb/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-mysql/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-robot-unsafe/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-common/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-etracker/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-task/target/" />
+    <ignored path="$PROJECT_DIR$/biao/biao-plat/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="biao" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/PlatUserController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="257">
+              <caret line="95" column="14" lean-forward="true" selection-start-line="95" selection-start-column="14" selection-end-line="95" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/DepositController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2850">
+              <caret line="167" column="92" selection-start-line="167" selection-start-column="92" selection-end-line="167" selection-end-column="92" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/DepositLogService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="247">
+              <caret line="16" column="34" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/WithdrawController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3021">
+              <caret line="181" column="94" selection-start-line="181" selection-start-column="94" selection-end-line="181" selection-end-column="94" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/WithdrawLogServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2698">
+              <caret line="175" column="48" selection-start-line="175" selection-start-column="48" selection-end-line="175" selection-end-column="48" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/mapper/WithdrawLogDao.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="228">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/DepositLogServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="418">
+              <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/PlatUserServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="969">
+              <caret line="106" column="39" selection-start-line="106" selection-start-column="39" selection-end-line="106" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/constant/RedisConstants.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="76">
+              <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>CustomerTradeAccessDeniedHandlerImpl</find>
+      <find>oa</find>
+      <find>spring</find>
+      <find>1.0-</find>
+      <find>httpsec</find>
+      <find>).then</find>
+      <find>fromIterable</find>
+      <find>.interval</find>
+      <find>/user/login</find>
+      <find>用户不存在</find>
+      <find>10001000</find>
+      <find>登录成</find>
+      <find>setRequiresAuthenticationMatcher</find>
+      <find>stringRedisTemplate</find>
+      <find>RedisSessionUser</find>
+      <find>EnableWebFluxSecurity</find>
+      <find>ReactiveUserDetailsService</find>
+      <find>userDetailsService</find>
+      <find>requiresAuthenticationMatcher</find>
+      <find>aliyun.authenticatesig</find>
+      <find>aliYunAuthenticateSigConfig</find>
+      <find>passwordEncoder</find>
+      <find>errMsg</find>
+      <find>TRADE_KAFKA_TOPIC</find>
+      <find>撮合</find>
+      <find>buyI</find>
+      <find>/lastPrice</find>
+      <find>deposit/list</find>
+      <find>/withdraw/list</find>
+      <find>open=&quot;(&quot; separator=&quot;,&quot; close=&quot;)</find>
+    </findStrings>
+    <replaceStrings>
+      <replace />
+    </replaceStrings>
+    <dirStrings>
+      <dir>D:\biao\biao\biao-plat\target\classes</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/biao" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/biao/biao-kline/src/main/java/com/biao/controller/KlineController.java" />
+        <option value="$PROJECT_DIR$/biao/biao-usdtTracker/src/main/java/com/biao/UsdtTrackerApplication.java" />
+        <option value="$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/Tools.java" />
+        <option value="$PROJECT_DIR$/biao/biao-photo/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-im/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-task/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-usdtTracker/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-websocket/src/main/java/com/biao/constant/WebsocketConstant.java" />
+        <option value="$PROJECT_DIR$/biao/biao-etracker/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-bomb/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/jeesite-biao.properties" />
+        <option value="$PROJECT_DIR$/biao/biao-common/src/main/resources/application.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-trade/src/main/test/com/bbex/previous/BuyTest.java" />
+        <option value="$PROJECT_DIR$/biao/biao-im/src/main/resources/jim.properties" />
+        <option value="$PROJECT_DIR$/biao/biao-robot-unsafe/src/main/resources/config/robot.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-websocket/src/main/java/com/biao/WebsocketApplication.java" />
+        <option value="$PROJECT_DIR$/biao/biao-trade/pom.xml" />
+        <option value="$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/ExPairServiceImpl.java" />
+        <option value="$PROJECT_DIR$/biao/biao-common/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-configuration/src/main/java/com/biao/configuration/redis/RedisConfiguration.java" />
+        <option value="$PROJECT_DIR$/biao/biao-websocket/pom.xml" />
+        <option value="$PROJECT_DIR$/biao/biao-websocket/src/main/java/com/biao/handler/PlatDataHandler.java" />
+        <option value="$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/TradeApplication.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/pom.xml" />
+        <option value="$PROJECT_DIR$/biao/pom.xml" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/PlatTradeController.java" />
+        <option value="$PROJECT_DIR$/biao/biao-kline/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/constant/Constants.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/CustomerTradeWebFilter.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/CustomerExceptionWebFilter.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/TradeController.java" />
+        <option value="$PROJECT_DIR$/biao/biao-websocket/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-trade/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/resources/application-dev.yml" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/CustomerTradeAccessDeniedHandlerImpl.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/CustomerAuthenticationWebFilter.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/SecurityConfig.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/TestReactor.java" />
+        <option value="$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/PlatUserController.java" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$PROJECT_DIR$/../tool/apache-maven-3.3.9" />
+        <option name="userSettingsFile" value="D:\tool\apache-maven-3.3.9\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao-plat" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao-plat" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao-trade" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao-trade" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao-websocket" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="biao-websocket" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+      </expand>
+      <select />
+    </treeState>
+  </component>
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-10" />
+    <option name="y" value="-10" />
+    <option name="width" value="1750" />
+    <option name="height" value="980" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="biao-plat" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="biao" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="controller" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554995872075" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../biao-boss" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\biao\biao\biao-websocket\src\main\resources" />
+      <recent name="D:\biao\biao\biao-websocket\src\main\java\com\biao" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\biao\biao\biao-websocket\src\main\resources" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.PlatApplication">
+    <configuration name="KlineApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.biao.KlineApplication" />
+      <module name="biao-kline" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.biao.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlatApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.biao.PlatApplication" />
+      <module name="biao-plat" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.biao.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestReactor" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.biao.config.sercurity.TestReactor" />
+      <module name="biao-plat" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.biao.config.sercurity.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TradeApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.biao.TradeApplication" />
+      <module name="biao-trade" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.biao.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WebsocketApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.biao.WebsocketApplication" />
+      <module name="biao-websocket" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.biao.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.PlatApplication" />
+        <item itemvalue="Application.TestReactor" />
+        <item itemvalue="Application.WebsocketApplication" />
+        <item itemvalue="Application.TradeApplication" />
+        <item itemvalue="Application.KlineApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="773eb77d-f37b-41c3-adb5-66753ec6bded" name="Default Changelist" comment="" />
+      <created>1553245288195</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1553245288195</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49150142" visible="true" weight="0.269437" />
+      <window_info id="Structure" order="1" sideWeight="0.5084388" side_tool="true" weight="0.25938338" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" sideWeight="0.5084986" side_tool="true" weight="0.25938338" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.3286119" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.3045326" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.40934843" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="10" weight="0.32924962" />
+      <window_info anchor="bottom" id="Problems" order="11" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Maven" order="6" weight="0.1541555" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49156117" visible="true" weight="0.25938338" />
+      <window_info id="Structure" order="1" sideWeight="0.5084388" side_tool="true" weight="0.25938338" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" sideWeight="0.5084388" side_tool="true" weight="0.25938338" />
+      <window_info active="true" anchor="bottom" id="Messages" order="0" visible="true" weight="0.3286119" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.3045326" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.40934843" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="10" weight="0.32924962" />
+      <window_info anchor="bottom" id="Problems" order="11" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Maven" order="6" visible="true" weight="0.1541555" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+    </layout-to-restore>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="redisTemplate.boundValueOps(key)" language="JAVA" />
+        <watch expression="redisTemplate.boundValueOps(key).get()" language="JAVA" />
+        <watch expression="ExPairDao" language="JAVA" />
+        <watch expression="exPairService.findByList()" language="JAVA" />
+        <watch expression="token.getPrincipal()" language="JAVA" />
+        <watch expression="token.getCredentials()" language="JAVA" />
+        <watch expression="token.getCredentials()" language="JAVA" />
+        <watch expression="authentication.getPrincipal()" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>token.getCredentials()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>authentication.getPrincipal()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>token.getPrincipal()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>exPairService.findByList()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>ExPairDao</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>redisTemplate.boundValueOps(key).get()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>redisTemplate.boundValueOps(key)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/UserDetailsServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="665">
+          <caret line="53" column="77" selection-start-line="53" selection-start-column="77" selection-end-line="53" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/xss/XssFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="28" column="55" selection-start-line="28" selection-start-column="55" selection-end-line="28" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/AliYunAuthenticateSigConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="7" column="42" lean-forward="true" selection-start-line="7" selection-start-column="42" selection-end-line="7" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/config/sercurity/SecurityConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="404" column="80" selection-start-line="404" selection-start-column="53" selection-end-line="404" selection-end-column="80" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#30858#30859#0" expanded="true" />
+            <element signature="e#30909#30910#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/valid/ValidateGroup.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="10" column="20" selection-start-line="10" selection-start-column="20" selection-end-line="10" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/valid/ValidateFiled.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="133" column="18" selection-start-line="133" selection-start-column="18" selection-end-line="133" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/constant/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="70" column="12" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/mapper/PlatUserDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="48" column="23" lean-forward="true" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/util/Optional.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="156" column="16" selection-start-line="156" selection-start-column="16" selection-end-line="156" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/util/RsaUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="14" column="31" selection-start-line="14" selection-start-column="31" selection-end-line="14" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/vo/MessageVO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-214">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../repository/io/projectreactor/reactor-core/3.2.5.RELEASE/reactor-core-3.2.5.RELEASE.jar!/reactor/core/scheduler/Schedulers.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/PlatUserService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="12" column="27" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/pojo/GlobalMessageResponseVo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/PlatTradeController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="65" column="92" lean-forward="true" selection-start-line="65" selection-start-column="92" selection-end-line="65" selection-end-column="92" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/mapper/ExPairDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="22" column="17" selection-start-line="22" selection-start-column="17" selection-end-line="22" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/ExPairServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="509">
+          <caret line="50" column="29" lean-forward="true" selection-start-line="50" selection-start-column="29" selection-end-line="50" selection-end-column="29" />
+          <folding>
+            <element signature="e#962#963#0" expanded="true" />
+            <element signature="e#1007#1008#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/handler/PlatDataHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="215" column="65" selection-start-line="215" selection-start-column="65" selection-end-line="215" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../repository/org/springframework/data/spring-data-redis/2.1.4.RELEASE/spring-data-redis-2.1.4.RELEASE.jar!/org/springframework/data/redis/core/RedisTemplate.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="797" column="38" selection-start-line="797" selection-start-column="38" selection-end-line="797" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/redis/RedisCacheManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="170" column="9" lean-forward="true" selection-start-line="170" selection-start-column="9" selection-end-line="170" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/valid/ParamerValidHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="41">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/OrderController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="542">
+          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/sql/build/OrderSqlBuild.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/entity/Order.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/mapper/OrderDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../repository/org/springframework/data/spring-data-redis/2.1.4.RELEASE/spring-data-redis-2.1.4.RELEASE.jar!/org/springframework/data/redis/core/HashOperations.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="37" column="9" selection-start-line="37" selection-start-column="9" selection-end-line="37" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/util/Objects.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="57" column="26" selection-start-line="57" selection-start-column="26" selection-end-line="57" selection-end-column="26" />
+          <folding>
+            <element signature="e#1410#1411#0" expanded="true" />
+            <element signature="e#1471#1472#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/util/concurrent/ThreadPoolExecutor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="1341" column="16" selection-start-line="1341" selection-start-column="16" selection-end-line="1341" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/main/TradeCache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="52" column="18" selection-start-line="52" selection-start-column="18" selection-end-line="52" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../repository/org/redisson/redisson/3.10.0/redisson-3.10.0.jar!/org/redisson/api/RedissonClient.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="84" column="10" selection-start-line="84" selection-start-column="10" selection-end-line="84" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/TradeServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="218" column="67" lean-forward="true" selection-start-line="218" selection-start-column="67" selection-end-line="218" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/constant/TradeConstant.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1083">
+          <caret line="57" column="31" selection-start-line="57" selection-start-column="31" selection-end-line="57" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/TradeConsumer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2774">
+          <caret line="182" column="22" selection-start-line="182" selection-start-column="22" selection-end-line="182" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/main/BuyInFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1064">
+          <caret line="78" column="49" selection-start-line="78" selection-start-column="49" selection-end-line="78" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/TradeController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="950">
+          <caret line="66" column="42" selection-start-line="66" selection-start-column="42" selection-end-line="66" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/Tools.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1767">
+          <caret line="102" column="50" selection-start-line="102" selection-start-column="50" selection-end-line="102" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/enums/TradeEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="24" column="4" selection-start-line="24" selection-start-column="4" selection-end-line="24" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/main/DataChain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2128">
+          <caret line="122" column="16" selection-start-line="122" selection-start-column="16" selection-end-line="122" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/main/AbstractFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="893">
+          <caret line="55" column="19" selection-start-line="55" selection-start-column="19" selection-end-line="55" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-trade/src/main/java/com/biao/previous/thread/ConsistentHashSelector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="608">
+          <caret line="37" column="30" selection-start-line="37" selection-start-column="30" selection-end-line="37" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/vo/PlatUserVO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="28" column="19" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="19" />
+          <folding>
+            <element signature="e#1965#1966#0" expanded="true" />
+            <element signature="e#1998#1999#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/mapper/DepositLogDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="30" column="139" lean-forward="true" selection-start-line="30" selection-start-column="139" selection-end-line="30" selection-end-column="139" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/DepositController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2850">
+          <caret line="167" column="92" selection-start-line="167" selection-start-column="92" selection-end-line="167" selection-end-column="92" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/WithdrawController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3021">
+          <caret line="181" column="94" selection-start-line="181" selection-start-column="94" selection-end-line="181" selection-end-column="94" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/WithdrawLogServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2698">
+          <caret line="175" column="48" selection-start-line="175" selection-start-column="48" selection-end-line="175" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/mapper/WithdrawLogDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/DepositLogServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/impl/PlatUserServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="969">
+          <caret line="106" column="39" selection-start-line="106" selection-start-column="39" selection-end-line="106" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-common/src/main/java/com/biao/constant/RedisConstants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-mysql/src/main/java/com/biao/service/DepositLogService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="16" column="34" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biao/biao-plat/src/main/java/com/biao/web/controller/PlatUserController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="95" column="14" lean-forward="true" selection-start-line="95" selection-start-column="14" selection-end-line="95" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>biao</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: args4j:args4j:2.33</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

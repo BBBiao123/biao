@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.briandilley.jsonrpc4j:jsonrpc4j:1.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../repository/com/github/briandilley/jsonrpc4j/jsonrpc4j/1.1/jsonrpc4j-1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../repository/com/github/briandilley/jsonrpc4j/jsonrpc4j/1.1/jsonrpc4j-1.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../repository/com/github/briandilley/jsonrpc4j/jsonrpc4j/1.1/jsonrpc4j-1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.googlecode.libphonenumber:prefixmapper:2.99">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../repository/com/googlecode/libphonenumber/prefixmapper/2.99/prefixmapper-2.99.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../repository/com/googlecode/libphonenumber/prefixmapper/2.99/prefixmapper-2.99-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../repository/com/googlecode/libphonenumber/prefixmapper/2.99/prefixmapper-2.99-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
