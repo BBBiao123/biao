@@ -47,7 +47,7 @@
 				<th>手机号</th>
 				<th>邮箱</th>
 				<th>币种</th>
-				<th>充值总额</th>
+				<th>充币总额</th>
 				<th>提币总额</th>
 				<th>盈亏</th>
 			</tr>
@@ -85,5 +85,25 @@
 		</tbody>
 	</table>
 	<div class="pagination">${page}</div>
+    <div>
+		<form    class="breadcrumb form-search">
+
+			<p style="margin: 0 0 0 auto;font-size: 16px;font-weight: bold">合计</p>
+			<ul class="ul-form" style="margin-left: 50px">
+
+				<li><label>充币总额：</label>
+					<label style="text-align: left"   >${platUserFinanceTotal.cbvolume} </label>
+				</li>
+				<li><label>提币总额：</label>
+					<label    style="text-align: left">${platUserFinanceTotal.tbvolume} </label>
+				</li>
+				<li><label>盈亏：</label>
+					<label    style="text-align: left" >${platUserFinanceTotal.yingkui} </label>
+				</li>
+
+				<li class="clearfix"></li>
+			</ul>
+		</form>
+	</div>
 </body>
 </html>

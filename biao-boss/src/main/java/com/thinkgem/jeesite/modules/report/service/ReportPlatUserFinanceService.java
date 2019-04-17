@@ -51,6 +51,10 @@ public class ReportPlatUserFinanceService extends CrudService<ReportPlatUserFina
 		page.setList(reportPlatUserFinanceDao.addList(map));
 		return page;
 	}
+	public List<ReportPlatUserFinance> findPlatUserFinanceTotal(Map<String, Object> map) {
+		return reportPlatUserFinanceDao.findPlatUserFinanceTotal(map);
+	}
+
 	public void findReportPlatUserFinance(ReportPlatUserFinance reportPlatUserFinance) {
 
 		if (StringUtils.isEmpty(reportPlatUserFinance.getUserId())) {

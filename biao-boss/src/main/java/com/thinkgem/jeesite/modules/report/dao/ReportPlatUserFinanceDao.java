@@ -19,5 +19,6 @@ import java.util.Objects;
 @MyBatisDao
 public interface ReportPlatUserFinanceDao extends CrudDao<ReportPlatUserFinance> {
     public List<ReportPlatUserFinance> addList(Map<String, Object> map);
+    public List<ReportPlatUserFinance> findPlatUserFinanceTotal(Map<String, Object> map);
 	
 }

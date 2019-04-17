@@ -28,6 +28,16 @@ public class ReportPlatUserFinance extends DataEntity<ReportPlatUserFinance> {
 	private Integer inviteCode;
 	private Integer referInviteCode;
 
+	private List<String> userList;
+
+	public List<String> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<String> userList) {
+		this.userList = userList;
+	}
+
 	public String getRealName() {
 		return realName;
 	}

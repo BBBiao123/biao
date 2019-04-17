@@ -60,9 +60,14 @@ public class ReportPlatUserFinanceController extends BaseController {
 	@RequestMapping(value = {"list", ""})
 	public String list(ReportPlatUserFinance reportPlatUserReconciliation, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<ReportPlatUserFinance> page = new Page<ReportPlatUserFinance>(request, response);
+        ReportPlatUserFinance platUserFinance=new ReportPlatUserFinance();
 		String userId= UserUtils.getUser().getRelPlatUserId();
 		PlatUser platUser=platUserService.get(userId);
-
+        if (platUser ==null ||StringUtils.isEmpty(platUser.getInviteCode()) ){
+            model.addAttribute("page", page);
+            model.addAttribute("platUserFinanceTotal",platUserFinance);
+            return "modules/report/reportPlatUserFinanceList";
+        }
 		ReportPlatUserInvite reportPlatUserInvite =new ReportPlatUserInvite();
 		reportPlatUserInvite.setUserId( platUser.getInviteCode() );
 		List<ReportPlatUserInvite> xiaji=reportPlatUserInviteService.findList(reportPlatUserInvite);
@@ -85,16 +90,33 @@ public class ReportPlatUserFinanceController extends BaseController {
 		map.put ("page",page);
 		map.put("list",userList);
 		if (StringUtils.isNotEmpty(reportPlatUserReconciliation.getUserId())){
+			userList=new ArrayList<String>();
 			if (userList.contains(reportPlatUserReconciliation.getUserId())){
-				userList=new ArrayList<String>();
 				userList.add(reportPlatUserReconciliation.getUserId());
 				map.put("list",userList);
-				page = reportPlatUserFinanceService.findPage(page, map);
-			}else page.setList(null);
+				reportPlatUserReconciliation.setUserList(userList);
+				page = reportPlatUserFinanceService.findPage(page, reportPlatUserReconciliation);
+			}else {
+				page.setList(null);
+			}
 
-		}else page = reportPlatUserFinanceService.findPage(page, map);
+		}else {
+		    if (userList.size()>0){
+				reportPlatUserReconciliation.setUserList(userList);
+				page = reportPlatUserFinanceService.findPage(page, reportPlatUserReconciliation);
+			}
+		    else page.setList(null);
+        }
+      if (userList.size()>0) {
+		  List<ReportPlatUserFinance> totalList = reportPlatUserFinanceService.findPlatUserFinanceTotal(map);
+		  if (totalList != null && totalList.size() > 0) {
+			  platUserFinance = totalList.get(0);
+		  }
+	  }
+
 
 		model.addAttribute("page", page);
+        model.addAttribute("platUserFinanceTotal",platUserFinance);
 		return "modules/report/reportPlatUserFinanceList";
 	}
 
