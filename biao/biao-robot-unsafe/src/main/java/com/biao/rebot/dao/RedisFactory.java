@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
-import org.springframework.data.redis.connection.RedisClusterConfiguration;
-import org.springframework.data.redis.connection.RedisNode;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -80,7 +77,17 @@ public class RedisFactory {
         //密码.
         RedisPassword password = RedisPassword.of(pwd);
         JedisConnectionFactory connectionFactory;
-        if ("cluster".equalsIgnoreCase(mode) || "default".equalsIgnoreCase(mode)) {
+        if ("default".equalsIgnoreCase(mode)) {
+            RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+            Iterable<String> splits = Splitter.on(";").split(hosts);
+            splits.forEach(e -> {
+                String[] host = e.split(":");
+                configuration.setHostName(host[0]);
+                configuration.setPort(Integer.parseInt(host[1]));
+            });
+            configuration.setPassword(password);
+            connectionFactory = new JedisConnectionFactory(configuration);
+        } else if ("cluster".equalsIgnoreCase(mode) || "default".equalsIgnoreCase(mode)) {
             RedisClusterConfiguration configuration = new RedisClusterConfiguration();
             configuration.setPassword(password);
             Iterable<String> splits = Splitter.on(";").split(hosts);
