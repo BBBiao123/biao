@@ -1,13 +1,16 @@
 package com.biao.service.impl.balance;
 
+import com.biao.entity.PlatUser;
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
+import com.biao.mapper.PlatUserDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDetailDao;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
 import com.biao.util.SnowFlake;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     @Autowired(required = false)
     private BalanceUserCoinVolumeDao balanceUserCoinVolumeDao;
 
+    @Autowired(required = false)
+    private PlatUserDao platUserDao;
 
     @Override
     public String save(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail) {
@@ -81,15 +86,63 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     @Override
     public void balanceIncomeDetail(){
         List<BalanceUserCoinVolume>  balanceUserCoinVolumeList= balanceUserCoinVolumeDao.findAll();
+
         if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList)) {
             balanceUserCoinVolumeList.forEach(e -> {
+                List<PlatUser> platUserList= platUserDao.findInvitesById(e.getUserId());
+                //动态收益计算
+                BigDecimal   detailIncomeTotal=e.getCoinBalance().multiply(e.getDayRate());
+                BigDecimal  dayRate=new BigDecimal(0);
+                if(CollectionUtils.isNotEmpty(platUserList)){
+                    int length=platUserList.size();
+                   for (int i=0;i<length;i++) {
+                       PlatUser platUser=platUserList.get(i);
+                        List<BalanceUserCoinVolume> childList = balanceUserCoinVolumeDao.findByUserIdAndCoin(platUser.getId(),e.getCoinSymbol());
+                        BalanceUserCoinVolume balanceTmp = null;
+                        if (CollectionUtils.isNotEmpty(childList)) {
+                            balanceTmp = childList.get(0);
+                        }
+                        if(balanceTmp != null){
+                            detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
+                        }
+                       if(length>=3){
+                           if(balanceTmp != null){
+                               detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
+                           }
+                           PlatUser  platUserBen=  platUserDao.findById(e.getUserId());
+                           if(platUserBen !=null && StringUtils.isNotEmpty( platUserBen.getReferId()) ){
+                               List<BalanceUserCoinVolume> supList = balanceUserCoinVolumeDao.findByUserIdAndCoin(platUserBen.getReferId(),e.getCoinSymbol());
+                               BalanceUserCoinVolume balanceSupTmp = null;
+                               if (CollectionUtils.isNotEmpty(supList)) {
+                                   balanceSupTmp = supList.get(0);
+                               }
+                               if(balanceSupTmp != null){
+                                   detailIncomeTotal.add(balanceSupTmp.getCoinBalance().multiply(balanceSupTmp.getDayRate()).multiply(new BigDecimal(0.15)));
+                               }
+                           }
+                       }
+
+                       if(length>5){
+                          if( i<=length-5){
+                              if(dayRate.compareTo(new BigDecimal(0.005))<0) {
+                                  dayRate.add(new BigDecimal(0.001));
+                              }
+
+                          }
+                       }
+                    };
+
+
+                }
                 BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail=new BalanceUserCoinVolumeDetail();
                 String id = SnowFlake.createSnowFlake().nextIdString();
                 balanceUserCoinVolumeDetail.setId(id);
                 balanceUserCoinVolumeDetail.setCoinSymbol(e.getCoinSymbol());
                 balanceUserCoinVolumeDetail.setUserId(e.getUserId());
-                //收益算法
-                balanceUserCoinVolumeDetail.setDetailIncome(e.getCoinBalance().multiply(e.getDayRate()));
+
+                //收益明细总计
+                balanceUserCoinVolumeDetail.setDetailIncome(detailIncomeTotal);
+
                 //奖励算法
                 balanceUserCoinVolumeDetail.setDetailReward(new BigDecimal(2));
                 //收益日期精确到天
