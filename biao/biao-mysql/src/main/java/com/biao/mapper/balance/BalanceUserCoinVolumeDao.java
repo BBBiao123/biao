@@ -24,6 +24,9 @@ public interface BalanceUserCoinVolumeDao {
     @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance where  user_id = #{userId} order by create_date desc")
     List<BalanceUserCoinVolume> findByUserId(@Param("userId") String userId);
 
+    @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance where  user_id = #{userId} and  coin_symbol = #{coinSymbol} order by create_date desc")
+    List<BalanceUserCoinVolume> findByUserIdAndCoin(@Param("userId") String userId,@Param("coinSymbol") String coinSymbol);
+
     @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance  order by create_date desc")
     List<BalanceUserCoinVolume> findAll();
 }
