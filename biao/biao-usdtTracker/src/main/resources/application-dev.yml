@@ -28,18 +28,18 @@ spring:
                 enabled: true
 
   redis:
-#    password: foobaredbbexONE123
+    password: foobaredbbexONE123
     host: 47.244.153.103
-    port: 6800
+    port: 6379
 mybatis:
     typeAliasesPackage: com.biao.entity
     configLocation: classpath:mybatis/mybatis-config.xml
 omni:
     rpc:
-      username : dazi
-      password : dazi
+      username : wpybtc
+      password : wpybtc
       uri: http://127.0.0.1:18111
-      sendAddr :
+      sendAddr : 1FnE1xasMnBWHk95ANHf5bepJhJFtdwfMx
       collectAddr :
       feeAddr :
       collectFee: 0.0002
@@ -60,7 +60,7 @@ user:
     #      执行时间S
     time: 5
     #是否启动task;
-    taskFlag: false
+    taskFlag: true
 logging:
     level:
         root: info
