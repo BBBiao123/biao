@@ -28,16 +28,16 @@ spring:
                 enabled: true
 
   redis:
-#    password: foobaredbbexONE123
+    password: foobaredbbexONE123
     host: 47.244.153.103
-    port: 6800
+    port: 6379
 mybatis:
     typeAliasesPackage: com.biao.entity
     configLocation: classpath:mybatis/mybatis-config.xml
 omni:
     rpc:
-      username : dazi
-      password : dazi
+      username : btcwpy
+      password : btcwpy
       uri: http://127.0.0.1:18111
       sendAddr :
       collectAddr :
