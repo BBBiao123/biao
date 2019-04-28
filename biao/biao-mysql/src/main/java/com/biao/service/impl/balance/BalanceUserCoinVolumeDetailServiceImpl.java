@@ -107,8 +107,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     treePlatUserList(platUserList,allPlatUserList);
                     Map<String,BigDecimal> detailRewardMap=new HashMap<String,BigDecimal>();
                     calRewardTotal(detailRewardMap,allPlatUserList,e);
-                    int length=5;
-                   for (int i=0;i<platUserList.size();i++) {
+                    int length=platUserList.size();
+                   for (int i=0;i<length;i++) {
                        PlatUser platUser=platUserList.get(i);
                         List<BalanceUserCoinVolume> childList = balanceUserCoinVolumeDao.findByUserIdAndCoin(platUser.getId(),e.getCoinSymbol());
                         BalanceUserCoinVolume balanceTmp = null;
