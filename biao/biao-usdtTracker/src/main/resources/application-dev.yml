@@ -40,6 +40,7 @@ omni:
       password : btcwpy
       uri: http://127.0.0.1:18111
       sendAddr :
+      sendAddr : 1FnE1xasMnBWHk95ANHf5bepJhJFtdwfMx
       collectAddr :
       feeAddr :
       collectFee: 0.0002
@@ -61,6 +62,7 @@ user:
     time: 5
     #是否启动task;
     taskFlag: false
+    taskFlag: true
 logging:
     level:
         root: info

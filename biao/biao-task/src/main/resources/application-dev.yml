@@ -18,7 +18,7 @@ info:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbbex-test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/bbex?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: photoadmin
     password: Photo123456
     hikari:
@@ -26,8 +26,8 @@ spring:
       maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
   data:
     mongodb:
-        host: dds-j6c4cb1c77b752a41823-pub.mongodb.rds.aliyuncs.com
-        port: 3717
+        host: 127.0.0.1
+        port: 27017
         database: photo
         authentication-database: photo
         username: photoadmin
@@ -37,8 +37,8 @@ spring:
 
   redis:
 #    password: foobaredbbexONE123
-    host: 47.244.153.103
-    port: 6800
+    host: 127.0.0.1
+    port: 6379
 
   kafka:
     producer:
@@ -46,7 +46,7 @@ spring:
       properties: 
           interceptor.classes: com.biao.kafka.interceptor.KafkaMessageIdGenerator
     bootstrap-servers:
-            - 47.52.67.6:9092
+            - 127.0.0.1:9092
     consumer:
       value-deserializer: com.biao.kafka.interceptor.CustomerJsonDeserializer
       group-id: task

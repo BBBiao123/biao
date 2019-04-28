@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import com.biao.service.*;
+import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class ScheduledTasks {
 
     @Autowired
     private StatisticsTradeTaskService statisticsTradeTaskService;
+
+    @Autowired
+    private BalanceUserCoinVolumeDetailService balanceUserCoinVolumeDetailService;
 
     @Autowired
     private MkRuleTaskCoreService mkRuleTaskCoreService;
@@ -762,5 +766,25 @@ public class ScheduledTasks {
 
         platUserService.userCardStatuScanCheck(cardStatuScanCheckDTO);
         logger.info("exexute userCardStatusTask  end   ....");
+    }
+
+    /**
+     * 余币宝收益,每天00:00AM
+     */
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void balanceIncomeDetail() {
+
+        logger.info("exexute balanceIncomeDetail  start ....");
+        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+        logger.info("exexute balanceIncomeDetail  end   ....");
+    }
+    /**
+     * 余币宝统计,每天8:00AM
+     */
+    @Scheduled(cron = "0 0 8 * * ?")
+    public void balanceIncomeCount() {
+        logger.info("exexute balanceIncomeCount  start ....");
+        balanceUserCoinVolumeDetailService.balanceIncomeCount();
+        logger.info("exexute balanceIncomeCount  end   ....");
     }
 }
