@@ -115,10 +115,16 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         if (CollectionUtils.isNotEmpty(childList)) {
                             balanceTmp = childList.get(0);
                         }
-                        if(balanceTmp != null){
-                            detailIncomeTotal= detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
-                        }
-                       if(length>=3){
+
+
+                       if(length>5){
+                          if( i<=length-5){
+                              if(dayRate.compareTo(new BigDecimal(0.005))<0) {
+                                  dayRate= dayRate.add(new BigDecimal(0.001));
+                              }
+
+                          }
+                       }else  if(length>=3){
                            if(balanceTmp != null){
                                detailIncomeTotal= detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
                            }
@@ -133,34 +139,29 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                                    detailIncomeTotal= detailIncomeTotal.add(balanceSupTmp.getCoinBalance().multiply(balanceSupTmp.getDayRate()).multiply(new BigDecimal(0.15)));
                                }
                            }
-                       }
+                       }else{
+                           if(balanceTmp != null){
+                               detailIncomeTotal= detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
+                           }
 
-                       if(length>5){
-                          if( i<=length-5){
-                              if(dayRate.compareTo(new BigDecimal(0.005))<0) {
-                                  dayRate= dayRate.add(new BigDecimal(0.001));
-                              }
-
-                          }
                        }
 
                     }
-                    if(length>=5 && length<10){
-                        if(detailRewardMap.get("communityBalance") != null && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(100000))>=0){
-                            detailRewardTotal=detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.05)));
-                        }
-                    }
-                    if(length>=10 && detailRewardMap.get("communityBalance") != null ){
-                        if(detailRewardMap.get("communityBalance").compareTo(new BigDecimal(500000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(2000000))<0){
-                            detailRewardTotal= detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.1)));
-                        }else if(detailRewardMap.get("communityBalance").compareTo(new BigDecimal(2000000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))<0){
-                            detailRewardTotal= detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.15)));
-                        }else if(detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(10000000))<0){
-                            detailRewardTotal=  detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.20)));
-                        }else if(detailRewardMap.get("communityBalance").compareTo(new BigDecimal(10000000))>=0 ){
+
+                    if(detailRewardMap.get("communityBalance") != null){
+                        if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(10000000))>=0 ){
                             //待确认
+                        }else if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(10000000))<0){
+                            detailRewardTotal=  detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.20)));
+                        }else if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(2000000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))<0){
+                            detailRewardTotal= detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.15)));
+                        }else if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(500000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(2000000))<0){
+                            detailRewardTotal= detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.1)));
+                        }else if(length>=5  && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(100000))>=0){
+                                detailRewardTotal=detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.05)));
                         }
                     }
+
                 }
                 //动态收益和社区奖励计算 end
 
