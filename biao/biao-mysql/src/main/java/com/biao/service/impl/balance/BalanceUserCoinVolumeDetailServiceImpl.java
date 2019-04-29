@@ -116,18 +116,11 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                             balanceTmp = childList.get(0);
                         }
 
+                       if(balanceTmp != null){
+                           detailIncomeTotal= detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
+                       }
+                        if(length>=3){
 
-                       if(length>5){
-                          if( i<=length-5){
-                              if(dayRate.compareTo(new BigDecimal(0.005))<0) {
-                                  dayRate= dayRate.add(new BigDecimal(0.001));
-                              }
-
-                          }
-                       }else  if(length>=3){
-                           if(balanceTmp != null){
-                               detailIncomeTotal= detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
-                           }
                            PlatUser  platUserBen=  platUserDao.findById(e.getUserId());
                            if(platUserBen !=null && StringUtils.isNotEmpty( platUserBen.getReferId()) ){
                                List<BalanceUserCoinVolume> supList = balanceUserCoinVolumeDao.findByUserIdAndCoin(platUserBen.getReferId(),e.getCoinSymbol());
@@ -136,22 +129,24 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                                    balanceSupTmp = supList.get(0);
                                }
                                if(balanceSupTmp != null){
-                                   detailIncomeTotal= detailIncomeTotal.add(balanceSupTmp.getCoinBalance().multiply(balanceSupTmp.getDayRate()).multiply(new BigDecimal(0.15)));
+                                   detailIncomeTotal= detailIncomeTotal.add(balanceSupTmp.getCoinBalance().multiply(balanceSupTmp.getDayRate()).multiply(new BigDecimal(0.15)));//此处不好计算，因为此时的上级动态收益无法确定
                                }
                            }
-                       }else{
-                           if(balanceTmp != null){
-                               detailIncomeTotal= detailIncomeTotal.add(balanceTmp.getCoinBalance().multiply(balanceTmp.getDayRate()).divide(new BigDecimal(2)));
-                           }
-
                        }
+                       if(length>5){
+                           if( i<=length-5){
+                               if(dayRate.compareTo(new BigDecimal(0.005))<0) {
+                                   dayRate= dayRate.add(new BigDecimal(0.001));
+                               }
 
-                    }
+                           }
+                       }
+                   }
 
                     if(detailRewardMap.get("communityBalance") != null){
                         if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(10000000))>=0 ){
                             //待确认
-                        }else if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(10000000))<0){
+                        }else if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))>=0 ){
                             detailRewardTotal=  detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.20)));
                         }else if(length>=10 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(2000000))>=0 && detailRewardMap.get("communityBalance").compareTo(new BigDecimal(5000000))<0){
                             detailRewardTotal= detailRewardTotal.add(detailRewardMap.get("communityIncome").multiply(new BigDecimal(0.15)));
