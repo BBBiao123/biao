@@ -29,6 +29,8 @@ public interface BalanceUserCoinVolumeDetailService {
     List<BalanceUserCoinVolumeDetail> findAll(String userId);
 
    void  balanceIncomeDetail();
+    void  balanceIncomeDetailNew();
+
 
    void  balanceIncomeCount();
 
