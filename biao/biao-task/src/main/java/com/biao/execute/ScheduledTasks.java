@@ -771,11 +771,12 @@ public class ScheduledTasks {
     /**
      * 余币宝收益,每天00:00AM
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void balanceIncomeDetail() {
 
         logger.info("exexute balanceIncomeDetail  start ....");
-        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+//        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew();
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
     /**

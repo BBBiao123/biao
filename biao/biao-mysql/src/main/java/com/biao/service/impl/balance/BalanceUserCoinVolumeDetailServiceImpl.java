@@ -338,6 +338,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
                 //奖励算法
                 balanceUserCoinVolumeDetail.setDetailReward(new BigDecimal(0));
+
+                balanceUserCoinVolumeDetail.setReferId(e.getReferId());
                 //收益日期精确到天
                 balanceUserCoinVolumeDetail.setIncomeDate(LocalDateTime.now().minusHours(1));
                 balanceUserCoinVolumeDetail.setCreateDate(LocalDateTime.now());
@@ -463,7 +465,74 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * 动态收益2和平级奖
      */
     public void  calcIncomeAndEqualAward(){
+        List<BalanceUserCoinVolumeDetail>  suprerDetailList= balanceUserCoinVolumeDetailDao.findSuprer();
+        if (CollectionUtils.isNotEmpty(suprerDetailList)) {
+            suprerDetailList.forEach(e->{
+                BigDecimal sumIncome=e.getStaticsIncome().add(e.getDynamicsIncome()).add(e.getCommunityManageReward());
+                List<BalanceUserCoinVolumeDetail>  childDetailList = balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
+                if (CollectionUtils.isNotEmpty(childDetailList)) {
+                    treeSuperUserList(childDetailList,sumIncome);
+                }
+            });
+        }
+        //平级奖
+        List<BalanceUserCoinVolumeDetail> balanceDetailList=  balanceUserCoinVolumeDetailDao.findAll();
+        if (CollectionUtils.isNotEmpty(balanceDetailList)) {
+            balanceDetailList.forEach(balanceDetail -> {
+                List<BalanceUserCoinVolumeDetail>  childBalanceDetailList = balanceUserCoinVolumeDetailDao.findAllByReferId(balanceDetail.getUserId(),balanceDetail.getCoinSymbol());
+                List<BalanceUserCoinVolumeDetail>  childEqualUserList= treeChildEqualUserList(childBalanceDetailList,balanceDetail.getTeamLevel());
+                BigDecimal   equalityReward=new BigDecimal(0);
+                if(CollectionUtils.isNotEmpty(childEqualUserList)){
+                    for(BalanceUserCoinVolumeDetail childEqualUser: childEqualUserList){
+                        equalityReward=equalityReward.add(childEqualUser.getDetailReward().multiply(new BigDecimal(0.1)));
+                    }
+                }
+                balanceDetail.setEqualityReward(equalityReward);
+                balanceDetail.setSumIncome(equalityReward.add(balanceDetail.getDetailIncome()));
+                balanceUserCoinVolumeDetailDao.updateById(balanceDetail);
+            });
+        }
+    }
+    public  void treeSuperUserList(List<BalanceUserCoinVolumeDetail> userList,BigDecimal sumIncome) {
+        int length=userList.size();
+        for (BalanceUserCoinVolumeDetail user : userList) {
+            user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()).add(user.getCommunityManageReward()).add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length) )));
+            balanceUserCoinVolumeDetailDao.updateById(user);
+            List<BalanceUserCoinVolumeDetail> platList= balanceUserCoinVolumeDetailDao.findAllByReferId(user.getUserId(),user.getCoinSymbol());
+            //遍历出父id等于参数的id，add进子节点集合
+            if (CollectionUtils.isNotEmpty(platList)) {
+                //递归遍历下一级
+                //allUserList.addAll(platList);
+                treeSuperUserList(platList,user.getDetailIncome());
+            }
+        }
 
     }
+    public  List<BalanceUserCoinVolumeDetail>  treeChildEqualUserList(List<BalanceUserCoinVolumeDetail> userList,int level) {
+        List<BalanceUserCoinVolumeDetail> equalList=new ArrayList<BalanceUserCoinVolumeDetail>();
+        for (BalanceUserCoinVolumeDetail user : userList) {
+            if(user.getTeamLevel()==level){
+                equalList.add(user);
+            }
+        }
+        if(equalList.size()>0){
+            return equalList;
+        }
+        List<BalanceUserCoinVolumeDetail> childList=new ArrayList<BalanceUserCoinVolumeDetail>();
+        for (BalanceUserCoinVolumeDetail user : userList) {
 
+            List<BalanceUserCoinVolumeDetail> platList= balanceUserCoinVolumeDetailDao.findAllByReferId(user.getUserId(),user.getCoinSymbol());
+            //遍历出父id等于参数的id，add进子节点集合
+            if (CollectionUtils.isNotEmpty(platList)) {
+                //递归遍历下一级
+                //allUserList.addAll(platList);
+                childList.addAll(platList);
+            }
+        }
+        if(childList.size()==0){
+            return childList;
+        }
+        treeChildEqualUserList(childList,level);
+       return equalList;
+    }
 }
