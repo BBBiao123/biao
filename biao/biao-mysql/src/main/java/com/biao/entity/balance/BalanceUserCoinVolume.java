@@ -48,6 +48,9 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("coin_symbol")
     private String coinSymbol;
 
+    @SqlField("refer_id")
+    private String referId;
+
     public String getUserId() {
         return userId;
     }
@@ -110,5 +113,13 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setCoinSymbol(String coinSymbol) {
         this.coinSymbol = coinSymbol;
+    }
+
+    public String getReferId() {
+        return referId;
+    }
+
+    public void setReferId(String referId) {
+        this.referId = referId;
     }
 }

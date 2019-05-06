@@ -31,11 +31,75 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("detail_reward")
     private BigDecimal detailReward;
 
+    @SqlField("statics_income")
+    private BigDecimal staticsIncome;
 
+    @SqlField("team_record")
+    private BigDecimal teamRecord;
 
+    @SqlField("team_community_record")
+    private BigDecimal teamCommunityRecord;
+
+    @SqlField("team_level")
+    private int teamLevel;
+
+    @SqlField("community_statics_income")
+    private BigDecimal communityStaticsIncome;
+
+    @SqlField("node_number")
+    private int nodeNumber;
+
+    @SqlField("reality_statics_income")
+    private BigDecimal realityStaticsIncome;
+
+    @SqlField("community_manage_reward")
+    private BigDecimal communityManageReward;
+
+    @SqlField("dynamics_income")
+    private BigDecimal dynamicsIncome;
+
+    public BigDecimal getDynamicsIncome() {
+        return dynamicsIncome;
+    }
+
+    public void setDynamicsIncome(BigDecimal dynamicsIncome) {
+        this.dynamicsIncome = dynamicsIncome;
+    }
 
     @SqlField("version")
     private int version;
+
+    public BigDecimal getTeamRecord() {
+        return teamRecord;
+    }
+
+    public void setTeamRecord(BigDecimal teamRecord) {
+        this.teamRecord = teamRecord;
+    }
+
+    public BigDecimal getTeamCommunityRecord() {
+        return teamCommunityRecord;
+    }
+
+    public void setTeamCommunityRecord(BigDecimal teamCommunityRecord) {
+        this.teamCommunityRecord = teamCommunityRecord;
+    }
+
+    public int getTeamLevel() {
+        return teamLevel;
+    }
+
+    public void setTeamLevel(int teamLevel) {
+        this.teamLevel = teamLevel;
+    }
+
+    public BigDecimal getCommunityStaticsIncome() {
+        return communityStaticsIncome;
+    }
+
+    public void setCommunityStaticsIncome(BigDecimal communityStaticsIncome) {
+        this.communityStaticsIncome = communityStaticsIncome;
+    }
 
     @SqlField("coin_symbol")
     private String coinSymbol;
@@ -87,5 +151,36 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public BigDecimal getStaticsIncome() {
+        return staticsIncome;
+    }
+
+    public void setStaticsIncome(BigDecimal staticsIncome) {
+        this.staticsIncome = staticsIncome;
+    }
+
+    public int getNodeNumber() {
+        return nodeNumber;
+    }
+
+    public void setNodeNumber(int nodeNumber) {
+        this.nodeNumber = nodeNumber;
+    }
+    public BigDecimal getRealityStaticsIncome() {
+        return realityStaticsIncome;
+    }
+
+    public void setRealityStaticsIncome(BigDecimal realityStaticsIncome) {
+        this.realityStaticsIncome = realityStaticsIncome;
+    }
+
+    public BigDecimal getCommunityManageReward() {
+        return communityManageReward;
+    }
+
+    public void setCommunityManageReward(BigDecimal communityManageReward) {
+        this.communityManageReward = communityManageReward;
     }
 }
