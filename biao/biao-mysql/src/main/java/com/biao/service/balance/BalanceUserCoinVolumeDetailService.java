@@ -3,7 +3,9 @@ package com.biao.service.balance;
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 余币宝详情接口
@@ -29,7 +31,7 @@ public interface BalanceUserCoinVolumeDetailService {
     List<BalanceUserCoinVolumeDetail> findAll(String userId);
 
    void  balanceIncomeDetail();
-    void  balanceIncomeDetailNew();
+    void  balanceIncomeDetailNew(Map<String , BigDecimal> map);
 
 
    void  balanceIncomeCount();

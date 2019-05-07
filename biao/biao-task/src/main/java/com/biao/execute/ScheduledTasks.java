@@ -1,8 +1,12 @@
 package com.biao.execute;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import com.biao.config.BalanceDayRateConfig;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import org.slf4j.Logger;
@@ -91,6 +95,9 @@ public class ScheduledTasks {
 
     @Autowired
     private AliYunCardCheckConfig aliYunCardCheckConfig;
+
+    @Autowired
+    private BalanceDayRateConfig balanceDayRateConfig;
 
     @Autowired
     private TraderVolumeSnapshotTaskService traderVolumeSnapshotTaskService;
@@ -776,7 +783,11 @@ public class ScheduledTasks {
 
         logger.info("exexute balanceIncomeDetail  start ....");
 //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
-        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew();
+        Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
+        dayRateMap.put("oneDayRate",balanceDayRateConfig.getOneDayRate());
+        dayRateMap.put("secondDayRate",balanceDayRateConfig.getSecondDayRate());
+        dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
     /**

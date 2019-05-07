@@ -224,11 +224,18 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * 重新梳理收益规账新方法
      */
     @Override
-    public void balanceIncomeDetailNew(){
-        staticsIncomeAndPartDynamics();
+    public void balanceIncomeDetailNew(Map<String ,BigDecimal> map){
+        //静态收益、动态收益1和3 计算
+        staticsIncomeAndPartDynamics(map);
+
+        //团队业绩、团队小区业绩、社区总收益 计算
         communityRecordAndLevel();
+
+        //社区管理奖 计算
         calcManagementAward();
-        calcIncomeAndEqualAward();
+
+        //动态收益2、平级奖 计算
+        calcIncomeAndEqualAward(map);
     }
     public  void treeCommunityUserList(List<BalanceUserCoinVolume> userList,List<BalanceUserCoinVolume> allUserList) {
         for (BalanceUserCoinVolume user : userList) {
@@ -246,7 +253,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     /**
      * 静态收益计算和动态收益1和3计算
      */
-    public void staticsIncomeAndPartDynamics(){
+    public void staticsIncomeAndPartDynamics(Map<String ,BigDecimal> map){
         List<BalanceUserCoinVolume>  balanceUserCoinVolumeList= balanceUserCoinVolumeDao.findAll();
         if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList)) {
             balanceUserCoinVolumeList.forEach(e->{
@@ -322,7 +329,15 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 }
 
                 //静态收益
-                staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(e.getDayRate()));
+                //收益率通过配置计算
+                BigDecimal balance=new BigDecimal(5000);
+
+                if(e.getCoinBalance().compareTo(balance)>0){
+                    staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("oneDayRate")));
+                }else{
+                    staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("secondDayRate")));
+                }
+
                 //动态收益1和3
                 dynamicsIncomeTotal=dynamicsIncomeTotal.add(e.getCoinBalance().multiply(dayRate));
                 BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail=new BalanceUserCoinVolumeDetail();
@@ -464,7 +479,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     /**
      * 动态收益2和平级奖
      */
-    public void  calcIncomeAndEqualAward(){
+    public void  calcIncomeAndEqualAward(Map<String ,BigDecimal> map){
         List<BalanceUserCoinVolumeDetail>  suprerDetailList= balanceUserCoinVolumeDetailDao.findSuprer();
         if (CollectionUtils.isNotEmpty(suprerDetailList)) {
             suprerDetailList.forEach(e->{
@@ -484,7 +499,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 BigDecimal   equalityReward=new BigDecimal(0);
                 if(CollectionUtils.isNotEmpty(childEqualUserList)){
                     for(BalanceUserCoinVolumeDetail childEqualUser: childEqualUserList){
-                        equalityReward=equalityReward.add(childEqualUser.getDetailReward().multiply(new BigDecimal(0.1)));
+                        equalityReward=equalityReward.add(childEqualUser.getDetailReward().multiply(map.get("equalReward")));
                     }
                 }
                 balanceDetail.setEqualityReward(equalityReward);

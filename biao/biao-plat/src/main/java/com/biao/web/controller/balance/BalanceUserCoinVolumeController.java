@@ -1,5 +1,6 @@
 package com.biao.web.controller.balance;
 
+import com.biao.config.BalancePlatDayRateConfig;
 import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.constant.Constants;
 import com.biao.entity.*;
@@ -71,6 +72,9 @@ public class BalanceUserCoinVolumeController {
     @Autowired
     private UserCoinVolumeExService userCoinVolumeExService;
 
+    @Autowired
+    private BalancePlatDayRateConfig balancePlatDayRateConfig;
+
     /**
      * 根据用户查询所有币种余额收益信息
      * @return
@@ -93,6 +97,7 @@ public class BalanceUserCoinVolumeController {
                         BeanUtils.copyProperties(coin, coinVolumeVO);
                         coinVolumeVO.setId(null);
                         coinVolumeVO.setUserId(e.getId());
+                        coinVolumeVO.setCoinId(coin.getId());
                         listVo.add(coinVolumeVO);
 
                     });
@@ -103,9 +108,16 @@ public class BalanceUserCoinVolumeController {
                             listVolume.forEach(userCoinVolume -> {
                                 if (userCoinVolume != null) {
                                     if (userCoinVolume.getCoinSymbol().equals(coinVolumeVO2.getName())) {
-                                        coinVolumeVO2.setRise(  userCoinVolume.getDayRate().setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+                                        BigDecimal balance=new BigDecimal(5000);
+                                        BigDecimal dayRate=new BigDecimal(0);
+                                        if(userCoinVolume.getCoinBalance().compareTo(balance)>0){
+                                            dayRate=dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
+                                        }else{
+                                            dayRate=dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
+                                        }
+                                        coinVolumeVO2.setRise( dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
                                         BeanUtils.copyProperties(userCoinVolume, coinVolumeVO2);
-
+                                        coinVolumeVO2.setReferId(e.getReferId());
                                     }
                                 }
                             });
@@ -136,13 +148,12 @@ public class BalanceUserCoinVolumeController {
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
                     balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
                     BigDecimal balance=new BigDecimal(5000);
-                    BigDecimal dayRate1=new BigDecimal(0.008);
-                    BigDecimal dayRate2=new BigDecimal(0.005);
                     if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
-                        balanceUserCoinVolume.setDayRate(dayRate1);
+                        balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getSecondDayRate());
                     }else{
-                        balanceUserCoinVolume.setDayRate(dayRate2);
+                        balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getOneDayRate());
                     }
+
                     if( StringUtils.isNotEmpty(balanceCoinVolumeVO.getId()) &&  !"null".equals(balanceCoinVolumeVO.getId())){
                         balanceUserCoinVolumeService.updateById(balanceUserCoinVolume);
                     }else{
@@ -175,12 +186,10 @@ public class BalanceUserCoinVolumeController {
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
                     balanceUserCoinVolume.setCoinBalance( balanceUserCoinVolume.getCoinBalance().subtract(balanceCoinVolumeVO.getCoinNum()));
                     BigDecimal balance=new BigDecimal(5000);
-                    BigDecimal dayRate1=new BigDecimal(0.008);
-                    BigDecimal dayRate2=new BigDecimal(0.005);
                     if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
-                        balanceUserCoinVolume.setDayRate(dayRate1);
+                        balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getSecondDayRate());
                     }else{
-                        balanceUserCoinVolume.setDayRate(dayRate2);
+                        balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getOneDayRate());
                     }
                     if( StringUtils.isNotEmpty(balanceCoinVolumeVO.getId()) &&  !"null".equals(balanceCoinVolumeVO.getId())){
                         balanceUserCoinVolumeService.updateById(balanceUserCoinVolume);
