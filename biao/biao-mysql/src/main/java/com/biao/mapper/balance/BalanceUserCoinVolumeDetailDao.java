@@ -34,8 +34,8 @@ public interface BalanceUserCoinVolumeDetailDao {
     @Select("SELECT " + BalanceUserCoinVolumeDetailSqlBuild.columns + " FROM js_plat_user_coin_incomedetail t WHERE t.refer_id=#{referId}  and t.coin_symbol=#{coinSymbol} and t.version=1 ")
     List<BalanceUserCoinVolumeDetail>  findAllByReferId(@Param("referId") String referId, @Param("coinSymbol") String coinSymbol);
 
-    @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail where  team_level=5 and  version=1 order by create_date desc")
-    List<BalanceUserCoinVolumeDetail> findGlobalByCoin();
+    @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail where  team_level=5 and coin_symbol=#{coinSymbol} and  version=1 order by create_date desc")
+    List<BalanceUserCoinVolumeDetail> findGlobalByCoin(@Param("coinSymbol") String coinSymbol);
 
     @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail t2 WHERE (t2.refer_id NOT IN" +
             "( SELECT t.user_id FROM js_plat_user_coin_incomedetail t where t.version=1 ) or  t2.refer_id is null )and t2.version=1  order by t2.create_date desc")

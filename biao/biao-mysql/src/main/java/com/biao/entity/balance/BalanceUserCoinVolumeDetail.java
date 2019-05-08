@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 用户资产
+ * 用户收益和奖励明细
  *
  *  ""
  */

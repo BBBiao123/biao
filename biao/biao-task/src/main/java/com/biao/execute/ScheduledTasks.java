@@ -778,15 +778,17 @@ public class ScheduledTasks {
     /**
      * 余币宝收益,每天00:00AM
      */
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void balanceIncomeDetail() {
 
         logger.info("exexute balanceIncomeDetail  start ....");
 //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+        //静态收益和平级奖的利率支持配置
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
         dayRateMap.put("oneDayRate",balanceDayRateConfig.getOneDayRate());
         dayRateMap.put("secondDayRate",balanceDayRateConfig.getSecondDayRate());
         dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
+        //每天收益和奖励计算
         balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
