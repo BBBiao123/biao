@@ -1,8 +1,12 @@
 package com.biao.execute;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import com.biao.config.BalanceDayRateConfig;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import org.slf4j.Logger;
@@ -93,6 +97,9 @@ public class ScheduledTasks {
     private AliYunCardCheckConfig aliYunCardCheckConfig;
 
     @Autowired
+    private BalanceDayRateConfig balanceDayRateConfig;
+
+    @Autowired
     private TraderVolumeSnapshotTaskService traderVolumeSnapshotTaskService;
 
     @Autowired
@@ -111,8 +118,8 @@ public class ScheduledTasks {
     private Mk2MemberReleaseService mk2MemberReleaseService;
 
 
-   // @Scheduled(cron = "0 0/1 * * * ?")
-     public void createKlineDataForOneMinute() {
+    // @Scheduled(cron = "0 0/1 * * * ?")
+    public void createKlineDataForOneMinute() {
         if (logger.isDebugEnabled()) {
             logger.debug("========== createKlineDataForOneMinute  start ==========");
         }
@@ -372,7 +379,7 @@ public class ScheduledTasks {
     /**
      * 手续费打款至指定账户(每小时执行一次)
      */
-   // @Scheduled(cron = "0 0 0/1 * * ?")
+    // @Scheduled(cron = "0 0 0/1 * * ?")
     public void triggerRemitFeeToPlatAccount() {
         logger.info("exexute triggerRemitFeeToPlatAccount  start ....");
         mkDividendRuleTaskService.triggerRemitFeeToPlatAccount();
@@ -382,7 +389,7 @@ public class ScheduledTasks {
     /**
      * 挖矿定时任务
      */
-   // @Scheduled(cron = "0 0 2 * * ?")
+    // @Scheduled(cron = "0 0 2 * * ?")
     public void triggerMiningTask() {
         logger.info("exexute triggerMiningDayTask  start ....");
         mkRuleTaskCoreService.triggerMiningDayTask();
@@ -392,7 +399,7 @@ public class ScheduledTasks {
     /**
      * 挖矿团队排名争霸
      */
-   // @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     public void triggerTeamMinningSortTask() {
         logger.info("exexute triggerTeamMinningSortTask  start ....");
         mk2MiningTeamSortTaskService.doSortTeamMinging();
@@ -402,7 +409,7 @@ public class ScheduledTasks {
     /**
      * 会员币释放
      */
-   // @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     public void triggerReleaseTask() {
         logger.info("exexute triggerReleaseTask  start ....");
         mk2MemberReleaseService.releaseLockVolume();
@@ -463,7 +470,7 @@ public class ScheduledTasks {
     /**
      * 会员推广定时任务(每小时执行一次)
      */
-   // @Scheduled(cron = "0 0 0/1 * * ?")
+    // @Scheduled(cron = "0 0 0/1 * * ?")
     //@Scheduled(fixedRate = 20000)
     public void triggerPromoteTask() {
         logger.info("exexute triggerPromoteDayTask  start ....");
@@ -633,7 +640,7 @@ public class ScheduledTasks {
     /**
      * 用户注册推荐人送奖励任务  每天凌晨3点执行
      */
-   // @Scheduled(cron = "0 0 3 * * ?")
+    // @Scheduled(cron = "0 0 3 * * ?")
     public void registerReferLottery() {
         logger.info("exexute registerReferLottery  start ....");
         userRegisterLotteryService.executeLotteryRefer();
@@ -775,7 +782,14 @@ public class ScheduledTasks {
     public void balanceIncomeDetail() {
 
         logger.info("exexute balanceIncomeDetail  start ....");
-        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+//        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+        //静态收益和平级奖的利率支持配置
+        Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
+        dayRateMap.put("oneDayRate",balanceDayRateConfig.getOneDayRate());
+        dayRateMap.put("secondDayRate",balanceDayRateConfig.getSecondDayRate());
+        dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
+        //每天收益和奖励计算
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
     /**

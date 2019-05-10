@@ -25,6 +25,8 @@ public class BalanceCoinVolumeVO implements Serializable {
     private BigDecimal yesterdayReward;
     private BigDecimal coinNum;
     private String  rise;
+    private String coinId;
+    private String  referId;
 
 
 }

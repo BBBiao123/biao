@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-04-30 10:26:22
+Date: 2019-05-08 21:46:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -31,5 +31,17 @@ CREATE TABLE `js_plat_user_coin_incomedetail` (
   `create_by` varchar(64) DEFAULT NULL COMMENT '创建者',
   `update_by` varchar(64) DEFAULT NULL COMMENT '修改者',
   `version` bigint(20) DEFAULT NULL COMMENT '版本',
+  `statics_income` decimal(32,16) DEFAULT NULL,
+  `team_record` decimal(32,16) DEFAULT NULL COMMENT '团队业绩',
+  `team_community_record` decimal(32,16) DEFAULT NULL,
+  `team_level` int(4) DEFAULT NULL COMMENT '等级',
+  `community_statics_income` decimal(32,16) DEFAULT NULL COMMENT '社区静态收益',
+  `node_number` int(10) DEFAULT NULL COMMENT '直推节点个数',
+  `reality_statics_income` decimal(32,16) DEFAULT NULL COMMENT '实际静态收益',
+  `community_manage_reward` decimal(32,16) DEFAULT NULL COMMENT '社区管理奖',
+  `equality_reward` decimal(32,16) DEFAULT NULL COMMENT '平级奖励',
+  `dynamics_income` decimal(32,16) DEFAULT NULL COMMENT '动态收益',
+  `refer_id` varchar(64) DEFAULT NULL COMMENT '上级ID',
+  `sum_income` decimal(32,16) DEFAULT NULL COMMENT '总收益',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='余币宝收益明细表';

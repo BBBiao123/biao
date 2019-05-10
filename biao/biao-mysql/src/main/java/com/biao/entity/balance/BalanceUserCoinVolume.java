@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * 用户资产
+ * 用户余币宝资产
  *
  *  ""
  */
@@ -41,12 +41,25 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("yesterday_reward")
     private BigDecimal yesterdayReward;
 
-//
-//    @SqlField("coin_id")
-//    private String coinId;
 
     @SqlField("coin_symbol")
     private String coinSymbol;
+
+    @SqlField("refer_id")
+    private String referId;
+
+    @SqlField("yesterday_statics_income")
+    private BigDecimal yesterdayStaticsIncome;
+
+    @SqlField("yesterday_equality_reward")
+    private BigDecimal yesterdayEqualityReward;
+
+    @SqlField("yesterday_dynamics_income")
+    private BigDecimal yesterdayDynamicsIncome;
+
+    @SqlField("yesterday_community_reward")
+    private BigDecimal yesterdayCommunityReward;
+
 
     public String getUserId() {
         return userId;
@@ -110,5 +123,45 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setCoinSymbol(String coinSymbol) {
         this.coinSymbol = coinSymbol;
+    }
+
+    public String getReferId() {
+        return referId;
+    }
+
+    public void setReferId(String referId) {
+        this.referId = referId;
+    }
+
+    public BigDecimal getYesterdayStaticsIncome() {
+        return yesterdayStaticsIncome;
+    }
+
+    public void setYesterdayStaticsIncome(BigDecimal yesterdayStaticsIncome) {
+        this.yesterdayStaticsIncome = yesterdayStaticsIncome;
+    }
+
+    public BigDecimal getYesterdayEqualityReward() {
+        return yesterdayEqualityReward;
+    }
+
+    public void setYesterdayEqualityReward(BigDecimal yesterdayEqualityReward) {
+        this.yesterdayEqualityReward = yesterdayEqualityReward;
+    }
+
+    public BigDecimal getYesterdayDynamicsIncome() {
+        return yesterdayDynamicsIncome;
+    }
+
+    public void setYesterdayDynamicsIncome(BigDecimal yesterdayDynamicsIncome) {
+        this.yesterdayDynamicsIncome = yesterdayDynamicsIncome;
+    }
+
+    public BigDecimal getYesterdayCommunityReward() {
+        return yesterdayCommunityReward;
+    }
+
+    public void setYesterdayCommunityReward(BigDecimal yesterdayCommunityReward) {
+        this.yesterdayCommunityReward = yesterdayCommunityReward;
     }
 }

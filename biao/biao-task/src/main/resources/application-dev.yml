@@ -133,6 +133,10 @@ user:
 riskMgt:
   mailList: james.jing168@gmail.com
 
+balance:
+  oneDayRate: 0.005
+  secondDayRate: 0.008
+  equalReward: 0.1
 
 logging:
     level:
