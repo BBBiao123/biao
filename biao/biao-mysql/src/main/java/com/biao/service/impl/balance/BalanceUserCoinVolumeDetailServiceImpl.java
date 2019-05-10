@@ -289,9 +289,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     for(BalanceUserCoinVolume childUserVolume:allPlatUserList){
                         BigDecimal childRate=new BigDecimal(0);
                         if(childUserVolume.getCoinBalance().compareTo(balance)>0){
-                            childRate=map.get("oneDayRate");
-                        }else{
                             childRate=map.get("secondDayRate");
+                        }else{
+                            childRate=map.get("oneDayRate");
                         }
                         communityStaticsIncome=communityStaticsIncome.add(childUserVolume.getCoinBalance().multiply(childRate));
                         teamRecord=teamRecord.add(childUserVolume.getCoinBalance());
@@ -304,9 +304,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         if(balanceTmp != null){
                             BigDecimal childRateSec=new BigDecimal(0);
                             if(balanceTmp.getCoinBalance().compareTo(balance)>0){
-                                childRateSec=map.get("oneDayRate");
-                            }else{
                                 childRateSec=map.get("secondDayRate");
+                            }else{
+                                childRateSec=map.get("oneDayRate");
                             }
                             dynamicsIncomeTotal= dynamicsIncomeTotal.add(balanceTmp.getCoinBalance().multiply(childRateSec).multiply(new BigDecimal(0.5)));
                         }
@@ -330,9 +330,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 //静态收益
                 //收益率通过配置计算
                 if(e.getCoinBalance().compareTo(balance)>0){
-                    staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("oneDayRate")));
-                }else{
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("secondDayRate")));
+                }else{
+                    staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("oneDayRate")));
                 }
 
                 //动态收益1和3
@@ -347,6 +347,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 balanceUserCoinVolumeDetail.setDynamicsIncome(dynamicsIncomeTotal);
                 balanceUserCoinVolumeDetail.setTeamRecord(teamRecord);
                 balanceUserCoinVolumeDetail.setCommunityStaticsIncome(communityStaticsIncome);
+                balanceUserCoinVolumeDetail.setNodeNumber(length);
                 //收益明细总计
                 balanceUserCoinVolumeDetail.setDetailIncome(new BigDecimal(0));
 
@@ -425,9 +426,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                          BigDecimal dayRate=new BigDecimal(0);
                          BigDecimal balance=new BigDecimal(0);
                          if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
-                             dayRate=map.get("oneDayRate");
-                         }else{
                              dayRate=map.get("secondDayRate");
+                         }else{
+                             dayRate=map.get("oneDayRate");
                          }
                          coinIncome.add(balanceUserCoinVolume.getCoinBalance().multiply(dayRate));
                      }
@@ -496,6 +497,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
         List<BalanceUserCoinVolumeDetail>  suprerDetailList= balanceUserCoinVolumeDetailDao.findSuprer();
         if (CollectionUtils.isNotEmpty(suprerDetailList)) {
             suprerDetailList.forEach(e->{
+                e.setDetailIncome(e.getStaticsIncome().add(e.getDynamicsIncome()));
+                balanceUserCoinVolumeDetailDao.updateById(e);
                 BigDecimal sumIncome=e.getStaticsIncome().add(e.getDynamicsIncome()).add(e.getCommunityManageReward());
                 List<BalanceUserCoinVolumeDetail>  childDetailList = balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(childDetailList)) {
@@ -516,7 +519,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     }
                 }
                 balanceDetail.setEqualityReward(equalityReward);
-                balanceDetail.setSumIncome(equalityReward.add(balanceDetail.getDetailIncome()));
+                balanceDetail.setSumIncome(equalityReward.add(balanceDetail.getDetailIncome()).add(balanceDetail.getCommunityManageReward()));
                 balanceDetail.setDetailReward(balanceDetail.getCommunityManageReward().add(equalityReward));
                 balanceUserCoinVolumeDetailDao.updateById(balanceDetail);
             });
@@ -531,15 +534,15 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     public  void treeSuperUserList(List<BalanceUserCoinVolumeDetail> userList,BigDecimal sumIncome) {
         int length=userList.size();
         for (BalanceUserCoinVolumeDetail user : userList) {
-            user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()).add(user.getCommunityManageReward()).add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length) )));
-            user.setDynamicsIncome(user.getDynamicsIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length) )));
+            user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()).add(user.getCommunityManageReward()));
+            user.setDynamicsIncome(user.getDynamicsIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
             balanceUserCoinVolumeDetailDao.updateById(user);
             List<BalanceUserCoinVolumeDetail> platList= balanceUserCoinVolumeDetailDao.findAllByReferId(user.getUserId(),user.getCoinSymbol());
             //遍历出父id等于参数的id，add进子节点集合
             if (CollectionUtils.isNotEmpty(platList)) {
                 //递归遍历下一级
                 //allUserList.addAll(platList);
-                treeSuperUserList(platList,user.getDetailIncome());
+                treeSuperUserList(platList,user.getDetailIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
             }
         }
 

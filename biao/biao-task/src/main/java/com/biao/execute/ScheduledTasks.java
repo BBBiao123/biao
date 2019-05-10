@@ -118,8 +118,8 @@ public class ScheduledTasks {
     private Mk2MemberReleaseService mk2MemberReleaseService;
 
 
-   // @Scheduled(cron = "0 0/1 * * * ?")
-     public void createKlineDataForOneMinute() {
+    // @Scheduled(cron = "0 0/1 * * * ?")
+    public void createKlineDataForOneMinute() {
         if (logger.isDebugEnabled()) {
             logger.debug("========== createKlineDataForOneMinute  start ==========");
         }
@@ -379,7 +379,7 @@ public class ScheduledTasks {
     /**
      * 手续费打款至指定账户(每小时执行一次)
      */
-   // @Scheduled(cron = "0 0 0/1 * * ?")
+    // @Scheduled(cron = "0 0 0/1 * * ?")
     public void triggerRemitFeeToPlatAccount() {
         logger.info("exexute triggerRemitFeeToPlatAccount  start ....");
         mkDividendRuleTaskService.triggerRemitFeeToPlatAccount();
@@ -389,7 +389,7 @@ public class ScheduledTasks {
     /**
      * 挖矿定时任务
      */
-   // @Scheduled(cron = "0 0 2 * * ?")
+    // @Scheduled(cron = "0 0 2 * * ?")
     public void triggerMiningTask() {
         logger.info("exexute triggerMiningDayTask  start ....");
         mkRuleTaskCoreService.triggerMiningDayTask();
@@ -399,7 +399,7 @@ public class ScheduledTasks {
     /**
      * 挖矿团队排名争霸
      */
-   // @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     public void triggerTeamMinningSortTask() {
         logger.info("exexute triggerTeamMinningSortTask  start ....");
         mk2MiningTeamSortTaskService.doSortTeamMinging();
@@ -409,7 +409,7 @@ public class ScheduledTasks {
     /**
      * 会员币释放
      */
-   // @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     public void triggerReleaseTask() {
         logger.info("exexute triggerReleaseTask  start ....");
         mk2MemberReleaseService.releaseLockVolume();
@@ -470,7 +470,7 @@ public class ScheduledTasks {
     /**
      * 会员推广定时任务(每小时执行一次)
      */
-   // @Scheduled(cron = "0 0 0/1 * * ?")
+    // @Scheduled(cron = "0 0 0/1 * * ?")
     //@Scheduled(fixedRate = 20000)
     public void triggerPromoteTask() {
         logger.info("exexute triggerPromoteDayTask  start ....");
@@ -640,7 +640,7 @@ public class ScheduledTasks {
     /**
      * 用户注册推荐人送奖励任务  每天凌晨3点执行
      */
-   // @Scheduled(cron = "0 0 3 * * ?")
+    // @Scheduled(cron = "0 0 3 * * ?")
     public void registerReferLottery() {
         logger.info("exexute registerReferLottery  start ....");
         userRegisterLotteryService.executeLotteryRefer();
