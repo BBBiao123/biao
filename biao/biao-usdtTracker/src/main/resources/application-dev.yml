@@ -36,16 +36,15 @@ mybatis:
     configLocation: classpath:mybatis/mybatis-config.xml
 omni:
     rpc:
-      username : btcwpy
-      password : btcwpy
+      username: btcwpy
+      password: btcwpy
       uri: http://127.0.0.1:18111
-      sendAddr :
-      sendAddr : 1FnE1xasMnBWHk95ANHf5bepJhJFtdwfMx
-      collectAddr :
-      feeAddr :
+      sendAddr: 1FnE1xasMnBWHk95ANHf5bepJhJFtdwfMx
+      collectAddr:
+      feeAddr:
       collectFee: 0.0002
-      coinId : 23597ebbe96849368696cc298bb04463
-      syncTime : 300
+      coinId: 23597ebbe96849368696cc298bb04463
+      syncTime: 300
       sendTime: 300
       collectTime: 300
 generateAddress: 1
@@ -61,11 +60,10 @@ user:
     #      执行时间S
     time: 5
     #是否启动task;
-    taskFlag: false
     taskFlag: true
 logging:
     level:
-        root: info
+        root: debug
         org.springframework.boot: info
         org.apache.ibatis: debug
         com.bbex.bonuspoint: debug
