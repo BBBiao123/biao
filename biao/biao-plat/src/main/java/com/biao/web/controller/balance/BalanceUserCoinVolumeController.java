@@ -203,6 +203,22 @@ public class BalanceUserCoinVolumeController {
                 });
     }
 
+    /**
+     * 获取用户邀请码
+     * @return
+     */
+    @GetMapping("/balance/volume/invoteCode")
+    public Mono<GlobalMessageResponseVo> findUserCode() {
 
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    return GlobalMessageResponseVo
+                            .newSuccessInstance(e);
+                });
+    }
 }
 
