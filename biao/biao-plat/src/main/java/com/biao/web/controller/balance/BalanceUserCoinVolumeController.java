@@ -4,16 +4,19 @@ import com.biao.config.BalancePlatDayRateConfig;
 import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.constant.Constants;
 import com.biao.entity.*;
+import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
+import com.biao.service.balance.BalanceChangeUserCoinVolumeService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
 import com.biao.util.StringUtil;
 import com.biao.vo.CoinVolumeVO;
 import com.biao.vo.OfflineTransferListVO;
 import com.biao.vo.OfflineTransferVO;
 import com.biao.vo.OfflineVolumeVO;
+import com.biao.vo.balance.BalanceChangeCoinVolumeVO;
 import com.biao.vo.balance.BalanceCoinVolumeVO;
 import com.biao.web.valid.ValidateFiled;
 import com.biao.web.valid.ValidateGroup;
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +64,8 @@ public class BalanceUserCoinVolumeController {
     @Autowired
     private BalanceUserCoinVolumeService balanceUserCoinVolumeService;
 
+    @Autowired
+    private BalanceChangeUserCoinVolumeService balanceChangeUserCoinVolumeService;
 
     @Autowired
     private OrderService orderService;
@@ -160,6 +167,14 @@ public class BalanceUserCoinVolumeController {
 
                         balanceUserCoinVolumeService.save(balanceUserCoinVolume);
                     }
+                    BalanceChangeUserCoinVolume   balanceChangeUserCoinVolume =new BalanceChangeUserCoinVolume();
+                    balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
+                    balanceChangeUserCoinVolume.setUserId(balanceCoinVolumeVO.getUserId());
+                    balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
+                    balanceChangeUserCoinVolume.setFlag(1);
+                    balanceChangeUserCoinVolume.setMail(e.getMail());
+                    balanceChangeUserCoinVolume.setMobile(e.getMobile());
+                    balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
                     userCoinVolumeExService.updateOutcome(null,balanceCoinVolumeVO.getCoinNum(),e.getId(),balanceUserCoinVolume.getCoinSymbol(),false);
                     return GlobalMessageResponseVo
                             .newSuccessInstance("操作成功！");
@@ -197,9 +212,16 @@ public class BalanceUserCoinVolumeController {
 
                         balanceUserCoinVolumeService.save(balanceUserCoinVolume);
                     }
+                    BalanceChangeUserCoinVolume   balanceChangeUserCoinVolume =new BalanceChangeUserCoinVolume();
+                    balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
+                    balanceChangeUserCoinVolume.setUserId(balanceCoinVolumeVO.getUserId());
+                    balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
+                    balanceChangeUserCoinVolume.setFlag(2);
+                    balanceChangeUserCoinVolume.setMail(e.getMail());
+                    balanceChangeUserCoinVolume.setMobile(e.getMobile());
+                    balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
                     userCoinVolumeExService.updateIncome(null,balanceCoinVolumeVO.getCoinNum(),e.getId(),balanceUserCoinVolume.getCoinSymbol(),false);
-                    return GlobalMessageResponseVo
-                            .newSuccessInstance("操作成功！");
+                    return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
 
@@ -216,8 +238,54 @@ public class BalanceUserCoinVolumeController {
                 .map(s -> s.getAuthentication().getPrincipal())
                 .cast(RedisSessionUser.class)
                 .map(e -> {
-                    return GlobalMessageResponseVo
-                            .newSuccessInstance(e);
+                    return GlobalMessageResponseVo.newSuccessInstance(e);
+                });
+    }
+
+    /**
+     * 查询转入记录
+     * @return
+     */
+    @GetMapping("/balance/volume/change")
+    public Mono<GlobalMessageResponseVo> findChangeAll() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    //查询余币宝资产信息
+                    List<BalanceChangeUserCoinVolume> listVolume = balanceChangeUserCoinVolumeService.findAll();
+                    List<Coin> list = coinService.findAll();
+                    List<BalanceChangeCoinVolumeVO> listVo = new ArrayList<>();
+                    listVolume.forEach(coin -> {
+                        BalanceChangeCoinVolumeVO coinVolumeVO = new BalanceChangeCoinVolumeVO();
+                        BeanUtils.copyProperties(coin, coinVolumeVO);
+
+                        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime time = coin.getCreateDate();
+                        String createStr = df.format(time);
+                        coinVolumeVO.setCreateStr(createStr);
+                        String userName=null;
+                        if(coin.getMobile() != null ){
+                            userName=coin.getMobile().substring(0,3)+"******"+coin.getMobile().substring(coin.getMobile().length()-2);
+                        }else if (coin.getMail() != null){
+                            int index =coin.getMail().indexOf("@");
+                            if(index>4){
+                                userName=coin.getMail().substring(0,index-4)+"****"+coin.getMail().substring(index);
+                            }else{
+                                userName=coin.getMail().substring(0,1)+"****"+coin.getMail().substring(index);
+                            }
+
+                        }
+                        coinVolumeVO.setUserName(userName);
+
+                        listVo.add(coinVolumeVO);
+
+                    });
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
                 });
     }
 }
