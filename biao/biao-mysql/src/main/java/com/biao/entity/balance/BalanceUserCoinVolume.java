@@ -78,6 +78,13 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("valid_num")
     private int validNum;
 
+    @SqlField("mobile")
+    private String mobile;
+
+    @SqlField("mail")
+    private String mail;
+
+    private int ordNum;
 
     public String getUserId() {
         return userId;
@@ -229,5 +236,29 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setValidNum(int validNum) {
         this.validNum = validNum;
+    }
+
+    public int getOrdNum() {
+        return ordNum;
+    }
+
+    public void setOrdNum(int ordNum) {
+        this.ordNum = ordNum;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 }

@@ -1,11 +1,7 @@
 package com.biao.service.balance;
 
-import com.biao.entity.UserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
-import com.biao.enums.OrderEnum;
-import com.biao.pojo.UserCoinVolumeOpDTO;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -31,5 +27,5 @@ public interface BalanceUserCoinVolumeService {
      */
     List<BalanceUserCoinVolume> findAll(String userId);
 
-
+    public List<BalanceUserCoinVolume> findByRank();
 }

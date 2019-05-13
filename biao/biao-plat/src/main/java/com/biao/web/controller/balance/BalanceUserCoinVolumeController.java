@@ -2,7 +2,6 @@ package com.biao.web.controller.balance;
 
 import com.biao.config.BalancePlatDayRateConfig;
 import com.biao.config.sercurity.RedisSessionUser;
-import com.biao.constant.Constants;
 import com.biao.entity.*;
 import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
@@ -11,22 +10,14 @@ import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceChangeUserCoinVolumeService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
-import com.biao.util.StringUtil;
-import com.biao.vo.CoinVolumeVO;
-import com.biao.vo.OfflineTransferListVO;
-import com.biao.vo.OfflineTransferVO;
-import com.biao.vo.OfflineVolumeVO;
 import com.biao.vo.balance.BalanceChangeCoinVolumeVO;
 import com.biao.vo.balance.BalanceCoinVolumeVO;
-import com.biao.web.valid.ValidateFiled;
-import com.biao.web.valid.ValidateGroup;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
@@ -130,6 +121,7 @@ public class BalanceUserCoinVolumeController {
                             });
                         });
                     }
+                    findByRank();
                     return GlobalMessageResponseVo
                             .newSuccessInstance(listVo);
                 });
@@ -152,6 +144,8 @@ public class BalanceUserCoinVolumeController {
                 .map(e -> {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
+                    balanceUserCoinVolume.setMail(e.getMail());
+                    balanceUserCoinVolume.setMobile(e.getMobile());
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
                     balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
                     BigDecimal balance=new BigDecimal(5000);
@@ -198,6 +192,8 @@ public class BalanceUserCoinVolumeController {
                 .map(e -> {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     BeanUtils.copyProperties(balanceCoinVolumeVO, balanceUserCoinVolume);
+                    balanceUserCoinVolume.setMail(e.getMail());
+                    balanceUserCoinVolume.setMobile(e.getMobile());
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
                     balanceUserCoinVolume.setCoinBalance( balanceUserCoinVolume.getCoinBalance().subtract(balanceCoinVolumeVO.getCoinNum()));
                     BigDecimal balance=new BigDecimal(5000);
@@ -262,6 +258,51 @@ public class BalanceUserCoinVolumeController {
                     List<BalanceChangeCoinVolumeVO> listVo = new ArrayList<>();
                     listVolume.forEach(coin -> {
                         BalanceChangeCoinVolumeVO coinVolumeVO = new BalanceChangeCoinVolumeVO();
+                        BeanUtils.copyProperties(coin, coinVolumeVO);
+
+                        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime time = coin.getCreateDate();
+                        String createStr = df.format(time);
+                        coinVolumeVO.setCreateStr(createStr);
+                        String userName=null;
+                        if(coin.getMobile() != null ){
+                            userName=coin.getMobile().substring(0,3)+"******"+coin.getMobile().substring(coin.getMobile().length()-2);
+                        }else if (coin.getMail() != null){
+                            int index =coin.getMail().indexOf("@");
+                            if(index>4){
+                                userName=coin.getMail().substring(0,index-4)+"****"+coin.getMail().substring(index);
+                            }else{
+                                userName=coin.getMail().substring(0,1)+"****"+coin.getMail().substring(index);
+                            }
+
+                        }
+                        coinVolumeVO.setUserName(userName);
+
+                        listVo.add(coinVolumeVO);
+
+                    });
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+    /**
+     * 排行榜查询
+     * @return
+     */
+    @GetMapping("/balance/volume/rank")
+    public Mono<GlobalMessageResponseVo> findByRank() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    //查询余币宝资产信息
+                    List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByRank();
+                    List<BalanceCoinVolumeVO> listVo = new ArrayList<>();
+                    listVolume.forEach(coin -> {
+                        BalanceCoinVolumeVO coinVolumeVO = new BalanceCoinVolumeVO();
                         BeanUtils.copyProperties(coin, coinVolumeVO);
 
                         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

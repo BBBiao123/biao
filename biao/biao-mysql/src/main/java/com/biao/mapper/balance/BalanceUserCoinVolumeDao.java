@@ -1,9 +1,6 @@
 package com.biao.mapper.balance;
 
-import com.biao.entity.DepositLog;
 import com.biao.entity.balance.BalanceUserCoinVolume;
-import com.biao.pojo.DepdrawLogVO;
-import com.biao.sql.build.DepositLogSqlBuild;
 import com.biao.sql.build.balance.BalanceUserCoinVolumeSqlBuild;
 import org.apache.ibatis.annotations.*;
 
@@ -35,4 +32,7 @@ public interface BalanceUserCoinVolumeDao {
 
     @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance where   coin_symbol = #{coinSymbol} order by create_date desc")
     List<BalanceUserCoinVolume> findByCoin(@Param("coinSymbol") String coinSymbol);
+
+    @Select("select "+ BalanceUserCoinVolumeSqlBuild.columns +",(@i := @i + 1) as ordNum from js_plat_user_coin_balance ,(select   @i:=0)  t2  order by coin_balance desc  LIMIT 10")
+    List<BalanceUserCoinVolume> findByRank();
 }
