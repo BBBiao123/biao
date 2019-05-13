@@ -60,6 +60,24 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("yesterday_community_reward")
     private BigDecimal yesterdayCommunityReward;
 
+    @SqlField("team_level")
+    private String  teamLevel;
+
+    @SqlField("team_amount")
+    private BigDecimal teamAmount;
+
+    @SqlField("team_community_amount")
+    private BigDecimal teamCommunityAmount;
+
+    @SqlField("sum_revenue")
+    private BigDecimal sumRevenue;
+
+    @SqlField("yesterday_revenue")
+    private BigDecimal yesterdayRevenue;
+
+    @SqlField("valid_num")
+    private int validNum;
+
 
     public String getUserId() {
         return userId;
@@ -163,5 +181,53 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setYesterdayCommunityReward(BigDecimal yesterdayCommunityReward) {
         this.yesterdayCommunityReward = yesterdayCommunityReward;
+    }
+
+    public String getTeamLevel() {
+        return teamLevel;
+    }
+
+    public void setTeamLevel(String teamLevel) {
+        this.teamLevel = teamLevel;
+    }
+
+    public BigDecimal getTeamAmount() {
+        return teamAmount;
+    }
+
+    public void setTeamAmount(BigDecimal teamAmount) {
+        this.teamAmount = teamAmount;
+    }
+
+    public BigDecimal getTeamCommunityAmount() {
+        return teamCommunityAmount;
+    }
+
+    public void setTeamCommunityAmount(BigDecimal teamCommunityAmount) {
+        this.teamCommunityAmount = teamCommunityAmount;
+    }
+
+    public BigDecimal getSumRevenue() {
+        return sumRevenue;
+    }
+
+    public void setSumRevenue(BigDecimal sumRevenue) {
+        this.sumRevenue = sumRevenue;
+    }
+
+    public BigDecimal getYesterdayRevenue() {
+        return yesterdayRevenue;
+    }
+
+    public void setYesterdayRevenue(BigDecimal yesterdayRevenue) {
+        this.yesterdayRevenue = yesterdayRevenue;
+    }
+
+    public int getValidNum() {
+        return validNum;
+    }
+
+    public void setValidNum(int validNum) {
+        this.validNum = validNum;
     }
 }

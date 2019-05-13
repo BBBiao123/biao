@@ -61,11 +61,14 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("equality_reward")
     private BigDecimal equalityReward;
 
-    @SqlField("sum_income")
-    private BigDecimal sumIncome;
+    @SqlField("sum_revenue")
+    private BigDecimal sumRevenue;
 
     @SqlField("refer_id")
     private String referId;
+
+    @SqlField("valid_num")
+    private int validNum;
 
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
@@ -201,13 +204,23 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
         this.equalityReward = equalityReward;
     }
 
-    public BigDecimal getSumIncome() {
-        return sumIncome;
+    public BigDecimal getSumRevenue() {
+        return sumRevenue;
     }
 
-    public void setSumIncome(BigDecimal sumIncome) {
-        this.sumIncome = sumIncome;
+    public void setSumRevenue(BigDecimal sumRevenue) {
+        this.sumRevenue = sumRevenue;
     }
+
+    public int getValidNum() {
+        return validNum;
+    }
+
+    public void setValidNum(int validNum) {
+        this.validNum = validNum;
+    }
+
+
 
     public String getReferId() {
         return referId;

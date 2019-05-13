@@ -68,7 +68,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 List<BalanceUserCoinVolumeDetail> balanceDetailList=balanceUserCoinVolumeDetailDao.findByUserIdAndCoin(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList)) {
                     balanceDetailList.forEach(balanceDetail -> {
-                        e.setCoinBalance(e.getCoinBalance().add(balanceDetail.getSumIncome()));
+                        //余额计算
+                        e.setCoinBalance(e.getCoinBalance().add(balanceDetail.getSumRevenue()));
+
                         e.setYesterdayIncome(balanceDetail.getDetailIncome());
                         e.setYesterdayReward(balanceDetail.getDetailReward());
                         if(e.getAccumulIncome() !=null){
@@ -81,6 +83,24 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         }else{
                             e.setAccumulReward(balanceDetail.getDetailReward());
                         }
+                        //总收入
+                        if(e.getSumRevenue() !=null){
+                            e.setSumRevenue(e.getSumRevenue().add(balanceDetail.getSumRevenue()));
+                        }else {
+                            e.setSumRevenue(balanceDetail.getSumRevenue());
+                        }
+
+                        //昨日收入
+                        e.setYesterdayRevenue(balanceDetail.getSumRevenue());
+                        //团队刷单总值
+                        e.setTeamAmount(balanceDetail.getTeamRecord());
+
+                        //小区刷单市值
+                        e.setTeamCommunityAmount(balanceDetail.getTeamCommunityRecord());
+                        //社区级别
+                        e.setTeamLevel("V"+String.valueOf(balanceDetail.getTeamLevel()));
+                        //社区有效用户数
+                        e.setValidNum(balanceDetail.getValidNum());
                         e.setYesterdayStaticsIncome(balanceDetail.getStaticsIncome());
                         e.setYesterdayDynamicsIncome(balanceDetail.getDynamicsIncome());
                         e.setYesterdayCommunityReward(balanceDetail.getCommunityManageReward());
@@ -280,12 +300,14 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 int length=0;
                 //仓位分界线
                 BigDecimal balance=new BigDecimal(5000);
-
+                //社区有效用户数
+                int userNum=0;
                 List<BalanceUserCoinVolume>  childUserVolumeList= balanceUserCoinVolumeDao.findInvitesById(e.getUserId(),e.getCoinSymbol());
                 if(CollectionUtils.isNotEmpty(childUserVolumeList)){
                     List<BalanceUserCoinVolume> allPlatUserList=new ArrayList<BalanceUserCoinVolume>();
                     allPlatUserList.addAll(childUserVolumeList);
                     treeCommunityUserList(childUserVolumeList,allPlatUserList);
+                    userNum=allPlatUserList.size();
                     for(BalanceUserCoinVolume childUserVolume:allPlatUserList){
                         BigDecimal childRate=new BigDecimal(0);
                         if(childUserVolume.getCoinBalance().compareTo(balance)>0){
@@ -348,6 +370,10 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 balanceUserCoinVolumeDetail.setTeamRecord(teamRecord);
                 balanceUserCoinVolumeDetail.setCommunityStaticsIncome(communityStaticsIncome);
                 balanceUserCoinVolumeDetail.setNodeNumber(length);
+
+                //社区有效用户数
+                balanceUserCoinVolumeDetail.setValidNum(userNum);
+
                 //收益明细总计
                 balanceUserCoinVolumeDetail.setDetailIncome(new BigDecimal(0));
 
@@ -519,7 +545,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     }
                 }
                 balanceDetail.setEqualityReward(equalityReward);
-                balanceDetail.setSumIncome(equalityReward.add(balanceDetail.getDetailIncome()).add(balanceDetail.getCommunityManageReward()));
+                balanceDetail.setSumRevenue(equalityReward.add(balanceDetail.getDetailIncome()).add(balanceDetail.getCommunityManageReward()));
                 balanceDetail.setDetailReward(balanceDetail.getCommunityManageReward().add(equalityReward));
                 balanceUserCoinVolumeDetailDao.updateById(balanceDetail);
             });
