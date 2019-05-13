@@ -70,6 +70,9 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("valid_num")
     private int validNum;
 
+    @SqlField("community_sum_manage_reward")
+    private BigDecimal communitySumManageReward;
+
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
     }
@@ -228,5 +231,13 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
 
     public void setReferId(String referId) {
         this.referId = referId;
+    }
+
+    public BigDecimal getCommunitySumManageReward() {
+        return communitySumManageReward;
+    }
+
+    public void setCommunitySumManageReward(BigDecimal communitySumManageReward) {
+        this.communitySumManageReward = communitySumManageReward;
     }
 }
