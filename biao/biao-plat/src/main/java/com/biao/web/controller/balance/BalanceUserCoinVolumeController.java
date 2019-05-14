@@ -5,6 +5,7 @@ import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.entity.*;
 import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
+import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
@@ -73,6 +74,9 @@ public class BalanceUserCoinVolumeController {
     @Autowired
     private BalancePlatDayRateConfig balancePlatDayRateConfig;
 
+    @Autowired
+    private PlatUserDao platUserDao;
+
     /**
      * 根据用户查询所有币种余额收益信息
      * @return
@@ -121,7 +125,6 @@ public class BalanceUserCoinVolumeController {
                             });
                         });
                     }
-                    findByRank();
                     return GlobalMessageResponseVo
                             .newSuccessInstance(listVo);
                 });
@@ -323,6 +326,54 @@ public class BalanceUserCoinVolumeController {
                         }
                         coinVolumeVO.setUserName(userName);
 
+                        listVo.add(coinVolumeVO);
+
+                    });
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
+    /**
+     * 我的社区邀请明细
+     * @return
+     */
+    @GetMapping("/balance/volume/inviteUserList")
+    public Mono<GlobalMessageResponseVo> findInviteUserList() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    //查询余币宝资产信息
+                    List<PlatUser> users = platUserDao.findInvitesById(e.getId());
+                    List<BalanceCoinVolumeVO> listVo = new ArrayList<>();
+                    users.forEach(user -> {
+                        BalanceCoinVolumeVO coinVolumeVO = new BalanceCoinVolumeVO();
+                        BeanUtils.copyProperties(user, coinVolumeVO);
+                        //前期只查USDT
+                        List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(user.getId(),"USDT");
+                        if(listVolume != null && listVolume.size()>0){
+                            BalanceUserCoinVolume balanceVolume=listVolume.get(0);
+                            coinVolumeVO.setTeamLevel(balanceVolume.getTeamLevel());
+                            coinVolumeVO.setValidNum(balanceVolume.getValidNum());
+                            coinVolumeVO.setTeamAmount(balanceVolume.getTeamAmount());
+                        }
+                        String userName=null;
+                        if(user.getMobile() != null ){
+                            userName=user.getMobile().substring(0,3)+"******"+user.getMobile().substring(user.getMobile().length()-2);
+                        }else if (user.getMail() != null){
+                            int index =user.getMail().indexOf("@");
+                            if(index>4){
+                                userName=user.getMail().substring(0,index-4)+"****"+user.getMail().substring(index);
+                            }else{
+                                userName=user.getMail().substring(0,1)+"****"+user.getMail().substring(index);
+                            }
+
+                        }
+                        coinVolumeVO.setUserName(userName);
                         listVo.add(coinVolumeVO);
 
                     });

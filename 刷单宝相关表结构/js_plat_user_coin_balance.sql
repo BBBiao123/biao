@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-05-13 18:13:51
+Date: 2019-05-14 23:08:03
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -49,5 +49,10 @@ CREATE TABLE `js_plat_user_coin_balance` (
   `yesterday_revenue` decimal(32,16) DEFAULT NULL COMMENT '昨日收入（收益+奖励）',
   `mobile` varchar(11) DEFAULT NULL,
   `mail` varchar(64) DEFAULT NULL,
+  `equality_reward` decimal(32,16) DEFAULT NULL COMMENT '平级奖励',
+  `community_manage_reward` decimal(32,16) DEFAULT NULL COMMENT '社区管理奖',
+  `share_reward` decimal(32,16) DEFAULT NULL COMMENT '分享奖励',
+  `scalping_reward` decimal(32,16) DEFAULT NULL COMMENT '刷单奖励',
+  `differential_reward` decimal(32,16) DEFAULT NULL COMMENT '级益奖',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='余币宝用户信息表';

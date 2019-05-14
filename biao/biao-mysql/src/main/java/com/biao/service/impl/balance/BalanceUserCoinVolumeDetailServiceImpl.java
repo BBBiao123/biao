@@ -101,6 +101,36 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         e.setTeamLevel("V"+String.valueOf(balanceDetail.getTeamLevel()));
                         //社区有效用户数
                         e.setValidNum(balanceDetail.getValidNum());
+                        //刷单奖
+                        if(e.getScalpingReward() != null){
+                            e.setScalpingReward(e.getScalpingReward().add(balanceDetail.getStaticsIncome()));
+                        }else {
+                            e.setScalpingReward(balanceDetail.getStaticsIncome());
+                        }
+                        //分享奖
+                        if(e.getShareReward()!= null){
+                            e.setShareReward(e.getShareReward().add(balanceDetail.getDynamicsIncome()));
+                        }else {
+                            e.setShareReward(balanceDetail.getDynamicsIncome());
+                        }
+                        //社区管理奖
+                        if(e.getCommunityManageReward() != null){
+                            e.setCommunityManageReward(e.getCommunityManageReward().add(balanceDetail.getCommunityManageReward()));
+                        }else {
+                            e.setCommunityManageReward(balanceDetail.getCommunityManageReward());
+                        }
+                        //平级奖
+                        if(e.getEqualityReward() != null){
+                            e.setEqualityReward(e.getEqualityReward().add(balanceDetail.getEqualityReward()));
+                        }else {
+                            e.setEqualityReward(balanceDetail.getEqualityReward());
+                        }
+                        //级益奖
+                        if(e.getDifferentialReward() != null){
+                            e.setDifferentialReward(e.getDifferentialReward().add(balanceDetail.getCommunityManageReward()));
+                        }else {
+                            e.setDifferentialReward(balanceDetail.getCommunityManageReward());
+                        }
                         e.setYesterdayStaticsIncome(balanceDetail.getStaticsIncome());
                         e.setYesterdayDynamicsIncome(balanceDetail.getDynamicsIncome());
                         e.setYesterdayCommunityReward(balanceDetail.getCommunityManageReward());

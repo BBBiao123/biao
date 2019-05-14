@@ -36,5 +36,10 @@ public class BalanceCoinVolumeVO implements Serializable {
     private int ordNum;
     private String userName;
     private String createStr;
+    private BigDecimal equalityReward;
+    private BigDecimal communityManageReward;
+    private BigDecimal shareReward;
+    private BigDecimal scalpingReward;
+    private BigDecimal differentialReward;
 
 }

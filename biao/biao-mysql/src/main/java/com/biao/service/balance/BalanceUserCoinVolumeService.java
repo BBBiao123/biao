@@ -28,4 +28,6 @@ public interface BalanceUserCoinVolumeService {
     List<BalanceUserCoinVolume> findAll(String userId);
 
     public List<BalanceUserCoinVolume> findByRank();
+
+    List<BalanceUserCoinVolume> findByUserIdAndCoin(String userId,String coinSymbol);
 }

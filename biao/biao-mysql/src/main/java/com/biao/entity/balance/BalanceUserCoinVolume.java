@@ -86,6 +86,21 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     private int ordNum;
 
+    @SqlField("equality_reward")
+    private BigDecimal equalityReward;
+
+    @SqlField("community_manage_reward")
+    private BigDecimal communityManageReward;
+
+    @SqlField("share_reward")
+    private BigDecimal shareReward;
+
+    @SqlField("scalping_reward")
+    private BigDecimal scalpingReward;
+
+    @SqlField("differential_reward")
+    private BigDecimal differentialReward;
+
     public String getUserId() {
         return userId;
     }
@@ -260,5 +275,45 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public BigDecimal getEqualityReward() {
+        return equalityReward;
+    }
+
+    public void setEqualityReward(BigDecimal equalityReward) {
+        this.equalityReward = equalityReward;
+    }
+
+    public BigDecimal getCommunityManageReward() {
+        return communityManageReward;
+    }
+
+    public void setCommunityManageReward(BigDecimal communityManageReward) {
+        this.communityManageReward = communityManageReward;
+    }
+
+    public BigDecimal getShareReward() {
+        return shareReward;
+    }
+
+    public void setShareReward(BigDecimal shareReward) {
+        this.shareReward = shareReward;
+    }
+
+    public BigDecimal getScalpingReward() {
+        return scalpingReward;
+    }
+
+    public void setScalpingReward(BigDecimal scalpingReward) {
+        this.scalpingReward = scalpingReward;
+    }
+
+    public BigDecimal getDifferentialReward() {
+        return differentialReward;
+    }
+
+    public void setDifferentialReward(BigDecimal differentialReward) {
+        this.differentialReward = differentialReward;
     }
 }
