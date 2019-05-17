@@ -36,10 +36,10 @@ mybatis:
     configLocation: classpath:mybatis/mybatis-config.xml
 omni:
     rpc:
-      username: btcwpy
-      password: btcwpy
-      uri: http://127.0.0.1:18111
-      sendAddr: 1FnE1xasMnBWHk95ANHf5bepJhJFtdwfMx
+      username: wpybtc
+      password: wpybtc
+      uri: http://47.75.198.192:18111
+      sendAddr: 1ELQJ73re7ZS1D5TwBgzYHEjpfhxuYub3D
       collectAddr:
       feeAddr:
       collectFee: 0.0002
