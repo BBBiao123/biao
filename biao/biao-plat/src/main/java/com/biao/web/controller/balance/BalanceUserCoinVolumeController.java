@@ -380,5 +380,24 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
                 });
     }
+
+    /**
+     * 查询活动参与人数
+     * @return
+     */
+    @GetMapping("/balance/volume/countNum")
+    public Mono<GlobalMessageResponseVo> findByCountNum() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                     int countNum=balanceUserCoinVolumeService.findByCountNum();
+                    return GlobalMessageResponseVo.newSuccessInstance(countNum);
+                });
+    }
 }
 
