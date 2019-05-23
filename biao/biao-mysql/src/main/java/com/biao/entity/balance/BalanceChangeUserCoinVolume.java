@@ -1,10 +1,13 @@
 package com.biao.entity.balance;
 
+import com.biao.config.CustomLocalDateTimeSerializer;
 import com.biao.entity.BaseEntity;
 import com.biao.sql.SqlField;
 import com.biao.sql.SqlTable;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 用户余币宝资产
@@ -31,6 +34,13 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
 
     @SqlField("mail")
     private String mail;
+
+    @SqlField("accumul_income")
+    private BigDecimal accumulIncome;
+
+    @SqlField("take_out_date")
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    protected LocalDateTime takeOutDate;
 
     public String getUserId() {
         return userId;
@@ -78,5 +88,21 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public BigDecimal getAccumulIncome() {
+        return accumulIncome;
+    }
+
+    public void setAccumulIncome(BigDecimal accumulIncome) {
+        this.accumulIncome = accumulIncome;
+    }
+
+    public LocalDateTime getTakeOutDate() {
+        return takeOutDate;
+    }
+
+    public void setTakeOutDate(LocalDateTime takeOutDate) {
+        this.takeOutDate = takeOutDate;
     }
 }

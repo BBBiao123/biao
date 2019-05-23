@@ -2,10 +2,12 @@ package com.biao.service.impl.balance;
 
 import com.biao.entity.Coin;
 import com.biao.entity.PlatUser;
+import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
 import com.biao.mapper.CoinDao;
 import com.biao.mapper.PlatUserDao;
+import com.biao.mapper.balance.BalanceChangeUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDetailDao;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
@@ -41,6 +43,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
     @Autowired
     private CoinDao coinDao;
+
+    @Autowired(required = false)
+    private BalanceChangeUserCoinVolumeDao balanceChangeUserCoinVolumeDao;
 
     @Override
     public String save(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail) {
@@ -387,6 +392,23 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("oneDayRate")));
                 }
 
+                List<BalanceChangeUserCoinVolume> balanceChangeList=balanceChangeUserCoinVolumeDao.findByUserId(e.getUserId(),e.getCoinSymbol());
+                if (CollectionUtils.isNotEmpty(balanceChangeList)) {
+                    balanceChangeList.forEach(balanceChangeVolume ->{
+                        BigDecimal changeIncome=new BigDecimal(0);
+                        if(e.getCoinBalance().compareTo(balance)>0){
+                            changeIncome=changeIncome.add(balanceChangeVolume.getCoinNum().multiply(map.get("secondDayRate")));
+                        }else{
+                            changeIncome=changeIncome.add(balanceChangeVolume.getCoinNum().multiply(map.get("oneDayRate")));
+                        }
+                       if(balanceChangeVolume.getAccumulIncome() !=null){
+                           balanceChangeVolume.setAccumulIncome(balanceChangeVolume.getAccumulIncome().add(changeIncome));
+                       }else {
+                           balanceChangeVolume.setAccumulIncome(changeIncome);
+                       }
+                        balanceChangeUserCoinVolumeDao.updateById(balanceChangeVolume);
+                    });
+                }
                 //动态收益1和3
                 dynamicsIncomeTotal=dynamicsIncomeTotal.add(e.getCoinBalance().multiply(dayRate));
                 BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail=new BalanceUserCoinVolumeDetail();
