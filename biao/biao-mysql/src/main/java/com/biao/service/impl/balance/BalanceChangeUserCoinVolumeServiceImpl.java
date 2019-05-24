@@ -49,4 +49,9 @@ public class BalanceChangeUserCoinVolumeServiceImpl implements BalanceChangeUser
     public List<BalanceChangeUserCoinVolume>   findChangeByUserId(String userId){
         return balanceUserCoinVolumeDao.findChangeByUserId(userId);
     }
+
+    @Override
+    public List<BalanceChangeUserCoinVolume> findChangeAllByUserId(String userId){
+        return balanceUserCoinVolumeDao.findChangeAllByUserId(userId);
+    }
 }

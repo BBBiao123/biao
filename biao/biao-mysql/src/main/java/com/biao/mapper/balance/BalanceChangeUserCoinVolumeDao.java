@@ -28,4 +28,7 @@ public interface BalanceChangeUserCoinVolumeDao {
     @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where user_id = #{userId} and flag=1   and take_out_date is null order by create_date desc")
     List<BalanceChangeUserCoinVolume> findChangeByUserId(String userId);
 
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where user_id = #{userId}   order by create_date desc")
+    List<BalanceChangeUserCoinVolume> findChangeAllByUserId(String userId);
+
 }

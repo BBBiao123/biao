@@ -30,4 +30,6 @@ public interface BalanceChangeUserCoinVolumeService {
     List<BalanceChangeUserCoinVolume> findByUserId(String userId, String coinSymbol);
 
     List<BalanceChangeUserCoinVolume>   findChangeByUserId(String userId);
+
+    List<BalanceChangeUserCoinVolume> findChangeAllByUserId(String userId);
 }
