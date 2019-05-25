@@ -5,14 +5,17 @@ import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.entity.*;
 import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
+import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
 import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceChangeUserCoinVolumeService;
+import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
 import com.biao.vo.balance.BalanceChangeCoinVolumeVO;
 import com.biao.vo.balance.BalanceCoinVolumeVO;
+import com.biao.vo.balance.BalanceUserCoinVolumeDetailVO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -25,7 +28,10 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +64,9 @@ public class BalanceUserCoinVolumeController {
 
     @Autowired
     private BalanceChangeUserCoinVolumeService balanceChangeUserCoinVolumeService;
+
+    @Autowired
+    private BalanceUserCoinVolumeDetailService balanceUserCoinVolumeDetailService;
 
     @Autowired
     private OrderService orderService;
@@ -376,6 +385,182 @@ public class BalanceUserCoinVolumeController {
                         coinVolumeVO.setUserName(userName);
                         listVo.add(coinVolumeVO);
 
+                    });
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
+    /**
+     * 查询活动参与人数
+     * @return
+     */
+    @GetMapping("/balance/volume/countNum")
+    public Mono<GlobalMessageResponseVo> findByCountNum() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                     int countNum=balanceUserCoinVolumeService.findByCountNum();
+                    return GlobalMessageResponseVo.newSuccessInstance(countNum);
+                });
+    }
+
+    /**
+     * 查询登录用户转入记录
+     * @return
+     */
+    @GetMapping("/balance/volume/userChange")
+    public Mono<GlobalMessageResponseVo> findUserChange() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    //查询余币宝资产信息
+                    List<BalanceChangeUserCoinVolume> listVolume = balanceChangeUserCoinVolumeService.findChangeByUserId(e.getId());
+                    List<BalanceChangeCoinVolumeVO> listVo = new ArrayList<>();
+                    listVolume.forEach(coin -> {
+                        BalanceChangeCoinVolumeVO coinVolumeVO = new BalanceChangeCoinVolumeVO();
+                        BeanUtils.copyProperties(coin, coinVolumeVO);
+
+                        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime time = coin.getCreateDate();
+                        String createStr = df.format(time);
+                        coinVolumeVO.setCreateStr(createStr);
+                        String userName=null;
+                        if(coin.getMobile() != null ){
+                            userName=coin.getMobile().substring(0,3)+"******"+coin.getMobile().substring(coin.getMobile().length()-2);
+                        }else if (coin.getMail() != null){
+                            int index =coin.getMail().indexOf("@");
+                            if(index>4){
+                                userName=coin.getMail().substring(0,index-4)+"****"+coin.getMail().substring(index);
+                            }else{
+                                userName=coin.getMail().substring(0,1)+"****"+coin.getMail().substring(index);
+                            }
+
+                        }
+                        coinVolumeVO.setUserName(userName);
+
+                        listVo.add(coinVolumeVO);
+
+                    });
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+    /**
+     * 减少余币宝资产（按订单转出）
+     * @param balanceCoinVolumeVO
+     * @return
+     */
+    @PostMapping("/balance/volume/takeOutIncome")
+    public Mono<GlobalMessageResponseVo> takeOutIncome(BalanceChangeCoinVolumeVO balanceChangeCoinVolumeVO) {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    BalanceChangeUserCoinVolume  balanceUserCoinVolume=new BalanceChangeUserCoinVolume();
+                    BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
+                    balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());;
+
+                    if( StringUtils.isNotEmpty(balanceChangeCoinVolumeVO.getId()) &&  !"null".equals(balanceChangeCoinVolumeVO.getId())){
+                        balanceChangeUserCoinVolumeService.updateById(balanceUserCoinVolume);
+                    }else{
+
+                        balanceChangeUserCoinVolumeService.save(balanceUserCoinVolume);
+                    }
+                    List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceChangeCoinVolumeVO.getUserId(),balanceChangeCoinVolumeVO.getCoinSymbol());
+                    listVolume.forEach(balanceUserCoinVolume2 -> {
+                        balanceUserCoinVolume2.setCoinBalance(balanceUserCoinVolume2.getCoinBalance().subtract(balanceChangeCoinVolumeVO.getCoinNum()));
+                        balanceUserCoinVolumeService.updateById(balanceUserCoinVolume2);
+                    });
+                    LocalDateTime localDateTimeNow = LocalDateTime.now();
+                    Instant instant=Instant.ofEpochMilli(balanceChangeCoinVolumeVO.getCreateTime());
+                    ZoneId zone=ZoneId.systemDefault();
+                    LocalDateTime createDate=   LocalDateTime.ofInstant(instant,zone);
+                    Duration duration = Duration.between(createDate,localDateTimeNow);
+                    long longTime=duration.toDays();
+                    BigDecimal coinNum=balanceChangeCoinVolumeVO.getCoinNum();
+                    if (longTime<30){
+                        coinNum=coinNum.subtract(coinNum.multiply(new BigDecimal(0.05)));
+                    }
+                    userCoinVolumeExService.updateIncome(null,coinNum,balanceChangeCoinVolumeVO.getUserId(),balanceChangeCoinVolumeVO.getCoinSymbol(),false);
+                    return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
+                });
+    }
+    /**
+     * 查询登录用户财务明细
+     * @return
+     */
+    @GetMapping("/balance/volume/financeDetails")
+    public Mono<GlobalMessageResponseVo> findUserFinanceDetails() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    //查询余币宝资产信息
+                    List<BalanceUserCoinVolumeDetail> listVolume = balanceUserCoinVolumeDetailService.findAll(e.getId());
+                    List<BalanceUserCoinVolumeDetailVO> listVo = new ArrayList<>();
+                    listVolume.forEach(coin -> {
+                        BalanceUserCoinVolumeDetailVO coinVolumeVO = new BalanceUserCoinVolumeDetailVO();
+                        BeanUtils.copyProperties(coin, coinVolumeVO);
+
+                        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime time = coin.getIncomeDate();
+                        String createStr = df.format(time);
+                        coinVolumeVO.setCreateStr(createStr);
+
+                        listVo.add(coinVolumeVO);
+
+                    });
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
+    /**
+     * 查询登录用户存取记录
+     * @return
+     */
+    @GetMapping("/balance/volume/accessList")
+    public Mono<GlobalMessageResponseVo> findUserAccessList() {
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    //查询余币宝资产信息
+                    List<BalanceChangeUserCoinVolume> listVolume = balanceChangeUserCoinVolumeService.findChangeAllByUserId(e.getId());
+
+                    List<BalanceChangeCoinVolumeVO> listVo = new ArrayList<>();
+                    listVolume.forEach(coin -> {
+                        BalanceChangeCoinVolumeVO coinVolumeVO = new BalanceChangeCoinVolumeVO();
+                        BeanUtils.copyProperties(coin, coinVolumeVO);
+                        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime time = coin.getCreateDate();
+                        LocalDateTime takeOutTime = coin.getTakeOutDate();
+                        String createStr = df.format(time);
+                        coinVolumeVO.setCreateStr(createStr);
+                        if(takeOutTime != null){
+                            String takeOutTimeStr=df.format(takeOutTime);
+                            coinVolumeVO.setTakeOutTimeStr(takeOutTimeStr);
+                        }
+                        listVo.add(coinVolumeVO);
                     });
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
                 });

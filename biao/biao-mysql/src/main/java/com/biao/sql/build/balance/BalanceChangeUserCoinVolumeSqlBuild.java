@@ -5,6 +5,6 @@ import com.biao.sql.BaseSqlBuild;
 
 public class BalanceChangeUserCoinVolumeSqlBuild extends BaseSqlBuild<BalanceChangeUserCoinVolume, Integer> {
 
-    public static final String columns = "id,user_id,coin_symbol,create_date,coin_num,flag,mobile,mail";
+    public static final String columns = "id,user_id,coin_symbol,create_date,coin_num,accumul_income,flag,mobile,mail,take_out_date";
 
 }

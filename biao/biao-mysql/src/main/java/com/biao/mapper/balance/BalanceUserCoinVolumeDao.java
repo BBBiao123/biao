@@ -33,6 +33,9 @@ public interface BalanceUserCoinVolumeDao {
     @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance where   coin_symbol = #{coinSymbol} order by create_date desc")
     List<BalanceUserCoinVolume> findByCoin(@Param("coinSymbol") String coinSymbol);
 
-    @Select("select "+ BalanceUserCoinVolumeSqlBuild.columns +",(@i := @i + 1) as ordNum from js_plat_user_coin_balance ,(select   @i:=0)  t2  order by coin_balance desc  LIMIT 10")
+    @Select("select "+ BalanceUserCoinVolumeSqlBuild.columns +",(@i := @i + 1) as ordNum from js_plat_user_coin_balance ,(select   @i:=0)  t2  order by coin_balance desc  LIMIT 30")
     List<BalanceUserCoinVolume> findByRank();
+
+    @Select("select count(DISTINCT t.user_id) from js_plat_user_coin_balance t")
+    int findByCountNum();
 }

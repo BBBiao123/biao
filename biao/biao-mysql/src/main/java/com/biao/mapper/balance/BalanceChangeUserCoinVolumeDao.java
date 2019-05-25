@@ -19,8 +19,16 @@ public interface BalanceChangeUserCoinVolumeDao {
     long updateById(BalanceChangeUserCoinVolume balanceUserCoinVolume);
 
 
-    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where flag=1    order by create_date desc")
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where flag=1    order by create_date desc LIMIT 30 ")
     List<BalanceChangeUserCoinVolume> findAll();
 
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where user_id = #{userId} and  coin_symbol = #{coinSymbol} and flag=1    order by create_date desc")
+    List<BalanceChangeUserCoinVolume> findByUserId(String userId, String coinSymbol);
+
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where user_id = #{userId} and flag=1   and take_out_date is null order by create_date desc")
+    List<BalanceChangeUserCoinVolume> findChangeByUserId(String userId);
+
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where user_id = #{userId}   order by create_date desc")
+    List<BalanceChangeUserCoinVolume> findChangeAllByUserId(String userId);
 
 }

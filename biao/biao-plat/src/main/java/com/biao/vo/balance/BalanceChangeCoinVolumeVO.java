@@ -23,6 +23,10 @@ public class BalanceChangeCoinVolumeVO implements Serializable {
     private BigDecimal coinNum;
     private String userName;
     private String createStr;
+    private BigDecimal accumulIncome;
+    private long createTime;
+    private String takeOutTimeStr;
+    private int flag;
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     protected LocalDateTime createDate;
 }
