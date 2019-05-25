@@ -10,7 +10,7 @@ management:
 spring:
   datasource:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbbex-test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbex?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
       username: photoadmin
       password: Photo123456
       hikari:
@@ -38,9 +38,9 @@ omni:
     rpc:
       username: wpybtc
       password: wpybtc
-      uri: http://47.75.198.192:18111
+      uri: http://127.0.0.1:18111
       sendAddr: 1ELQJ73re7ZS1D5TwBgzYHEjpfhxuYub3D
-      collectAddr:
+      collectAddr: 1ELQJ73re7ZS1D5TwBgzYHEjpfhxuYub3D
       feeAddr:
       collectFee: 0.0002
       coinId: 23597ebbe96849368696cc298bb04463

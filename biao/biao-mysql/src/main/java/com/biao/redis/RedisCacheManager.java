@@ -2,8 +2,6 @@ package com.biao.redis;
 
 import com.biao.constant.RedisConstants;
 import com.biao.constant.RedisKeyConstant;
-import com.biao.current.threadpool.BbexThreadFactory;
-import com.biao.current.threadpool.BbexThreadPool;
 import com.biao.entity.*;
 import com.biao.entity.register.UserRegisterLottery;
 import com.biao.entity.register.UserRegisterLotteryLimit;
@@ -32,7 +30,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -110,7 +107,6 @@ public class RedisCacheManager {
                 if (Objects.nonNull(object)) {
                     redisTemplate.boundValueOps(key).set(object);
                 }
-
             }
         } catch (Exception e) {
             try {
@@ -216,7 +212,6 @@ public class RedisCacheManager {
     public RedisUserCoinVolume acquireUserCoinVolume(final String userId, final String coinSymbol) {
         return (RedisUserCoinVolume) this.cacheHashObject(RedisKeyConstant.buildUserCoinVolumeKey(userId), coinSymbol,
                 () -> buildRedisUserCoinVolume(userCoinVolumeDao.findByUserIdAndCoinSymbol(userId, coinSymbol)), () -> buildEmptyCoinVolume(userId, coinSymbol), USER_VOLUME_TYPE);
-
     }
 
     public List<RedisExPairVO> acquireAllExpair() {
