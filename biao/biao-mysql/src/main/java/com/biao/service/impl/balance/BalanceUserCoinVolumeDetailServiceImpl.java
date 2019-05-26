@@ -285,7 +285,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     @Override
     public void balanceIncomeDetailNew(Map<String ,BigDecimal> map){
         //静态收益、动态收益1和3 计算
-//        staticsIncomeAndPartDynamics(map);
+        staticsIncomeAndPartDynamics(map);
 
         //团队业绩、团队小区业绩、社区总收益 计算
         communityRecordAndLevel();
