@@ -70,7 +70,7 @@
 		<div class="control-group">
 			<label class="control-label">user_id：</label>
 			<div class="controls">
-				<form:input path="user.id" id="user" htmlEscape="false" maxlength="16" class="input-xlarge "/>
+				<form:input path="user.id" id="user" htmlEscape="false" maxlength="64" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">
