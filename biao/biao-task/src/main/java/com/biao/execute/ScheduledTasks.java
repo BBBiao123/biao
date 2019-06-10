@@ -1,14 +1,20 @@
 package com.biao.execute;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-
+import com.biao.config.AliYunCardCheckConfig;
 import com.biao.config.BalanceDayRateConfig;
+import com.biao.enums.CardStatusEnum;
+import com.biao.enums.KlineTimeEnum;
+import com.biao.enums.TradePairEnum;
+import com.biao.enums.UserCardStatusEnum;
+import com.biao.pojo.CardStatuScanCheckDTO;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
+import com.biao.service.impl.MkDividendRuleTaskServiceImpl;
+import com.biao.service.impl.MkPromoteRuleTaskServiceImpl;
+import com.biao.service.impl.UserCoinVolumeBillTaskServiceImpl;
+import com.biao.service.kline.KlineMinDateTransfer;
+import com.biao.service.register.UserRegisterLotteryService;
+import com.biao.vo.OfflineCoinVolumeDayVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +22,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.biao.config.AliYunCardCheckConfig;
-import com.biao.enums.CardStatusEnum;
-import com.biao.enums.KlineTimeEnum;
-import com.biao.enums.TradePairEnum;
-import com.biao.enums.UserCardStatusEnum;
-import com.biao.pojo.CardStatuScanCheckDTO;
-import com.biao.service.impl.MkDividendRuleTaskServiceImpl;
-import com.biao.service.impl.MkPromoteRuleTaskServiceImpl;
-import com.biao.service.impl.UserCoinVolumeBillTaskServiceImpl;
-import com.biao.service.kline.KlineMinDateTransfer;
-import com.biao.service.register.UserRegisterLotteryService;
-import com.biao.vo.OfflineCoinVolumeDayVO;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @Component
 public class ScheduledTasks {
@@ -470,8 +469,8 @@ public class ScheduledTasks {
     /**
      * 会员推广定时任务(每小时执行一次)
      */
-    // @Scheduled(cron = "0 0 0/1 * * ?")
-    //@Scheduled(fixedRate = 20000)
+     @Scheduled(cron = "0 0 0/1 * * ?")
+    @Scheduled(fixedRate = 20000)
     public void triggerPromoteTask() {
         logger.info("exexute triggerPromoteDayTask  start ....");
         mkRuleTaskCoreService.triggerPromoteDayTask();

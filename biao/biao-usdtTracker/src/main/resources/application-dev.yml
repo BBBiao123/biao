@@ -41,9 +41,9 @@ omni:
       uri: http://127.0.0.1:18111
       sendAddr: 1ELQJ73re7ZS1D5TwBgzYHEjpfhxuYub3D
       collectAddr: 1ELQJ73re7ZS1D5TwBgzYHEjpfhxuYub3D
-      feeAddr:
+      feeAddr: 1ELQJ73re7ZS1D5TwBgzYHEjpfhxuYub3D
       collectFee: 0.0002
-      coinId: 23597ebbe96849368696cc298bb04463
+      coinId:
       syncTime: 300
       sendTime: 300
       collectTime: 300

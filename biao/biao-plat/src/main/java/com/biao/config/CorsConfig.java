@@ -14,5 +14,4 @@ public class CorsConfig extends WebFluxConfigurationSupport {
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 
-
 }
