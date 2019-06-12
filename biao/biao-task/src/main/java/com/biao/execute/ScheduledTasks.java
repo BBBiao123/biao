@@ -786,6 +786,7 @@ public class ScheduledTasks {
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
         dayRateMap.put("oneDayRate",balanceDayRateConfig.getOneDayRate());
         dayRateMap.put("secondDayRate",balanceDayRateConfig.getSecondDayRate());
+        dayRateMap.put("threeDayRate",balanceDayRateConfig.getThreeDayRate());
         dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
         //每天收益和奖励计算
         balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);

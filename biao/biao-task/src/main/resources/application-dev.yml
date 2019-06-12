@@ -136,6 +136,7 @@ riskMgt:
 balance:
   oneDayRate: 0.005
   secondDayRate: 0.008
+  threeDayRate: 0.008
   equalReward: 0.1
 
 logging:

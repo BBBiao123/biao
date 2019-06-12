@@ -11,6 +11,7 @@ public class BalancePlatDayRateConfig {
 
 	private BigDecimal oneDayRate ;
 	private BigDecimal secondDayRate ;
+	private BigDecimal threeDayRate ;
 	private BigDecimal equalReward ;
 
 	public BigDecimal getOneDayRate() {
@@ -27,6 +28,14 @@ public class BalancePlatDayRateConfig {
 
 	public void setSecondDayRate(BigDecimal secondDayRate) {
 		this.secondDayRate = secondDayRate;
+	}
+
+	public BigDecimal getThreeDayRate() {
+		return threeDayRate;
+	}
+
+	public void setThreeDayRate(BigDecimal threeDayRate) {
+		this.threeDayRate = threeDayRate;
 	}
 
 	public BigDecimal getEqualReward() {

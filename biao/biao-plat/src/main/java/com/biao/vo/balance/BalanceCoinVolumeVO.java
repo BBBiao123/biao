@@ -41,5 +41,6 @@ public class BalanceCoinVolumeVO implements Serializable {
     private BigDecimal shareReward;
     private BigDecimal scalpingReward;
     private BigDecimal differentialReward;
+    private String positionName;
 
 }

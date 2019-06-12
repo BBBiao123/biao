@@ -335,6 +335,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 int length=0;
                 //仓位分界线
                 BigDecimal balance=new BigDecimal(5000);
+                BigDecimal balance2=new BigDecimal(1000);
                 //社区有效用户数
                 int userNum=0;
                 List<BalanceUserCoinVolume>  childUserVolumeList= balanceUserCoinVolumeDao.findInvitesById(e.getUserId(),e.getCoinSymbol());
@@ -346,8 +347,10 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     for(BalanceUserCoinVolume childUserVolume:allPlatUserList){
                         BigDecimal childRate=new BigDecimal(0);
                         if(childUserVolume.getCoinBalance().compareTo(balance)>0){
+                            childRate=map.get("threeDayRate");
+                        } else if (childUserVolume.getCoinBalance().compareTo(balance2)>0){
                             childRate=map.get("secondDayRate");
-                        }else{
+                        } else{
                             childRate=map.get("oneDayRate");
                         }
                         communityStaticsIncome=communityStaticsIncome.add(childUserVolume.getCoinBalance().multiply(childRate));
@@ -361,8 +364,10 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         if(balanceTmp != null){
                             BigDecimal childRateSec=new BigDecimal(0);
                             if(balanceTmp.getCoinBalance().compareTo(balance)>0){
+                                childRateSec=map.get("threeDayRate");
+                            }else if (balanceTmp.getCoinBalance().compareTo(balance2)>0){
                                 childRateSec=map.get("secondDayRate");
-                            }else{
+                            } else{
                                 childRateSec=map.get("oneDayRate");
                             }
                             dynamicsIncomeTotal= dynamicsIncomeTotal.add(balanceTmp.getCoinBalance().multiply(childRateSec).multiply(new BigDecimal(0.5)));
@@ -387,6 +392,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 //静态收益
                 //收益率通过配置计算
                 if(e.getCoinBalance().compareTo(balance)>0){
+                    staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("threeDayRate")));
+                }else if (e.getCoinBalance().compareTo(balance2)>0){
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("secondDayRate")));
                 }else{
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(map.get("oneDayRate")));
@@ -397,8 +404,10 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     balanceChangeList.forEach(balanceChangeVolume ->{
                         BigDecimal changeIncome=new BigDecimal(0);
                         if(e.getCoinBalance().compareTo(balance)>0){
+                            changeIncome=changeIncome.add(balanceChangeVolume.getCoinNum().multiply(map.get("threeDayRate")));
+                        }else if (e.getCoinBalance().compareTo(balance2)>0){
                             changeIncome=changeIncome.add(balanceChangeVolume.getCoinNum().multiply(map.get("secondDayRate")));
-                        }else{
+                        } else{
                             changeIncome=changeIncome.add(balanceChangeVolume.getCoinNum().multiply(map.get("oneDayRate")));
                         }
                        if(balanceChangeVolume.getAccumulIncome() !=null){
@@ -502,10 +511,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                  if(CollectionUtils.isNotEmpty(allVolumeList)){
                      for(BalanceUserCoinVolume balanceUserCoinVolume : allVolumeList){
                          BigDecimal dayRate=new BigDecimal(0);
-                         BigDecimal balance=new BigDecimal(0);
+                         BigDecimal balance=new BigDecimal(5000);
+                         BigDecimal balance2=new BigDecimal(1000);
                          if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
+                             dayRate=map.get("threeDayRate");
+                         }else if (balanceUserCoinVolume.getCoinBalance().compareTo(balance2)>0){
                              dayRate=map.get("secondDayRate");
-                         }else{
+                         } else{
                              dayRate=map.get("oneDayRate");
                          }
                          coinIncome.add(balanceUserCoinVolume.getCoinBalance().multiply(dayRate));

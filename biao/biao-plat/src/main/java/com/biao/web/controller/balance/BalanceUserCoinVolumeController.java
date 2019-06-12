@@ -120,14 +120,26 @@ public class BalanceUserCoinVolumeController {
                                 if (userCoinVolume != null) {
                                     if (userCoinVolume.getCoinSymbol().equals(coinVolumeVO2.getName())) {
                                         BigDecimal balance=new BigDecimal(5000);
+                                        BigDecimal balance2=new BigDecimal(1000);
+                                        BigDecimal balance3=new BigDecimal(200);
                                         BigDecimal dayRate=new BigDecimal(0);
-                                        if(userCoinVolume.getCoinBalance().compareTo(balance)>0){
-                                            dayRate=dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
-                                        }else{
-                                            dayRate=dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
+                                        String positionName="";
+                                        if(userCoinVolume.getCoinBalance().compareTo(balance3)>=0){
+                                            if(userCoinVolume.getCoinBalance().compareTo(balance)>0){
+                                                dayRate=dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
+                                                positionName="三级仓";
+                                            }else if (userCoinVolume.getCoinBalance().compareTo(balance2)>0){
+                                                dayRate=dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
+                                                positionName="二级仓";
+                                            } else{
+                                                positionName="一级仓";
+                                                dayRate=dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
+                                            }
                                         }
+
                                         coinVolumeVO2.setRise( dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
                                         BeanUtils.copyProperties(userCoinVolume, coinVolumeVO2);
+                                        coinVolumeVO2.setPositionName(positionName);
                                         coinVolumeVO2.setReferId(e.getReferId());
                                     }
                                 }
@@ -161,9 +173,12 @@ public class BalanceUserCoinVolumeController {
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
                     balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
                     BigDecimal balance=new BigDecimal(5000);
+                    BigDecimal balance2=new BigDecimal(1000);
                     if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
+                        balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getThreeDayRate());
+                    }else if(balanceUserCoinVolume.getCoinBalance().compareTo(balance2)>0){
                         balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getSecondDayRate());
-                    }else{
+                    } else{
                         balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getOneDayRate());
                     }
 
@@ -209,9 +224,12 @@ public class BalanceUserCoinVolumeController {
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
                     balanceUserCoinVolume.setCoinBalance( balanceUserCoinVolume.getCoinBalance().subtract(balanceCoinVolumeVO.getCoinNum()));
                     BigDecimal balance=new BigDecimal(5000);
+                    BigDecimal balance2=new BigDecimal(1000);
                     if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
+                        balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getThreeDayRate());
+                    }else if (balanceUserCoinVolume.getCoinBalance().compareTo(balance2)>0){
                         balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getSecondDayRate());
-                    }else{
+                    } else{
                         balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getOneDayRate());
                     }
                     if( StringUtils.isNotEmpty(balanceCoinVolumeVO.getId()) &&  !"null".equals(balanceCoinVolumeVO.getId())){
