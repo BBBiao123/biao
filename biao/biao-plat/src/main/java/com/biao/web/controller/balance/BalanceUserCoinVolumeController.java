@@ -181,7 +181,7 @@ public class BalanceUserCoinVolumeController {
                     } else{
                         balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getOneDayRate());
                     }
-
+                    balanceUserCoinVolume.setReferId(e.getReferId());
                     if( StringUtils.isNotEmpty(balanceCoinVolumeVO.getId()) &&  !"null".equals(balanceCoinVolumeVO.getId())){
                         balanceUserCoinVolumeService.updateById(balanceUserCoinVolume);
                     }else{
@@ -192,7 +192,7 @@ public class BalanceUserCoinVolumeController {
                     balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
                     balanceChangeUserCoinVolume.setUserId(balanceCoinVolumeVO.getUserId());
                     balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
-                    balanceChangeUserCoinVolume.setFlag(1);
+                    balanceChangeUserCoinVolume.setFlag(0);
                     balanceChangeUserCoinVolume.setMail(e.getMail());
                     balanceChangeUserCoinVolume.setMobile(e.getMobile());
                     balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
@@ -242,7 +242,7 @@ public class BalanceUserCoinVolumeController {
                     balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
                     balanceChangeUserCoinVolume.setUserId(balanceCoinVolumeVO.getUserId());
                     balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
-                    balanceChangeUserCoinVolume.setFlag(2);
+                    balanceChangeUserCoinVolume.setFlag(1);
                     balanceChangeUserCoinVolume.setMail(e.getMail());
                     balanceChangeUserCoinVolume.setMobile(e.getMobile());
                     balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
@@ -490,7 +490,7 @@ public class BalanceUserCoinVolumeController {
                     BalanceChangeUserCoinVolume  balanceUserCoinVolume=new BalanceChangeUserCoinVolume();
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
                     balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());;
-
+                    balanceUserCoinVolume.setFlag(1);
                     if( StringUtils.isNotEmpty(balanceChangeCoinVolumeVO.getId()) &&  !"null".equals(balanceChangeCoinVolumeVO.getId())){
                         balanceChangeUserCoinVolumeService.updateById(balanceUserCoinVolume);
                     }else{

@@ -1,4 +1,4 @@
-management:
+﻿management:
   health:
     mail:
       enabled: false
