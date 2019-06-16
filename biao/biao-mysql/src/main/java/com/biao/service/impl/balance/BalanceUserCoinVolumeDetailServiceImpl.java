@@ -10,6 +10,7 @@ import com.biao.mapper.PlatUserDao;
 import com.biao.mapper.balance.BalanceChangeUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDetailDao;
+import com.biao.service.UserCoinVolumeExService;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
 import com.biao.util.SnowFlake;
@@ -37,6 +38,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
     @Autowired(required = false)
     private BalanceUserCoinVolumeDao balanceUserCoinVolumeDao;
+
+    @Autowired
+    private UserCoinVolumeExService userCoinVolumeExService;
 
     @Autowired(required = false)
     private PlatUserDao platUserDao;
@@ -73,8 +77,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 List<BalanceUserCoinVolumeDetail> balanceDetailList=balanceUserCoinVolumeDetailDao.findByUserIdAndCoin(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList)) {
                     balanceDetailList.forEach(balanceDetail -> {
-                        //余额计算
-                        e.setCoinBalance(e.getCoinBalance().add(balanceDetail.getSumRevenue()));
+                        //总资产计算
+                        e.setCoinBalance(e.getCoinBalance());
 
                         e.setYesterdayIncome(balanceDetail.getDetailIncome());
                         e.setYesterdayReward(balanceDetail.getDetailReward());
@@ -94,7 +98,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         }else {
                             e.setSumRevenue(balanceDetail.getSumRevenue());
                         }
-
+                        if(balanceDetail.getSumRevenue() != null){
+                            userCoinVolumeExService.updateIncome(null,balanceDetail.getSumRevenue(),balanceDetail.getUserId(),balanceDetail.getCoinSymbol(),false);
+                        }
                         //昨日收入
                         e.setYesterdayRevenue(balanceDetail.getSumRevenue());
                         //团队刷单总值

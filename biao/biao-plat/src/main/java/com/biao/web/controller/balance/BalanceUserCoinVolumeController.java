@@ -33,9 +33,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 余币宝controller
@@ -144,6 +142,11 @@ public class BalanceUserCoinVolumeController {
                                     }
                                 }
                             });
+                            UserCoinVolume userVolume=   userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), coinVolumeVO2.getName());
+                            if(userVolume != null){
+                                coinVolumeVO2.setUserSurplus(userVolume.getVolume());
+
+                            }
                         });
                     }
                     return GlobalMessageResponseVo
@@ -331,7 +334,8 @@ public class BalanceUserCoinVolumeController {
                     //查询余币宝资产信息
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByRank();
                     List<BalanceCoinVolumeVO> listVo = new ArrayList<>();
-                    listVolume.forEach(coin -> {
+                    int userRank=0;
+                    for (BalanceUserCoinVolume coin:listVolume){
                         BalanceCoinVolumeVO coinVolumeVO = new BalanceCoinVolumeVO();
                         BeanUtils.copyProperties(coin, coinVolumeVO);
 
@@ -354,9 +358,16 @@ public class BalanceUserCoinVolumeController {
                         coinVolumeVO.setUserName(userName);
 
                         listVo.add(coinVolumeVO);
+                        if(e.getId().equals(coin.getUserId())){
+                            userRank=coin.getOrdNum();
+                        }
 
-                    });
-                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                    }
+
+                    Map<String,Object> map=new HashMap<String,Object>();
+                    map.put("userRank",userRank);
+                    map.put("list",listVo);
+                    return GlobalMessageResponseVo.newSuccessInstance(map);
                 });
     }
 
