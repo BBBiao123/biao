@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-05-13 17:02:21
+Date: 2019-06-17 19:05:22
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -44,5 +44,6 @@ CREATE TABLE `js_plat_user_coin_incomedetail` (
   `refer_id` varchar(64) DEFAULT NULL COMMENT '上级ID',
   `sum_revenue` decimal(32,16) DEFAULT NULL COMMENT '总收益',
   `valid_num` bigint(32) DEFAULT NULL,
+  `community_sum_manage_reward` decimal(32,16) DEFAULT NULL COMMENT '总的社区管理奖',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='余币宝收益明细表';
