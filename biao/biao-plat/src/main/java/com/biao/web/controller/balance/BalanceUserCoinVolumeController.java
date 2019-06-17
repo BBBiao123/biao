@@ -11,16 +11,14 @@ import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.pojo.RequestQuery;
 import com.biao.pojo.ResponsePage;
+import com.biao.query.UserFinanceQuery;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceChangeUserCoinVolumeService;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
 import com.biao.service.balance.BalanceUserVolumeIncomeDetailService;
-import com.biao.vo.balance.BalanceChangeCoinVolumeVO;
-import com.biao.vo.balance.BalanceCoinVolumeVO;
-import com.biao.vo.balance.BalanceUserCoinVolumeDetailVO;
-import com.biao.vo.balance.BalanceUserVolumeIncomeDetailVO;
+import com.biao.vo.balance.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -542,7 +540,7 @@ public class BalanceUserCoinVolumeController {
      * @return
      */
     @GetMapping("/balance/volume/financeDetails")
-    public Mono<GlobalMessageResponseVo> findUserFinanceDetails(RequestQuery requestQuery) {
+    public Mono<GlobalMessageResponseVo> findUserFinanceDetails(UserFinanceQuery requestQuery) {
 
         Mono<SecurityContext> context
                 = ReactiveSecurityContextHolder.getContext();
@@ -551,11 +549,11 @@ public class BalanceUserCoinVolumeController {
                 .map(s -> s.getAuthentication().getPrincipal())
                 .cast(RedisSessionUser.class)
                 .map(e -> {
-
+                    requestQuery.setUserId(e.getId());
                     ResponsePage<BalanceUserVolumeIncomeDetailVO> responsePage = new ResponsePage<>();
                     Page<BalanceUserVolumeIncomeDetailVO> page = PageHelper.startPage(requestQuery.getCurrentPage(), requestQuery.getShowCount());
                     //查询余币宝资产信息
-                    List<BalanceUserVolumeIncomeDetail> listVolume = balanceUserVolumeIncomeDetailService.findAll(e.getId());
+                    List<BalanceUserVolumeIncomeDetail> listVolume = balanceUserVolumeIncomeDetailService.findAll(requestQuery);
                     List<BalanceUserVolumeIncomeDetailVO> listVo = new ArrayList<>();
                     listVolume.forEach(coin -> {
                         BalanceUserVolumeIncomeDetailVO coinVolumeVO = new BalanceUserVolumeIncomeDetailVO();

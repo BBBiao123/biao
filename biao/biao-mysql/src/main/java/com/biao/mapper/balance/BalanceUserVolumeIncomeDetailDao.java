@@ -2,6 +2,7 @@ package com.biao.mapper.balance;
 
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
 import com.biao.entity.balance.BalanceUserVolumeIncomeDetail;
+import com.biao.query.UserFinanceQuery;
 import com.biao.sql.build.balance.BalanceUserCoinVolumeDetailSqlBuild;
 import com.biao.sql.build.balance.BalanceUserVolumeIncomeDetailSqlBuild;
 import org.apache.ibatis.annotations.*;
@@ -21,8 +22,8 @@ public interface BalanceUserVolumeIncomeDetailDao {
     @UpdateProvider(type = BalanceUserVolumeIncomeDetailSqlBuild.class, method = "updateById")
     long updateById(BalanceUserVolumeIncomeDetail balanceUserCoinVolumeDetail);
 
-    @Select("select " + BalanceUserVolumeIncomeDetailSqlBuild.columns + " from js_plat_user_income_incomedetail where  user_id = #{userId}  and DATEDIFF(income_date,NOW())<=0 and DATEDIFF(income_date,NOW())>-10 order by income_date desc,reward_type ")
-    List<BalanceUserVolumeIncomeDetail> findByUserId(@Param("userId") String userId);
+   @SelectProvider(type = BalanceUserVolumeIncomeDetailSqlBuild.class, method = "findByUserId")
+    List<BalanceUserVolumeIncomeDetail> findByUserId(UserFinanceQuery userTradeQuery);
 
     @Select("select " + BalanceUserVolumeIncomeDetailSqlBuild.columns + " from js_plat_user_income_incomedetail where  user_id = #{userId} and coin_symbol = #{coinSymbol} and version=1 order by create_date desc")
     List<BalanceUserCoinVolumeDetail> findByUserIdAndCoin(@Param("userId") String userId, @Param("coinSymbol") String coinSymbol);

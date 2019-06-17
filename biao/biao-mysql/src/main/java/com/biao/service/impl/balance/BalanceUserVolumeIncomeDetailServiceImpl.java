@@ -12,6 +12,7 @@ import com.biao.mapper.balance.BalanceChangeUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDao;
 import com.biao.mapper.balance.BalanceUserCoinVolumeDetailDao;
 import com.biao.mapper.balance.BalanceUserVolumeIncomeDetailDao;
+import com.biao.query.UserFinanceQuery;
 import com.biao.service.UserCoinVolumeExService;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.balance.BalanceUserVolumeIncomeDetailService;
@@ -69,8 +70,8 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
     }
 
     @Override
-    public List<BalanceUserVolumeIncomeDetail> findAll(String userId) {
-        return balanceUserVolumeIncomeDetailDao.findByUserId(userId);
+    public List<BalanceUserVolumeIncomeDetail> findAll(UserFinanceQuery requestQuery) {
+        return balanceUserVolumeIncomeDetailDao.findByUserId(requestQuery);
     }
 
     @Override
