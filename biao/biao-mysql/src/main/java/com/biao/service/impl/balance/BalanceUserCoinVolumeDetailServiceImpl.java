@@ -510,7 +510,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
                 balanceUserCoinVolumeDetail.setReferId(e.getReferId());
                 //收益日期精确到天
-                balanceUserCoinVolumeDetail.setIncomeDate(LocalDateTime.now().minusHours(1));
+                balanceUserCoinVolumeDetail.setIncomeDate(LocalDateTime.now());
                 balanceUserCoinVolumeDetail.setCreateDate(LocalDateTime.now());
                 balanceUserCoinVolumeDetail.setUpdateDate(LocalDateTime.now());
                 balanceUserCoinVolumeDetail.setVersion(1);

@@ -790,12 +790,13 @@ public class ScheduledTasks {
         dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
         //每天收益和奖励计算
         balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+        balanceUserCoinVolumeDetailService.balanceIncomeCount();
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
     /**
      * 余币宝统计,每天8:00AM
      */
-    @Scheduled(cron = "0 0 8 * * ?")
+   // @Scheduled(cron = "0 0 8 * * ?")
     public void balanceIncomeCount() {
         logger.info("exexute balanceIncomeCount  start ....");
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
