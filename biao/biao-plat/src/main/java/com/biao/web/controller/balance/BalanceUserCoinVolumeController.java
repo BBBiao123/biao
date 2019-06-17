@@ -6,16 +6,23 @@ import com.biao.entity.*;
 import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
+import com.biao.entity.balance.BalanceUserVolumeIncomeDetail;
 import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
+import com.biao.pojo.RequestQuery;
+import com.biao.pojo.ResponsePage;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceChangeUserCoinVolumeService;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.balance.BalanceUserCoinVolumeService;
+import com.biao.service.balance.BalanceUserVolumeIncomeDetailService;
 import com.biao.vo.balance.BalanceChangeCoinVolumeVO;
 import com.biao.vo.balance.BalanceCoinVolumeVO;
 import com.biao.vo.balance.BalanceUserCoinVolumeDetailVO;
+import com.biao.vo.balance.BalanceUserVolumeIncomeDetailVO;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +72,9 @@ public class BalanceUserCoinVolumeController {
 
     @Autowired
     private BalanceUserCoinVolumeDetailService balanceUserCoinVolumeDetailService;
+
+    @Autowired
+    private BalanceUserVolumeIncomeDetailService balanceUserVolumeIncomeDetailService;
 
     @Autowired
     private OrderService orderService;
@@ -532,7 +542,7 @@ public class BalanceUserCoinVolumeController {
      * @return
      */
     @GetMapping("/balance/volume/financeDetails")
-    public Mono<GlobalMessageResponseVo> findUserFinanceDetails() {
+    public Mono<GlobalMessageResponseVo> findUserFinanceDetails(RequestQuery requestQuery) {
 
         Mono<SecurityContext> context
                 = ReactiveSecurityContextHolder.getContext();
@@ -541,11 +551,14 @@ public class BalanceUserCoinVolumeController {
                 .map(s -> s.getAuthentication().getPrincipal())
                 .cast(RedisSessionUser.class)
                 .map(e -> {
+
+                    ResponsePage<BalanceUserVolumeIncomeDetailVO> responsePage = new ResponsePage<>();
+                    Page<BalanceUserVolumeIncomeDetailVO> page = PageHelper.startPage(requestQuery.getCurrentPage(), requestQuery.getShowCount());
                     //查询余币宝资产信息
-                    List<BalanceUserCoinVolumeDetail> listVolume = balanceUserCoinVolumeDetailService.findAll(e.getId());
-                    List<BalanceUserCoinVolumeDetailVO> listVo = new ArrayList<>();
+                    List<BalanceUserVolumeIncomeDetail> listVolume = balanceUserVolumeIncomeDetailService.findAll(e.getId());
+                    List<BalanceUserVolumeIncomeDetailVO> listVo = new ArrayList<>();
                     listVolume.forEach(coin -> {
-                        BalanceUserCoinVolumeDetailVO coinVolumeVO = new BalanceUserCoinVolumeDetailVO();
+                        BalanceUserVolumeIncomeDetailVO coinVolumeVO = new BalanceUserVolumeIncomeDetailVO();
                         BeanUtils.copyProperties(coin, coinVolumeVO);
 
                         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -556,7 +569,9 @@ public class BalanceUserCoinVolumeController {
                         listVo.add(coinVolumeVO);
 
                     });
-                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                    responsePage.setCount(page.getTotal());
+                    responsePage.setList(listVo);
+                    return GlobalMessageResponseVo.newSuccessInstance(responsePage);
                 });
     }
 
