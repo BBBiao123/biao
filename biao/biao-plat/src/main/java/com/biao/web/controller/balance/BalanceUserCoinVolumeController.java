@@ -33,10 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -147,6 +144,39 @@ public class BalanceUserCoinVolumeController {
                                         BeanUtils.copyProperties(userCoinVolume, coinVolumeVO2);
                                         coinVolumeVO2.setPositionName(positionName);
                                         coinVolumeVO2.setReferId(e.getReferId());
+                                        //我的资产
+                                        if(coinVolumeVO2.getCoinBalance() != null){
+                                            coinVolumeVO2.setCoinBalance(coinVolumeVO2.getCoinBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getYesterdayIncome() != null){
+                                            coinVolumeVO2.setYesterdayIncome(coinVolumeVO2.getYesterdayIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getYesterdayReward() != null){
+                                            coinVolumeVO2.setYesterdayReward(coinVolumeVO2.getYesterdayReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getTeamAmount() != null){
+                                            coinVolumeVO2.setTeamAmount(coinVolumeVO2.getTeamAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getTeamCommunityAmount() != null){
+                                            coinVolumeVO2.setTeamCommunityAmount(coinVolumeVO2.getTeamCommunityAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getAccumulIncome() != null){
+                                            coinVolumeVO2.setAccumulIncome(coinVolumeVO2.getAccumulIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getAccumulReward() != null){
+                                            coinVolumeVO2.setAccumulReward(coinVolumeVO2.getAccumulReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+                                        //
+                                        if(coinVolumeVO2.getUserSurplus() != null){
+                                            coinVolumeVO2.setUserSurplus(coinVolumeVO2.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
+                                        }
+
                                     }
                                 }
                             });
@@ -317,6 +347,9 @@ public class BalanceUserCoinVolumeController {
                             }
 
                         }
+                        if(coinVolumeVO.getCoinNum() != null){
+                            coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        }
                         coinVolumeVO.setUserName(userName);
 
                         listVo.add(coinVolumeVO);
@@ -364,7 +397,9 @@ public class BalanceUserCoinVolumeController {
 
                         }
                         coinVolumeVO.setUserName(userName);
-
+                        if(coinVolumeVO.getCoinBalance() != null){
+                            coinVolumeVO.setCoinBalance(coinVolumeVO.getCoinBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        }
                         listVo.add(coinVolumeVO);
                         if(e.getId().equals(coin.getUserId())){
                             userRank=coin.getOrdNum();
@@ -471,6 +506,7 @@ public class BalanceUserCoinVolumeController {
                         LocalDateTime time = coin.getCreateDate();
                         String createStr = df.format(time);
                         coinVolumeVO.setCreateStr(createStr);
+                        coinVolumeVO.setCreateTime(time.toInstant(ZoneOffset.of("+8")).toEpochMilli());
                         String userName=null;
                         if(coin.getMobile() != null ){
                             userName=coin.getMobile().substring(0,3)+"******"+coin.getMobile().substring(coin.getMobile().length()-2);
@@ -484,7 +520,13 @@ public class BalanceUserCoinVolumeController {
 
                         }
                         coinVolumeVO.setUserName(userName);
+                        if(coinVolumeVO.getCoinNum() != null){
+                            coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        }
 
+                        if(coinVolumeVO.getAccumulIncome() != null){
+                            coinVolumeVO.setAccumulIncome(coinVolumeVO.getAccumulIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        }
                         listVo.add(coinVolumeVO);
 
                     });
@@ -550,6 +592,9 @@ public class BalanceUserCoinVolumeController {
                 .cast(RedisSessionUser.class)
                 .map(e -> {
                     requestQuery.setUserId(e.getId());
+                   if("0".equals(requestQuery.getRewardType() )) {
+                       requestQuery.setRewardType(null);
+                   }
                     ResponsePage<BalanceUserVolumeIncomeDetailVO> responsePage = new ResponsePage<>();
                     Page<BalanceUserVolumeIncomeDetailVO> page = PageHelper.startPage(requestQuery.getCurrentPage(), requestQuery.getShowCount());
                     //查询余币宝资产信息
@@ -563,7 +608,9 @@ public class BalanceUserCoinVolumeController {
                         LocalDateTime time = coin.getIncomeDate();
                         String createStr = df.format(time);
                         coinVolumeVO.setCreateStr(createStr);
-
+                        if(coinVolumeVO.getDetailReward() != null){
+                            coinVolumeVO.setDetailReward(coinVolumeVO.getDetailReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        }
                         listVo.add(coinVolumeVO);
 
                     });
@@ -601,6 +648,10 @@ public class BalanceUserCoinVolumeController {
                         if(takeOutTime != null){
                             String takeOutTimeStr=df.format(takeOutTime);
                             coinVolumeVO.setTakeOutTimeStr(takeOutTimeStr);
+                            coinVolumeVO.setCreateStr(takeOutTimeStr);
+                        }
+                        if(coinVolumeVO.getCoinNum() != null){
+                            coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
                         }
                         listVo.add(coinVolumeVO);
                     });
