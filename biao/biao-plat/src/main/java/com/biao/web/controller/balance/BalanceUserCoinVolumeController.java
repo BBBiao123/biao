@@ -117,76 +117,101 @@ public class BalanceUserCoinVolumeController {
                     });
                     //查询余币宝资产信息
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findAll(e.getId());
-                    if (CollectionUtils.isNotEmpty(listVolume)) {
+
                         listVo.forEach(coinVolumeVO2 -> {
+                            if (CollectionUtils.isNotEmpty(listVolume)) {
                             listVolume.forEach(userCoinVolume -> {
+
                                 if (userCoinVolume != null) {
                                     if (userCoinVolume.getCoinSymbol().equals(coinVolumeVO2.getName())) {
-                                        BigDecimal balance=new BigDecimal(5000);
-                                        BigDecimal balance2=new BigDecimal(1000);
-                                        BigDecimal balance3=new BigDecimal(200);
-                                        BigDecimal dayRate=new BigDecimal(0);
-                                        String positionName="";
-                                        if(userCoinVolume.getCoinBalance().compareTo(balance3)>=0){
-                                            if(userCoinVolume.getCoinBalance().compareTo(balance)>0){
-                                                dayRate=dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
-                                                positionName="三级仓";
-                                            }else if (userCoinVolume.getCoinBalance().compareTo(balance2)>0){
-                                                dayRate=dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
-                                                positionName="二级仓";
-                                            } else{
-                                                positionName="一级仓";
-                                                dayRate=dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
-                                            }
-                                        }
-
-                                        coinVolumeVO2.setRise( dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
                                         BeanUtils.copyProperties(userCoinVolume, coinVolumeVO2);
-                                        coinVolumeVO2.setPositionName(positionName);
                                         coinVolumeVO2.setReferId(e.getReferId());
-                                        //我的资产
-                                        if(coinVolumeVO2.getCoinBalance() != null){
-                                            coinVolumeVO2.setCoinBalance(coinVolumeVO2.getCoinBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getYesterdayIncome() != null){
-                                            coinVolumeVO2.setYesterdayIncome(coinVolumeVO2.getYesterdayIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getYesterdayReward() != null){
-                                            coinVolumeVO2.setYesterdayReward(coinVolumeVO2.getYesterdayReward().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getTeamAmount() != null){
-                                            coinVolumeVO2.setTeamAmount(coinVolumeVO2.getTeamAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getTeamCommunityAmount() != null){
-                                            coinVolumeVO2.setTeamCommunityAmount(coinVolumeVO2.getTeamCommunityAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getAccumulIncome() != null){
-                                            coinVolumeVO2.setAccumulIncome(coinVolumeVO2.getAccumulIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getAccumulReward() != null){
-                                            coinVolumeVO2.setAccumulReward(coinVolumeVO2.getAccumulReward().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
-                                        //
-                                        if(coinVolumeVO2.getUserSurplus() != null){
-                                            coinVolumeVO2.setUserSurplus(coinVolumeVO2.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
-                                        }
 
                                     }
                                 }
                             });
-                            UserCoinVolume userVolume=   userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), coinVolumeVO2.getName());
-                            if(userVolume != null){
-                                coinVolumeVO2.setUserSurplus(userVolume.getVolume());
 
+                         }
+                            BigDecimal balance = new BigDecimal(5000);
+                            BigDecimal balance2 = new BigDecimal(1000);
+                            BigDecimal balance3 = new BigDecimal(200);
+                            BigDecimal dayRate = new BigDecimal(0);
+                            String positionName = "";
+                            if (coinVolumeVO2.getCoinBalance() != null && coinVolumeVO2.getCoinBalance().compareTo(balance3) >= 0) {
+                                if (coinVolumeVO2.getCoinBalance().compareTo(balance) > 0) {
+                                    dayRate = dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
+                                    positionName = "三级仓";
+                                } else if (coinVolumeVO2.getCoinBalance().compareTo(balance2) > 0) {
+                                    dayRate = dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
+                                    positionName = "二级仓";
+                                } else {
+                                    positionName = "一级仓";
+                                    dayRate = dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
+                                }
+                            } else {
+                                positionName = "暂无仓位";
+                            }
+                            coinVolumeVO2.setRise(dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+                            coinVolumeVO2.setPositionName(positionName);
+                            //我的资产
+                            if (coinVolumeVO2.getCoinBalance() != null) {
+                                coinVolumeVO2.setCoinBalance(coinVolumeVO2.getCoinBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setCoinBalance(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getYesterdayIncome() != null) {
+                                coinVolumeVO2.setYesterdayIncome(coinVolumeVO2.getYesterdayIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setYesterdayIncome(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getYesterdayReward() != null) {
+                                coinVolumeVO2.setYesterdayReward(coinVolumeVO2.getYesterdayReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setYesterdayReward(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getTeamAmount() != null) {
+                                coinVolumeVO2.setTeamAmount(coinVolumeVO2.getTeamAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setTeamAmount(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getTeamCommunityAmount() != null) {
+                                coinVolumeVO2.setTeamCommunityAmount(coinVolumeVO2.getTeamCommunityAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setTeamCommunityAmount(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getAccumulIncome() != null) {
+                                coinVolumeVO2.setAccumulIncome(coinVolumeVO2.getAccumulIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setAccumulIncome(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getAccumulReward() != null) {
+                                coinVolumeVO2.setAccumulReward(coinVolumeVO2.getAccumulReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setAccumulReward(BigDecimal.ZERO);
+                            }
+                            //
+                            if (coinVolumeVO2.getUserSurplus() != null) {
+                                coinVolumeVO2.setUserSurplus(coinVolumeVO2.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
+                                coinVolumeVO2.setUserSurplus(BigDecimal.ZERO);
+                            }
+                            if (coinVolumeVO2.getTeamLevel() == null) {
+                                coinVolumeVO2.setTeamLevel("V0");
+                            }
+                            UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), coinVolumeVO2.getName());
+                            if (userVolume != null) {
+                                coinVolumeVO2.setUserSurplus(userVolume.getVolume());
+                            }
+                            if (coinVolumeVO2.getUserSurplus() == null) {
+                                coinVolumeVO2.setUserSurplus(BigDecimal.ZERO);
                             }
                         });
-                    }
                     return GlobalMessageResponseVo
                             .newSuccessInstance(listVo);
                 });
@@ -212,7 +237,12 @@ public class BalanceUserCoinVolumeController {
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
-                    balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
+                    balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
+                    if(balanceUserCoinVolume.getCoinBalance() !=null){
+                        balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
+                    }else{
+                        balanceUserCoinVolume.setCoinBalance(balanceCoinVolumeVO.getCoinNum());
+                    }
                     BigDecimal balance=new BigDecimal(5000);
                     BigDecimal balance2=new BigDecimal(1000);
                     if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
@@ -441,6 +471,10 @@ public class BalanceUserCoinVolumeController {
                             coinVolumeVO.setTeamLevel(balanceVolume.getTeamLevel());
                             coinVolumeVO.setValidNum(balanceVolume.getValidNum());
                             coinVolumeVO.setTeamAmount(balanceVolume.getTeamAmount());
+                        }else{
+                            coinVolumeVO.setTeamLevel("V0");
+                            coinVolumeVO.setValidNum(0);
+                            coinVolumeVO.setTeamAmount(BigDecimal.ZERO);
                         }
                         String userName=null;
                         if(user.getMobile() != null ){
@@ -658,8 +692,6 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
                 });
     }
-
-
     /**
      * 主动发起计算收益 for test
      * @return
@@ -687,8 +719,6 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
-
-
 
 }
 

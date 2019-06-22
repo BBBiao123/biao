@@ -251,7 +251,7 @@ public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkP
     private void transferCoin() {
         List<Mk2PopularizeRegisterCoin> registerCoins = mk2PopularizeRegisterCoinDao.findTransfer(DateUtils.getCurrentDate());
         registerCoins.forEach(e -> {
-            userCoinVolumeService.updateIncome(null, new BigDecimal(e.getVolume()), e.getUserId(), e.getCoinSymbol());
+//            userCoinVolumeService.updateIncome(null, new BigDecimal(e.getVolume()), e.getUserId(), e.getCoinSymbol());
             mk2PopularizeRegisterCoinDao.updateTransferSuccess(e.getId());
         });
     }
