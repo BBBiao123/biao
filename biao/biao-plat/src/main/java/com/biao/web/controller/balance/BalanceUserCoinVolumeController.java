@@ -658,5 +658,37 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
                 });
     }
+
+
+    /**
+     * 主动发起计算收益 for test
+     * @return
+     */
+    @GetMapping("/balance/count")
+    public Mono<GlobalMessageResponseVo> count() {
+        LOGGER.info("exexute balanceIncomeDetail  start ....");
+        //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
+        //静态收益和平级奖的利率支持配置
+        Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
+        dayRateMap.put("oneDayRate",new BigDecimal(0.005));
+        dayRateMap.put("secondDayRate",new BigDecimal(0.008));
+        dayRateMap.put("threeDayRate",new BigDecimal(0.008));
+        dayRateMap.put("equalReward",new BigDecimal(0.1));
+        //每天收益和奖励计算
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+        balanceUserCoinVolumeDetailService.balanceIncomeCount();
+        LOGGER.info("exexute balanceIncomeDetail  end   ....");
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
+                });
+    }
+
+
+
 }
 
