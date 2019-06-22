@@ -196,11 +196,7 @@ public class BalanceUserCoinVolumeController {
                                 coinVolumeVO2.setAccumulReward(BigDecimal.ZERO);
                             }
                             //
-                            if (coinVolumeVO2.getUserSurplus() != null) {
-                                coinVolumeVO2.setUserSurplus(coinVolumeVO2.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
-                            } else {
-                                coinVolumeVO2.setUserSurplus(BigDecimal.ZERO);
-                            }
+
                             if (coinVolumeVO2.getTeamLevel() == null) {
                                 coinVolumeVO2.setTeamLevel("V0");
                             }
@@ -208,7 +204,9 @@ public class BalanceUserCoinVolumeController {
                             if (userVolume != null) {
                                 coinVolumeVO2.setUserSurplus(userVolume.getVolume());
                             }
-                            if (coinVolumeVO2.getUserSurplus() == null) {
+                            if (coinVolumeVO2.getUserSurplus() != null) {
+                                coinVolumeVO2.setUserSurplus(coinVolumeVO2.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            } else {
                                 coinVolumeVO2.setUserSurplus(BigDecimal.ZERO);
                             }
                         });
