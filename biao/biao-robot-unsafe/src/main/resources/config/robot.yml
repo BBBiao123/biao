@@ -10,7 +10,7 @@ priceFactory: com.biao.robot.RandomRobotPrice
 ##实现的币安价格拉取. 这里面已经写死配置了相应的 volumeFactory与priceFactory
 priceService: com.biao.rebot.service.async.WebsocketBinancePriceService
 ### jdbcurl prod
-jdbcUrl: jdbc:mysql://mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbex?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+jdbcUrl: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbex?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
 jdbcUser: photoadmin
 jdbcPass: Photo123456
 apiKey: ccvhVvBNLjOLVq3X9RiuuMIyfkERG156esMHQkehwoUCx5CcmaglbkSNaMh7cHGG
@@ -21,5 +21,5 @@ proxy:
 redis:
   host: 47.244.153.103:6379
   password: foobaredbbexONE123
-  mode: sentinel
+  mode: default
   master: mymaster

@@ -737,7 +737,7 @@ public class ScheduledTasks {
     /**
      * 取消C2C订单(每分钟执行一次)
      */
-    @Scheduled(cron = "0 0/1 * * * ?")
+//    @Scheduled(cron = "0 0/1 * * * ?")
     //@Scheduled(fixedRate = 20000)
     public void doCancelOrderDetail() {
 
@@ -778,8 +778,8 @@ public class ScheduledTasks {
      * 余币宝收益,每天00:00AM
      */
     @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0/59 0 0/1 * * ?")
     public void balanceIncomeDetail() {
-
         logger.info("exexute balanceIncomeDetail  start ....");
 //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
         //静态收益和平级奖的利率支持配置
@@ -793,6 +793,7 @@ public class ScheduledTasks {
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
+
     /**
      * 余币宝统计,每天8:00AM
      */
