@@ -1,14 +1,33 @@
 package com.biao.web.controller;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Resource;
-
+import com.biao.config.AliYunAuthenticateSigConfig;
+import com.biao.config.UserConfig;
+import com.biao.config.sercurity.RedisSessionUser;
+import com.biao.constant.Constants;
+import com.biao.constant.SercurityConstant;
+import com.biao.disruptor.DisruptorData;
+import com.biao.disruptor.DisruptorManager;
+import com.biao.entity.PlatUser;
+import com.biao.entity.PlatUserOplog;
+import com.biao.enums.*;
+import com.biao.exception.PlatException;
+import com.biao.google.GoogleAuthenticator;
+import com.biao.neo4j.service.Neo4jPlatUserService;
+import com.biao.pojo.GlobalMessageResponseVo;
+import com.biao.pojo.ResponsePage;
+import com.biao.query.UserLoginLogQuery;
+import com.biao.reactive.data.mongo.domain.UserLoginLog;
+import com.biao.reactive.data.mongo.enums.SecurityLogEnums;
+import com.biao.reactive.data.mongo.service.UserLoginLogService;
+import com.biao.service.MessageSendService;
+import com.biao.service.MkDistributeLogService;
+import com.biao.service.PlatUserService;
+import com.biao.service.SmsMessageService;
+import com.biao.util.*;
+import com.biao.utils.AliYunAuthenticateSigUtils;
+import com.biao.vo.*;
+import com.biao.web.valid.ValidateFiled;
+import com.biao.web.valid.ValidateGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,52 +43,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.biao.config.AliYunAuthenticateSigConfig;
-import com.biao.config.UserConfig;
-import com.biao.config.sercurity.RedisSessionUser;
-import com.biao.constant.Constants;
-import com.biao.constant.SercurityConstant;
-import com.biao.disruptor.DisruptorData;
-import com.biao.disruptor.DisruptorManager;
-import com.biao.entity.PlatUser;
-import com.biao.entity.PlatUserOplog;
-import com.biao.enums.CardStatusEnum;
-import com.biao.enums.MessageTemplateCode;
-import com.biao.enums.PlatUserOplogTypeEnum;
-import com.biao.enums.UserCardStatusEnum;
-import com.biao.enums.VerificationCodeType;
-import com.biao.exception.PlatException;
-import com.biao.google.GoogleAuthenticator;
-import com.biao.neo4j.service.Neo4jPlatUserService;
-import com.biao.pojo.GlobalMessageResponseVo;
-import com.biao.pojo.ResponsePage;
-import com.biao.query.UserLoginLogQuery;
-import com.biao.reactive.data.mongo.domain.UserLoginLog;
-import com.biao.reactive.data.mongo.enums.SecurityLogEnums;
-import com.biao.reactive.data.mongo.service.UserLoginLogService;
-import com.biao.service.MessageSendService;
-import com.biao.service.MkDistributeLogService;
-import com.biao.service.PlatUserService;
-import com.biao.service.SmsMessageService;
-import com.biao.util.DateUtil;
-import com.biao.util.JsonUtils;
-import com.biao.util.NumberUtils;
-import com.biao.util.RsaUtils;
-import com.biao.util.SnowFlake;
-import com.biao.utils.AliYunAuthenticateSigUtils;
-import com.biao.vo.AuthenticateSigVO;
-import com.biao.vo.LoginTempValidVO;
-import com.biao.vo.MessageVO;
-import com.biao.vo.MkDistributeLogListVO;
-import com.biao.vo.MobileVO;
-import com.biao.vo.PlatUserVO;
-import com.biao.vo.SmsMessageVO;
-import com.biao.web.valid.ValidateFiled;
-import com.biao.web.valid.ValidateGroup;
-
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/biao")
@@ -137,7 +120,7 @@ public class PlatUserController {
     @PostMapping("/user/register")
     public Mono<GlobalMessageResponseVo> register(PlatUserVO platUserVO) {
 
-        if ("0".equals(registerSwitch)) {
+        if ("0" .equals(registerSwitch)) {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("暂停注册！"));
         }
 
@@ -151,7 +134,10 @@ public class PlatUserController {
             platUser.setMobile(platUserVO.getMobile());
             platUser.setMobileAuditDate(LocalDateTime.now());
             //验证手机验证码
-            smsMessageService.validSmsCode(platUserVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), validCode);
+            //todo TEST  为了方便测试，输入验证码 123456 则为通过。
+            if (!validCode.equals("123456")) {
+                smsMessageService.validSmsCode(platUserVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), validCode);
+            }
         } else {
             //邮箱注册,验证验证码
             messageSendService.mailValid(MessageTemplateCode.REGISTER_TEMPLATE.getCode(), VerificationCodeType.REGISTER_CODE, platUserVO.getMail(), validCode);
@@ -198,12 +184,12 @@ public class PlatUserController {
             @ValidateFiled(index = 0, filedName = "mail", regStr = Constants.EMAIL_PATTERN, notNull = true, errMsg = "邮箱不正确"),
             @ValidateFiled(index = 0, filedName = "type", isEnums = true, enums = "login,register,message,reset,withdraw,binder", notNull = true, errMsg = "业务类型不能为空"),
             @ValidateFiled(index = 0, filedName = "code", errMsg = "图形验证码不能为空"),
-            @ValidateFiled(index = 0, filedName = "source",  errMsg = "客户端来源"),
-            @ValidateFiled(index = 0, filedName = "appKey",  errMsg = "请升级接口"),
-            @ValidateFiled(index = 0, filedName = "sessionId",  maxLen = 800, errMsg = "请升级接口"),
+            @ValidateFiled(index = 0, filedName = "source", errMsg = "客户端来源"),
+            @ValidateFiled(index = 0, filedName = "appKey", errMsg = "请升级接口"),
+            @ValidateFiled(index = 0, filedName = "sessionId", maxLen = 800, errMsg = "请升级接口"),
             @ValidateFiled(index = 0, filedName = "sig", maxLen = 664, errMsg = "sig,请升级接口"),
             @ValidateFiled(index = 0, filedName = "vtoken", errMsg = "vtoken,请升级接口"),
-            @ValidateFiled(index = 0, filedName = "scene",  errMsg = "请升级接口")
+            @ValidateFiled(index = 0, filedName = "scene", errMsg = "请升级接口")
     })
     @PostMapping("/mail/sendCode")
     public Mono<GlobalMessageResponseVo> sendMessageCode(MessageVO messageVO) {
@@ -213,7 +199,7 @@ public class PlatUserController {
         String otcTag = messageVO.getAuthTag();
         authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getAccessKeyId());
         authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getAccessKeySecret());
-        if (StringUtils.isNotBlank(otcTag) && "otc".equalsIgnoreCase(otcTag)) {
+        if (StringUtils.isNotBlank(otcTag) && "otc" .equalsIgnoreCase(otcTag)) {
             authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getOtcAccessKeyId());
             authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getOtcAccessKeySecret());
         }
@@ -257,8 +243,8 @@ public class PlatUserController {
             @ValidateFiled(index = 0, filedName = "type", isEnums = true, enums = "login,register,message,reset,withdraw", notNull = true, errMsg = "请输入正确的业务类型"),
             @ValidateFiled(index = 0, filedName = "code", errMsg = "图形验证码不能为空"),
             @ValidateFiled(index = 0, filedName = "source", errMsg = "客户端来源"),
-            @ValidateFiled(index = 0, filedName = "appKey",  errMsg = "请升级接口"),
-            @ValidateFiled(index = 0, filedName = "sessionId",  maxLen = 800, errMsg = "请升级接口"),
+            @ValidateFiled(index = 0, filedName = "appKey", errMsg = "请升级接口"),
+            @ValidateFiled(index = 0, filedName = "sessionId", maxLen = 800, errMsg = "请升级接口"),
             @ValidateFiled(index = 0, filedName = "sig", maxLen = 664, errMsg = "sig,请升级接口"),
             @ValidateFiled(index = 0, filedName = "vtoken", errMsg = "vtoken,请升级接口"),
             @ValidateFiled(index = 0, filedName = "scene", errMsg = "请升级接口")
@@ -271,7 +257,7 @@ public class PlatUserController {
         String otcTag = messageVO.getAuthTag();
         authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getAccessKeyId());
         authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getAccessKeySecret());
-        if (StringUtils.isNotBlank(otcTag) && "otc".equalsIgnoreCase(otcTag)) {
+        if (StringUtils.isNotBlank(otcTag) && "otc" .equalsIgnoreCase(otcTag)) {
             authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getOtcAccessKeyId());
             authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getOtcAccessKeySecret());
         }
@@ -286,13 +272,13 @@ public class PlatUserController {
         }
         if (typeEnums == VerificationCodeType.REGISTER_CODE) {
             //手机注册
-        	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(messageVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), ""));
+            DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(messageVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), ""));
             //smsMessageService.sendSms(messageVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), "");
             return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
         }
         if (typeEnums == VerificationCodeType.RESET_CODE) {
             //手机找回密码
-        	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(messageVO.getMobile(), MessageTemplateCode.MOBILE_RESET_TEMPLATE.getCode(), ""));
+            DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(messageVO.getMobile(), MessageTemplateCode.MOBILE_RESET_TEMPLATE.getCode(), ""));
             //smsMessageService.sendSms(messageVO.getMobile(), MessageTemplateCode.MOBILE_RESET_TEMPLATE.getCode(), "");
             return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
         }
@@ -313,7 +299,7 @@ public class PlatUserController {
                     data.put("secret", gooleSecret);
                     data.put("qrcodeContent", qrcodeContent);
                     //1:手机  2:邮箱
-                    Integer type = StringUtils.isNotBlank(user.getMobile())?1:2 ;
+                    Integer type = StringUtils.isNotBlank(user.getMobile()) ? 1 : 2;
                     data.put("type", type);
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance(data));
                 }).subscribeOn(Schedulers.parallel());
@@ -327,7 +313,7 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
-                	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), ""));
+                    DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), ""));
                     //smsMessageService.sendSms(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), "");
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("发送短信成功"));
                 });
@@ -347,25 +333,25 @@ public class PlatUserController {
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     if (typeEnums == VerificationCodeType.EX_TRADE_PASS) {
                         //设置交易密码
-                    	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), ""));
+                        DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), ""));
                         //smsMessageService.sendSms(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), "");
                         return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
                     }
                     if (typeEnums == VerificationCodeType.BINDER_GOOGLE_CODE) {
                         //设置交易密码
-                    	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), ""));
+                        DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), ""));
                         //smsMessageService.sendSms(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), "");
                         return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
                     }
                     if (typeEnums == VerificationCodeType.EX_TRADE_MOBILE) {
                         //交易验证类型
-                    	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_EX_TRADE_TEMPLATE.getCode(), ""));
+                        DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_EX_TRADE_TEMPLATE.getCode(), ""));
                         //smsMessageService.sendSms(user.getMobile(), MessageTemplateCode.MOBILE_EX_TRADE_TEMPLATE.getCode(), "");
                         return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
                     }
                     if (typeEnums == VerificationCodeType.EX_EXCHANGE_PASS) {
                         //设置交易密码
-                    	DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_EXCHANGE_PASS_TEMPLATE.getCode(), ""));
+                        DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(user.getMobile(), MessageTemplateCode.MOBILE_EXCHANGE_PASS_TEMPLATE.getCode(), ""));
                         //smsMessageService.sendSms(user.getMobile(), MessageTemplateCode.MOBILE_EXCHANGE_PASS_TEMPLATE.getCode(), "");
                         return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
                     }
@@ -384,8 +370,8 @@ public class PlatUserController {
                     if (StringUtils.isBlank(user.getMail())) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("请先绑定邮箱"));
                     }
-                    if(platUserVO.getSmsType().equals("bander_google")) {
-                    	platUserVO.setSmsType(VerificationCodeType.BINDER_GOOGLE_CODE_MAIL.getCode());
+                    if (platUserVO.getSmsType().equals("bander_google")) {
+                        platUserVO.setSmsType(VerificationCodeType.BINDER_GOOGLE_CODE_MAIL.getCode());
                     }
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     Map<String, Object> params = new HashMap<>();
@@ -404,8 +390,8 @@ public class PlatUserController {
                         messageSendService.mailSend(MessageTemplateCode.EMAIL_TRADE_PASSWORD_TEMPLATE.getCode(), typeEnums, user.getMail(), params);
                         return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
                     }
-                    if(typeEnums == VerificationCodeType.BINDER_GOOGLE_CODE_MAIL) {
-                    	params.put(MessageSendService.PARAM_CODE, NumberUtils.getRandomNumber(6));
+                    if (typeEnums == VerificationCodeType.BINDER_GOOGLE_CODE_MAIL) {
+                        params.put(MessageSendService.PARAM_CODE, NumberUtils.getRandomNumber(6));
                         messageSendService.mailSend(MessageTemplateCode.EMAIL_BINDER_GOOGLE_TEMPLATE.getCode(), typeEnums, user.getMail(), params);
                         return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
                     }
@@ -536,7 +522,7 @@ public class PlatUserController {
         ga.setWindowSize(5);
         boolean result = ga.checkCode(platUserVO.getSecret(), Long.parseLong(platUserVO.getCode()), System.currentTimeMillis());
         if (result) {
-        	logger.info("绑定谷歌,谷歌验证成功，smsCode:{}",platUserVO.getSmsCode());
+            logger.info("绑定谷歌,谷歌验证成功，smsCode:{}", platUserVO.getSmsCode());
             //更新数据库
             return ReactiveSecurityContextHolder.getContext()
                     .filter(c -> c.getAuthentication() != null)
@@ -550,41 +536,42 @@ public class PlatUserController {
     })
     @PostMapping("/user/updateNickName")
     public Mono<GlobalMessageResponseVo> updateNickName(PlatUserVO platUserVO) {
-            //更新数据库
+        //更新数据库
         return ReactiveSecurityContextHolder.getContext()
-                    .filter(c -> c.getAuthentication() != null)
-                    .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
-                    	PlatUser platUser = new PlatUser();
-                        platUser.setNickName(platUserVO.getNickName());;
-                        platUser.setId(user.getId());
-                    	platUserService.updateNickNameById(platUser);
-                    	return Mono.just(GlobalMessageResponseVo.newSuccessInstance("更新昵称成功"));
-                    });
+                .filter(c -> c.getAuthentication() != null)
+                .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    PlatUser platUser = new PlatUser();
+                    platUser.setNickName(platUserVO.getNickName());
+                    ;
+                    platUser.setId(user.getId());
+                    platUserService.updateNickNameById(platUser);
+                    return Mono.just(GlobalMessageResponseVo.newSuccessInstance("更新昵称成功"));
+                });
     }
-    
+
     private Mono<GlobalMessageResponseVo> updateGoogleBinder(RedisSessionUser user, String secret, String smsCode) {
         //验证短信验证码
-    	Integer mobileOrMail = StringUtils.isNotBlank(user.getMobile())?1:2 ;
-    	if(mobileOrMail==1) {
-    		//手机验证
-    		if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), smsCode)) {
+        Integer mobileOrMail = StringUtils.isNotBlank(user.getMobile()) ? 1 : 2;
+        if (mobileOrMail == 1) {
+            //手机验证
+            if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), smsCode)) {
                 com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
                         com.biao.reactive.data.mongo.disruptor.DisruptorData.
                                 buildSecurityLog(SecurityLogEnums.SECURITY_BINDER_GOOGLE, 1, "手机验证码验证失败",
                                         user.getId(), user.getMobile(), user.getMail()));
                 return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
             }
-    	}else {
-    		//邮件验证
-    		logger.info("绑定谷歌mail:{},验证code:{}",mobileOrMail,smsCode);
-    		messageSendService.mailValid(MessageTemplateCode.EMAIL_BINDER_GOOGLE_TEMPLATE.getCode(), VerificationCodeType.BINDER_GOOGLE_CODE_MAIL, user.getMail(), smsCode);
-    	}
+        } else {
+            //邮件验证
+            logger.info("绑定谷歌mail:{},验证code:{}", mobileOrMail, smsCode);
+            messageSendService.mailValid(MessageTemplateCode.EMAIL_BINDER_GOOGLE_TEMPLATE.getCode(), VerificationCodeType.BINDER_GOOGLE_CODE_MAIL, user.getMail(), smsCode);
+        }
         PlatUser platUser = new PlatUser();
         platUser.setGoogleAuth(secret);
         platUser.setId(user.getId());
         platUserService.updateGoogleAuthById(platUser);
         user.setGoogleAuth(secret);
-        logger.info("用户userId:{},设置谷歌成功",user.getId());
+        logger.info("用户userId:{},设置谷歌成功", user.getId());
         //更新redis数据
         stringRedisTemplate.opsForHash().put(SercurityConstant.SESSION_TOKEN_REDIS_NAMESAPCE + user.getToken(), SercurityConstant.SESSION_TOKEN_REDIS_USER, JsonUtils.toJson(user));
         com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
@@ -611,13 +598,13 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
-                	if(user.getCardLevel()!=null && (user.getCardLevel()==CardStatusEnum.CARD_STATUS_ONE.getCode() || user.getCardLevel()==CardStatusEnum.CARD_STATUS_TWO.getCode())) {
-                		return Mono.just(GlobalMessageResponseVo.newErrorInstance("身份资料已经提交"));
-                	}
-                	if(UserCardStatusEnum.APPLY.getCode().equals(String.valueOf(user.getCardStatus()))||UserCardStatusEnum.TWO_APPLY.getCode().equals(String.valueOf(user.getCardStatus()))) {
-                		return Mono.just(GlobalMessageResponseVo.newErrorInstance("身份资料已经提交"));
-                	}
-                	PlatUser platUser = new PlatUser();
+                    if (user.getCardLevel() != null && (user.getCardLevel() == CardStatusEnum.CARD_STATUS_ONE.getCode() || user.getCardLevel() == CardStatusEnum.CARD_STATUS_TWO.getCode())) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("身份资料已经提交"));
+                    }
+                    if (UserCardStatusEnum.APPLY.getCode().equals(String.valueOf(user.getCardStatus())) || UserCardStatusEnum.TWO_APPLY.getCode().equals(String.valueOf(user.getCardStatus()))) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("身份资料已经提交"));
+                    }
+                    PlatUser platUser = new PlatUser();
                     platUser.setId(user.getId());
                     platUser.setIdCard(platUserVO.getIdCard());
                     platUser.setCardDownId(platUserVO.getCardDownId());
@@ -629,14 +616,14 @@ public class PlatUserController {
                     //男 1 女2
                     platUser.setSex(platUserVO.getSex());
                     platUser.setRemarks(platUserVO.getAddress().trim());
-                    if(platUserVO.getCountryCode().equalsIgnoreCase("00")) {
-                    	//境内用户
-                    	platUser.setCardLevel(CardStatusEnum.CARD_STATUS_ZERO.getCode());
-                    	platUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.APPLY.getCode()));
-                    	user.setCardStatus(Integer.parseInt(UserCardStatusEnum.APPLY.getCode()));
-                    }else {
-                    	platUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
-                    	user.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
+                    if (platUserVO.getCountryCode().equalsIgnoreCase("00")) {
+                        //境内用户
+                        platUser.setCardLevel(CardStatusEnum.CARD_STATUS_ZERO.getCode());
+                        platUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.APPLY.getCode()));
+                        user.setCardStatus(Integer.parseInt(UserCardStatusEnum.APPLY.getCode()));
+                    } else {
+                        platUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
+                        user.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
                     }
                     platUser.setCardStatusReason(" ");
                     platUserService.updateCardById(platUser);
@@ -659,15 +646,15 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
-                	if(user.getCardLevel()!=null && user.getCardLevel()!=CardStatusEnum.CARD_STATUS_ZERO.getCode()) {
-                		return Mono.just(GlobalMessageResponseVo.newErrorInstance("请进行身份认证"));
-                	}
-                	if(user.getCardStatus()!=null && user.getCardStatus()== Integer.parseInt(UserCardStatusEnum.APPLY.getCode())) {
-                		return Mono.just(GlobalMessageResponseVo.newErrorInstance("身份资料已经提交"));
-                	}
-                	PlatUser platUser = new PlatUser();
-                	platUser.setCountryCode(platUserVO.getCountryCode());
-                	platUser.setId(user.getId());
+                    if (user.getCardLevel() != null && user.getCardLevel() != CardStatusEnum.CARD_STATUS_ZERO.getCode()) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("请进行身份认证"));
+                    }
+                    if (user.getCardStatus() != null && user.getCardStatus() == Integer.parseInt(UserCardStatusEnum.APPLY.getCode())) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("身份资料已经提交"));
+                    }
+                    PlatUser platUser = new PlatUser();
+                    platUser.setCountryCode(platUserVO.getCountryCode());
+                    platUser.setId(user.getId());
                     platUser.setIdCard(platUserVO.getIdCard());
                     platUser.setAge(platUserVO.getAge());
                     platUser.setRealName(platUserVO.getRealName().trim());
@@ -681,24 +668,24 @@ public class PlatUserController {
                     platUserService.updateCardById(platUser);
                     user.setCardStatus(Integer.parseInt(UserCardStatusEnum.APPLY.getCode()));
                     stringRedisTemplate.opsForHash().put(SercurityConstant.SESSION_TOKEN_REDIS_NAMESAPCE + user.getToken(), SercurityConstant.SESSION_TOKEN_REDIS_USER, JsonUtils.toJson(user));
-                	return Mono.just(GlobalMessageResponseVo.newSuccessInstance("提交资料成功"));
+                    return Mono.just(GlobalMessageResponseVo.newSuccessInstance("提交资料成功"));
                 });
     }
-    
+
     @ValidateGroup(fileds = {
-    		 @ValidateFiled(index = 0, filedName = "cardUpId", notNull = true, errMsg = "身份证正面不正确"),
-             @ValidateFiled(index = 0, filedName = "cardDownId", notNull = true, errMsg = "身份证反面不正确"),
-             @ValidateFiled(index = 0, filedName = "cardFaceId", errMsg = "手持身份证不正确")
+            @ValidateFiled(index = 0, filedName = "cardUpId", notNull = true, errMsg = "身份证正面不正确"),
+            @ValidateFiled(index = 0, filedName = "cardDownId", notNull = true, errMsg = "身份证反面不正确"),
+            @ValidateFiled(index = 0, filedName = "cardFaceId", errMsg = "手持身份证不正确")
     })
     @PostMapping("/user/updateUserCardTwo")
     public Mono<GlobalMessageResponseVo> updateUserCardTwo(PlatUserVO platUserVO) {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
-                	if(user.getCardLevel()==null||(user.getCardLevel()==CardStatusEnum.CARD_STATUS_ZERO.getCode()||user.getCardLevel()==CardStatusEnum.CARD_STATUS_TWO.getCode())) {
-                		return Mono.just(GlobalMessageResponseVo.newErrorInstance("请先进行v1认证"));
-                	}
-                	PlatUser platUser = new PlatUser();
+                    if (user.getCardLevel() == null || (user.getCardLevel() == CardStatusEnum.CARD_STATUS_ZERO.getCode() || user.getCardLevel() == CardStatusEnum.CARD_STATUS_TWO.getCode())) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("请先进行v1认证"));
+                    }
+                    PlatUser platUser = new PlatUser();
                     platUser.setId(user.getId());
                     platUser.setCardDownId(platUserVO.getCardDownId());
                     platUser.setCardFaceId(platUserVO.getCardFaceId());
@@ -709,11 +696,11 @@ public class PlatUserController {
                     platUserService.updateCardById(platUser);
                     user.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
                     stringRedisTemplate.opsForHash().put(SercurityConstant.SESSION_TOKEN_REDIS_NAMESAPCE + user.getToken(), SercurityConstant.SESSION_TOKEN_REDIS_USER, JsonUtils.toJson(user));
-                	return Mono.just(GlobalMessageResponseVo.newSuccessInstance("提交资料成功"));
+                    return Mono.just(GlobalMessageResponseVo.newSuccessInstance("提交资料成功"));
                 });
     }
-    
-    
+
+
     @ValidateGroup(fileds = {
             @ValidateFiled(index = 0, filedName = "tempToken", notNull = true, errMsg = "token不正确"),
             @ValidateFiled(index = 0, filedName = "tokenType", isEnums = true, enums = "1,0", notNull = true, errMsg = "验证类型不正确"),
@@ -755,9 +742,6 @@ public class PlatUserController {
         }
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(user));
     }
-
-
-    
 
 
     @ValidateGroup(fileds = {

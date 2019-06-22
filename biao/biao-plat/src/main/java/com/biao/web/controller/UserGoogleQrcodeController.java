@@ -4,7 +4,6 @@ import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.google.GoogleAuthenticator;
 import com.biao.google.QrCodeCreator;
 import com.biao.pojo.GlobalMessageResponseVo;
-import com.biao.reactive.data.mongo.service.GridFsTemplateService;
 import com.biao.util.ValidateCode;
 import com.biao.web.valid.ValidateFiled;
 import com.biao.web.valid.ValidateGroup;
@@ -47,8 +46,8 @@ public class UserGoogleQrcodeController {
     @Resource(name = "stringRedisTemplate")
     ValueOperations<String, String> valOpsStr;
 
-    @Autowired
-    private GridFsTemplateService gridFsTemplateService;
+//    @Autowired
+//    private GridFsTemplateService gridFsTemplateService;
 
     /**
      * 谷歌验证二维码生成
