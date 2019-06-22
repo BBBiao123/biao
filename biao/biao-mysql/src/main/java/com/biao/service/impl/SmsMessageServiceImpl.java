@@ -89,6 +89,7 @@ public class SmsMessageServiceImpl implements SmsMessageService {
             if (StringUtils.isNotBlank(outId) && StringHelp.regexMatcher("\\d+", outId)) {
                 code = outId;
             }
+            System.out.println("----------"+code);
             //初始化acsClient,暂不支持region化
             IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", mobileTemplate.getAccessKey(), mobileTemplate.getAccessSecret());
             DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
