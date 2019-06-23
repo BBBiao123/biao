@@ -150,8 +150,6 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
                         //总资产计算
                         e.setCoinBalance(e.getCoinBalance());
-
-                        e.setYesterdayIncome(balanceDetail.getDetailIncome());
                         e.setYesterdayIncome(balanceDetail.getDetailIncome().add(balanceDetail.getDetailReward()));
                         if(e.getAccumulIncome() !=null){
                             e.setAccumulIncome(e.getAccumulIncome().add(e.getYesterdayIncome()));
@@ -497,7 +495,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     });
                 }
                 //动态收益1和3
-                dynamicsIncomeTotal=dynamicsIncomeTotal.add(e.getCoinBalance().multiply(dayRate));
+//                dynamicsIncomeTotal=dynamicsIncomeTotal.add(e.getCoinBalance().multiply(dayRate));
+                staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().multiply(dayRate));
                 BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail=new BalanceUserCoinVolumeDetail();
                 String id = SnowFlake.createSnowFlake().nextIdString();
                 balanceUserCoinVolumeDetail.setId(id);
@@ -734,17 +733,26 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * @param sumIncome
      */
     public  void treeSuperUserList(List<BalanceUserCoinVolumeDetail> userList,BigDecimal sumIncome) {
-        int length=userList.size();
+        int length=0;
+        List<BalanceUserCoinVolumeDetail> userList2=new ArrayList<BalanceUserCoinVolumeDetail>();
         for (BalanceUserCoinVolumeDetail user : userList) {
-            user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()).add(user.getCommunityManageReward()));
-            user.setDynamicsIncome(user.getDynamicsIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
+            if(user.getValidNum()>=3){
+                length++;
+                userList2.add(user);
+            }
+        }
+        for (BalanceUserCoinVolumeDetail user : userList) {
+            if(length>0 && user.getValidNum()>=3){
+                user.setDynamicsIncome(user.getDynamicsIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
+            }
+            user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()));
             balanceUserCoinVolumeDetailDao.updateById(user);
             List<BalanceUserCoinVolumeDetail> platList= balanceUserCoinVolumeDetailDao.findAllByReferId(user.getUserId(),user.getCoinSymbol());
             //遍历出父id等于参数的id，add进子节点集合
             if (CollectionUtils.isNotEmpty(platList)) {
                 //递归遍历下一级
                 //allUserList.addAll(platList);
-                treeSuperUserList(platList,user.getDetailIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
+                treeSuperUserList(platList,user.getDetailIncome().add(user.getCommunityManageReward()));
             }
         }
 
