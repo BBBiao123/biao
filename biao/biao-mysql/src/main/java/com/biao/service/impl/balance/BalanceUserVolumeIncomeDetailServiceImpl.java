@@ -84,18 +84,18 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
                     balanceDetailList.forEach(balanceDetail -> {
                         //总资产计算
                         e.setCoinBalance(e.getCoinBalance());
-
-                        e.setYesterdayIncome(balanceDetail.getDetailIncome());
+                       //总收入
+                        e.setYesterdayIncome(balanceDetail.getDetailIncome().add(balanceDetail.getDetailReward()));
                         e.setYesterdayReward(balanceDetail.getDetailReward());
                         if(e.getAccumulIncome() !=null){
-                            e.setAccumulIncome(e.getAccumulIncome().add(balanceDetail.getDetailIncome()));
+                            e.setAccumulIncome(e.getAccumulIncome().add(e.getYesterdayIncome()));
                         }else{
-                            e.setAccumulIncome(balanceDetail.getDetailIncome());
+                            e.setAccumulIncome(e.getYesterdayIncome());
                         }
                         if(e.getAccumulReward() !=null){
-                            e.setAccumulReward(e.getAccumulReward().add(balanceDetail.getDetailReward()));
+                            e.setAccumulReward(e.getAccumulReward().add(e.getYesterdayIncome()).subtract(balanceDetail.getStaticsIncome()));
                         }else{
-                            e.setAccumulReward(balanceDetail.getDetailReward());
+                            e.setAccumulReward(e.getYesterdayIncome().subtract(balanceDetail.getStaticsIncome()));
                         }
                         //总收入
                         if(e.getSumRevenue() !=null){
@@ -341,6 +341,8 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
                 //团队总业绩
                 BigDecimal   teamRecord=new BigDecimal(0);
 
+                BigDecimal teamCoinRecord=new BigDecimal(0);
+
 
                 //直推节点个数
                 int length=0;
@@ -367,6 +369,7 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
                         communityStaticsIncome=communityStaticsIncome.add(childUserVolume.getCoinBalance().multiply(childRate));
                         teamRecord=teamRecord.add(childUserVolume.getCoinBalance());
                     }
+
                     length=childUserVolumeList.size();
                     for (int i=0;i<length;i++) {
 
@@ -451,6 +454,8 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
 
                 //奖励算法
                 balanceUserCoinVolumeDetail.setDetailReward(new BigDecimal(0));
+                teamCoinRecord=teamRecord.add(e.getCoinBalance());
+                balanceUserCoinVolumeDetail.setTeamCoinRecord(teamCoinRecord);
 
                 balanceUserCoinVolumeDetail.setReferId(e.getReferId());
                 //收益日期精确到天
@@ -474,6 +479,7 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
         if (CollectionUtils.isNotEmpty(balanceVolumeDetailList)) {
             balanceVolumeDetailList.forEach(e ->{
                 BigDecimal maxCommunityRecord=balanceUserCoinVolumeDetailDao.findByReferId(e.getUserId(),e.getCoinSymbol());
+                List<BalanceUserCoinVolume>  childUserVolumeList= balanceUserCoinVolumeDao.findInvitesById(e.getUserId(),e.getCoinSymbol());
                 if(maxCommunityRecord != null){
                     e.setTeamCommunityRecord(e.getTeamRecord().subtract(maxCommunityRecord));
                 }
@@ -557,7 +563,7 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
                 List<BalanceUserCoinVolumeDetail> childDetailList=balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(childDetailList)) {
                     for(BalanceUserCoinVolumeDetail childDetail : childDetailList){
-                        if(e.getTeamLevel()<=childDetail.getTeamLevel()){
+                        if(e.getTeamLevel()>0 && e.getTeamLevel()<=childDetail.getTeamLevel()){
                             //级差制算法 上级社区级别低于等于下级
                             realityStaticsIncome=realityStaticsIncome.subtract(childDetail.getCommunityStaticsIncome());
                         }
@@ -606,7 +612,7 @@ public class BalanceUserVolumeIncomeDetailServiceImpl implements BalanceUserVolu
                 List<BalanceUserCoinVolumeDetail> childDetailList=balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(childDetailList)) {
                     for(BalanceUserCoinVolumeDetail childDetail : childDetailList){
-                        if(e.getTeamLevel()>childDetail.getTeamLevel()){
+                        if(e.getTeamLevel()>1 && e.getTeamLevel()>childDetail.getTeamLevel()){
                             //级差制算法 上级社区级别高于下级
                             BigDecimal childCommunityManageReward=childDetail.getCommunitySumManageReward();
                             if(childCommunityManageReward != null){

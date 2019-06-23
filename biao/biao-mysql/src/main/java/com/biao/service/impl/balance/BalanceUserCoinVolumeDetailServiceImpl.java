@@ -82,76 +82,86 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 List<BalanceUserCoinVolumeDetail> balanceDetailList=balanceUserCoinVolumeDetailDao.findByUserIdAndCoin(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(balanceDetailList)) {
                     balanceDetailList.forEach(balanceDetail -> {
-                        BalanceUserVolumeIncomeDetail balanceIncomeDetail=new BalanceUserVolumeIncomeDetail();
-                        String id = SnowFlake.createSnowFlake().nextIdString();
-                        balanceIncomeDetail.setId(id);
-                        balanceIncomeDetail.setRewardType("1");
-                        balanceIncomeDetail.setDetailReward(balanceDetail.getStaticsIncome());
-                        balanceIncomeDetail.setCoinSymbol(e.getCoinSymbol());
-                        balanceIncomeDetail.setIncomeDate(balanceDetail.getIncomeDate());
-                        balanceIncomeDetail.setUserId(e.getUserId());
-                        balanceIncomeDetail.setVersion(0);
-                        balanceIncomeDetail.setCreateDate(LocalDateTime.now());
-                        balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail);
-                        BalanceUserVolumeIncomeDetail balanceIncomeDetail2=new BalanceUserVolumeIncomeDetail();
-                        String id2 = SnowFlake.createSnowFlake().nextIdString();
-                        balanceIncomeDetail2.setId(id2);
-                        balanceIncomeDetail2.setRewardType("2");
-                        balanceIncomeDetail2.setDetailReward(balanceDetail.getDynamicsIncome());
-                        balanceIncomeDetail2.setCoinSymbol(e.getCoinSymbol());
-                        balanceIncomeDetail2.setIncomeDate(balanceDetail.getIncomeDate());
-                        balanceIncomeDetail2.setUserId(e.getUserId());
-                        balanceIncomeDetail2.setVersion(0);
-                        balanceIncomeDetail2.setCreateDate(LocalDateTime.now());
-                        balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail2);
-                        BalanceUserVolumeIncomeDetail balanceIncomeDetail3=new BalanceUserVolumeIncomeDetail();
-                        String id3 = SnowFlake.createSnowFlake().nextIdString();
-                        balanceIncomeDetail3.setId(id3);
-                        balanceIncomeDetail3.setRewardType("3");
-                        balanceIncomeDetail3.setDetailReward(balanceDetail.getCommunityManageReward());
-                        balanceIncomeDetail3.setCoinSymbol(e.getCoinSymbol());
-                        balanceIncomeDetail3.setIncomeDate(balanceDetail.getIncomeDate());
-                        balanceIncomeDetail3.setUserId(e.getUserId());
-                        balanceIncomeDetail3.setVersion(0);
-                        balanceIncomeDetail3.setCreateDate(LocalDateTime.now());
-                        balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail3);
-                        BalanceUserVolumeIncomeDetail balanceIncomeDetail4=new BalanceUserVolumeIncomeDetail();
-                        String id4 = SnowFlake.createSnowFlake().nextIdString();
-                        balanceIncomeDetail4.setId(id4);
-                        balanceIncomeDetail4.setRewardType("4");
-                        balanceIncomeDetail4.setDetailReward(balanceDetail.getEqualityReward());
-                        balanceIncomeDetail4.setCoinSymbol(e.getCoinSymbol());
-                        balanceIncomeDetail4.setIncomeDate(balanceDetail.getIncomeDate());
-                        balanceIncomeDetail4.setUserId(e.getUserId());
-                        balanceIncomeDetail4.setVersion(0);
-                        balanceIncomeDetail4.setCreateDate(LocalDateTime.now());
-                        balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail4);
-                        BalanceUserVolumeIncomeDetail balanceIncomeDetail5=new BalanceUserVolumeIncomeDetail();
-                        String id5 = SnowFlake.createSnowFlake().nextIdString();
-                        balanceIncomeDetail5.setId(id5);
-                        balanceIncomeDetail5.setRewardType("5");
-                        balanceIncomeDetail5.setDetailReward(balanceDetail.getCommunityManageReward());
-                        balanceIncomeDetail5.setCoinSymbol(e.getCoinSymbol());
-                        balanceIncomeDetail5.setIncomeDate(balanceDetail.getIncomeDate());
-                        balanceIncomeDetail5.setUserId(e.getUserId());
-                        balanceIncomeDetail5.setVersion(0);
-                        balanceIncomeDetail5.setCreateDate(LocalDateTime.now());
-                        balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail5);
+                       if(balanceDetail.getStaticsIncome() != null && balanceDetail.getStaticsIncome().compareTo(BigDecimal.ZERO)>0) {
+                           BalanceUserVolumeIncomeDetail balanceIncomeDetail = new BalanceUserVolumeIncomeDetail();
+                           String id = SnowFlake.createSnowFlake().nextIdString();
+                           balanceIncomeDetail.setId(id);
+                           balanceIncomeDetail.setRewardType("1");
+                           balanceIncomeDetail.setDetailReward(balanceDetail.getStaticsIncome());
+                           balanceIncomeDetail.setCoinSymbol(e.getCoinSymbol());
+                           balanceIncomeDetail.setIncomeDate(balanceDetail.getIncomeDate());
+                           balanceIncomeDetail.setUserId(e.getUserId());
+                           balanceIncomeDetail.setVersion(0);
+                           balanceIncomeDetail.setCreateDate(LocalDateTime.now());
+                           balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail);
+                       }
+                        if(balanceDetail.getDynamicsIncome() != null && balanceDetail.getDynamicsIncome().compareTo(BigDecimal.ZERO)>0) {
+                            BalanceUserVolumeIncomeDetail balanceIncomeDetail2=new BalanceUserVolumeIncomeDetail();
+                            String id2 = SnowFlake.createSnowFlake().nextIdString();
+                            balanceIncomeDetail2.setId(id2);
+                            balanceIncomeDetail2.setRewardType("2");
+                            balanceIncomeDetail2.setDetailReward(balanceDetail.getDynamicsIncome());
+                            balanceIncomeDetail2.setCoinSymbol(e.getCoinSymbol());
+                            balanceIncomeDetail2.setIncomeDate(balanceDetail.getIncomeDate());
+                            balanceIncomeDetail2.setUserId(e.getUserId());
+                            balanceIncomeDetail2.setVersion(0);
+                            balanceIncomeDetail2.setCreateDate(LocalDateTime.now());
+                            balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail2);
+                        }
+                        if(balanceDetail.getCommunityManageReward() != null && balanceDetail.getCommunityManageReward().compareTo(BigDecimal.ZERO)>0) {
+                            BalanceUserVolumeIncomeDetail balanceIncomeDetail3=new BalanceUserVolumeIncomeDetail();
+                            String id3 = SnowFlake.createSnowFlake().nextIdString();
+                            balanceIncomeDetail3.setId(id3);
+                            balanceIncomeDetail3.setRewardType("3");
+                            balanceIncomeDetail3.setDetailReward(balanceDetail.getCommunityManageReward());
+                            balanceIncomeDetail3.setCoinSymbol(e.getCoinSymbol());
+                            balanceIncomeDetail3.setIncomeDate(balanceDetail.getIncomeDate());
+                            balanceIncomeDetail3.setUserId(e.getUserId());
+                            balanceIncomeDetail3.setVersion(0);
+                            balanceIncomeDetail3.setCreateDate(LocalDateTime.now());
+                            balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail3);
+                        }
+                        if(balanceDetail.getEqualityReward() != null && balanceDetail.getEqualityReward().compareTo(BigDecimal.ZERO)>0) {
+                            BalanceUserVolumeIncomeDetail balanceIncomeDetail4=new BalanceUserVolumeIncomeDetail();
+                            String id4 = SnowFlake.createSnowFlake().nextIdString();
+                            balanceIncomeDetail4.setId(id4);
+                            balanceIncomeDetail4.setRewardType("4");
+                            balanceIncomeDetail4.setDetailReward(balanceDetail.getEqualityReward());
+                            balanceIncomeDetail4.setCoinSymbol(e.getCoinSymbol());
+                            balanceIncomeDetail4.setIncomeDate(balanceDetail.getIncomeDate());
+                            balanceIncomeDetail4.setUserId(e.getUserId());
+                            balanceIncomeDetail4.setVersion(0);
+                            balanceIncomeDetail4.setCreateDate(LocalDateTime.now());
+                            balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail4);
+                        }
+                        if(balanceDetail.getEqualityReward() != null && balanceDetail.getEqualityReward().compareTo(BigDecimal.ZERO)>0) {
+                            BalanceUserVolumeIncomeDetail balanceIncomeDetail5=new BalanceUserVolumeIncomeDetail();
+                            String id5 = SnowFlake.createSnowFlake().nextIdString();
+                            balanceIncomeDetail5.setId(id5);
+                            balanceIncomeDetail5.setRewardType("5");
+                            balanceIncomeDetail5.setDetailReward(balanceDetail.getCommunityManageReward());
+                            balanceIncomeDetail5.setCoinSymbol(e.getCoinSymbol());
+                            balanceIncomeDetail5.setIncomeDate(balanceDetail.getIncomeDate());
+                            balanceIncomeDetail5.setUserId(e.getUserId());
+                            balanceIncomeDetail5.setVersion(0);
+                            balanceIncomeDetail5.setCreateDate(LocalDateTime.now());
+                            balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail5);
+                        }
 
                         //总资产计算
                         e.setCoinBalance(e.getCoinBalance());
 
                         e.setYesterdayIncome(balanceDetail.getDetailIncome());
-                        e.setYesterdayReward(balanceDetail.getDetailReward());
+                        e.setYesterdayIncome(balanceDetail.getDetailIncome().add(balanceDetail.getDetailReward()));
                         if(e.getAccumulIncome() !=null){
-                            e.setAccumulIncome(e.getAccumulIncome().add(balanceDetail.getDetailIncome()));
+                            e.setAccumulIncome(e.getAccumulIncome().add(e.getYesterdayIncome()));
                         }else{
-                            e.setAccumulIncome(balanceDetail.getDetailIncome());
+                            e.setAccumulIncome(e.getYesterdayIncome());
                         }
                         if(e.getAccumulReward() !=null){
-                            e.setAccumulReward(e.getAccumulReward().add(balanceDetail.getDetailReward()));
+                            e.setAccumulReward(e.getAccumulReward().add(e.getYesterdayIncome()).subtract(balanceDetail.getStaticsIncome()));
                         }else{
-                            e.setAccumulReward(balanceDetail.getDetailReward());
+                            e.setAccumulReward(e.getYesterdayIncome().subtract(balanceDetail.getStaticsIncome()));
                         }
                         //总收入
                         if(e.getSumRevenue() !=null){
@@ -396,6 +406,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
                 //团队总业绩
                 BigDecimal   teamRecord=new BigDecimal(0);
+                BigDecimal teamCoinRecord=new BigDecimal(0);
 
 
                 //直推节点个数
@@ -507,6 +518,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
                 //奖励算法
                 balanceUserCoinVolumeDetail.setDetailReward(new BigDecimal(0));
+                teamCoinRecord=teamRecord.add(e.getCoinBalance());
+                balanceUserCoinVolumeDetail.setTeamCoinRecord(teamCoinRecord);
 
                 balanceUserCoinVolumeDetail.setReferId(e.getReferId());
                 //收益日期精确到天
@@ -613,7 +626,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 List<BalanceUserCoinVolumeDetail> childDetailList=balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(childDetailList)) {
                     for(BalanceUserCoinVolumeDetail childDetail : childDetailList){
-                        if(e.getTeamLevel()<=childDetail.getTeamLevel()){
+                        if(e.getTeamLevel()>0 && e.getTeamLevel()<=childDetail.getTeamLevel()){
                             //级差制算法 上级社区级别低于等于下级
                             realityStaticsIncome=realityStaticsIncome.subtract(childDetail.getCommunityStaticsIncome());
                         }
@@ -662,7 +675,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 List<BalanceUserCoinVolumeDetail> childDetailList=balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(childDetailList)) {
                     for(BalanceUserCoinVolumeDetail childDetail : childDetailList){
-                        if(e.getTeamLevel()>childDetail.getTeamLevel()){
+                        if(e.getTeamLevel()>1 && e.getTeamLevel()>childDetail.getTeamLevel()){
                             //级差制算法 上级社区级别高于下级
                             BigDecimal childCommunityManageReward=childDetail.getCommunitySumManageReward();
                             if(childCommunityManageReward != null){

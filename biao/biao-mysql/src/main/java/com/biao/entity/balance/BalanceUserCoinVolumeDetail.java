@@ -73,6 +73,9 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("community_sum_manage_reward")
     private BigDecimal communitySumManageReward;
 
+    @SqlField("team_coin_record")
+    private BigDecimal teamCoinRecord;
+
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
     }
@@ -239,5 +242,13 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
 
     public void setCommunitySumManageReward(BigDecimal communitySumManageReward) {
         this.communitySumManageReward = communitySumManageReward;
+    }
+
+    public BigDecimal getTeamCoinRecord() {
+        return teamCoinRecord;
+    }
+
+    public void setTeamCoinRecord(BigDecimal teamCoinRecord) {
+        this.teamCoinRecord = teamCoinRecord;
     }
 }

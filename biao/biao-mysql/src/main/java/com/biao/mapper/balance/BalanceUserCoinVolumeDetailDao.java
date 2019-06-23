@@ -28,7 +28,7 @@ public interface BalanceUserCoinVolumeDetailDao {
     @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail where  version=1 order by create_date desc")
     List<BalanceUserCoinVolumeDetail> findAll();
 
-    @Select("SELECT max(t.team_record) FROM js_plat_user_coin_incomedetail t WHERE t.refer_id=#{referId}  and t.coin_symbol=#{coinSymbol} and t.version=1 ")
+    @Select("SELECT max(t.team_coin_record) FROM js_plat_user_coin_incomedetail t WHERE t.refer_id=#{referId}  and t.coin_symbol=#{coinSymbol} and t.version=1 ")
     BigDecimal findByReferId(@Param("referId") String referId, @Param("coinSymbol") String coinSymbol);
 
     @Select("SELECT " + BalanceUserCoinVolumeDetailSqlBuild.columns + " FROM js_plat_user_coin_incomedetail t WHERE t.refer_id=#{referId}  and t.coin_symbol=#{coinSymbol} and t.version=1 ")
