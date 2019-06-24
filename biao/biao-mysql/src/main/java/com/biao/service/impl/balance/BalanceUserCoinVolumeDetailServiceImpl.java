@@ -686,7 +686,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                                 }else if(childDetail.getTeamLevel()==2){
                                     diffManageReward= diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
                                 }else if(childDetail.getTeamLevel()==1){
-                                    diffManageReward=diffManageReward.add(realityStaticsIncome.multiply(new BigDecimal(0.15)));
+                                    diffManageReward=diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
                                 }
                             }
                             if(teamLevel==4){
@@ -707,7 +707,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                             }
                             if(teamLevel==2){
                                 if(childDetail.getTeamLevel()==1){
-                                    diffManageReward=diffManageReward.add(realityStaticsIncome.multiply(new BigDecimal(0.05)));
+                                    diffManageReward=diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
                                 }
                             }
 
