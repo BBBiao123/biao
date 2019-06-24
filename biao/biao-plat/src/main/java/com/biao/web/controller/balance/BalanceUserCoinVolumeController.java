@@ -231,6 +231,10 @@ public class BalanceUserCoinVolumeController {
                 .cast(RedisSessionUser.class)
                 .map(e -> {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
+                    List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getName());
+                            if (CollectionUtils.isNotEmpty(listVolume)) {
+                                balanceUserCoinVolume=listVolume.get(0);
+                            }
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
@@ -593,6 +597,9 @@ public class BalanceUserCoinVolumeController {
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceChangeCoinVolumeVO.getUserId(),balanceChangeCoinVolumeVO.getCoinSymbol());
                     listVolume.forEach(balanceUserCoinVolume2 -> {
                         balanceUserCoinVolume2.setCoinBalance(balanceUserCoinVolume2.getCoinBalance().subtract(balanceChangeCoinVolumeVO.getCoinNum()));
+                        if( BigDecimal.ZERO.compareTo( balanceUserCoinVolume2.getCoinBalance())>0){
+                            balanceUserCoinVolume2.setCoinBalance(BigDecimal.ZERO);
+                        }
                         balanceUserCoinVolumeService.updateById(balanceUserCoinVolume2);
                     });
                     LocalDateTime localDateTimeNow = LocalDateTime.now();
@@ -700,8 +707,8 @@ public class BalanceUserCoinVolumeController {
         //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
         //静态收益和平级奖的利率支持配置
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
-        dayRateMap.put("oneDayRate",new BigDecimal(0.005));
-        dayRateMap.put("secondDayRate",new BigDecimal(0.008));
+        dayRateMap.put("oneDayRate",new BigDecimal(0.003));
+        dayRateMap.put("secondDayRate",new BigDecimal(0.005));
         dayRateMap.put("threeDayRate",new BigDecimal(0.008));
         dayRateMap.put("equalReward",new BigDecimal(0.1));
         //每天收益和奖励计算

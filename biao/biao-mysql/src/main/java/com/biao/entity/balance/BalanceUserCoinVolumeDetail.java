@@ -76,6 +76,10 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("team_coin_record")
     private BigDecimal teamCoinRecord;
 
+    @SqlField("level_difference_reward")
+    private BigDecimal levelDifferenceReward;
+
+
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
     }
@@ -250,5 +254,13 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
 
     public void setTeamCoinRecord(BigDecimal teamCoinRecord) {
         this.teamCoinRecord = teamCoinRecord;
+    }
+
+    public BigDecimal getLevelDifferenceReward() {
+        return levelDifferenceReward;
+    }
+
+    public void setLevelDifferenceReward(BigDecimal levelDifferenceReward) {
+        this.levelDifferenceReward = levelDifferenceReward;
     }
 }

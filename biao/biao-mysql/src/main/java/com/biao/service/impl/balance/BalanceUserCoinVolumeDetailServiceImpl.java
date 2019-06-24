@@ -134,12 +134,12 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                             balanceIncomeDetail4.setCreateDate(LocalDateTime.now());
                             balanceUserVolumeIncomeDetailDao.insert(balanceIncomeDetail4);
                         }
-                        if(balanceDetail.getEqualityReward() != null && balanceDetail.getEqualityReward().compareTo(BigDecimal.ZERO)>0) {
+                        if(balanceDetail.getLevelDifferenceReward() != null && balanceDetail.getLevelDifferenceReward().compareTo(BigDecimal.ZERO)>0) {
                             BalanceUserVolumeIncomeDetail balanceIncomeDetail5=new BalanceUserVolumeIncomeDetail();
                             String id5 = SnowFlake.createSnowFlake().nextIdString();
                             balanceIncomeDetail5.setId(id5);
                             balanceIncomeDetail5.setRewardType("5");
-                            balanceIncomeDetail5.setDetailReward(balanceDetail.getCommunityManageReward());
+                            balanceIncomeDetail5.setDetailReward(balanceDetail.getLevelDifferenceReward());
                             balanceIncomeDetail5.setCoinSymbol(e.getCoinSymbol());
                             balanceIncomeDetail5.setIncomeDate(balanceDetail.getIncomeDate());
                             balanceIncomeDetail5.setUserId(e.getUserId());
@@ -670,11 +670,47 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
                 //社区管理奖
                 BigDecimal  communityManageReward=e.getCommunitySumManageReward();
+                int teamLevel=e.getTeamLevel();
 
+                BigDecimal diffManageReward=BigDecimal.ZERO;
                 List<BalanceUserCoinVolumeDetail> childDetailList=balanceUserCoinVolumeDetailDao.findAllByReferId(e.getUserId(),e.getCoinSymbol());
                 if (CollectionUtils.isNotEmpty(childDetailList)) {
                     for(BalanceUserCoinVolumeDetail childDetail : childDetailList){
                         if(e.getTeamLevel()>1 && e.getTeamLevel()>childDetail.getTeamLevel()){
+                            BigDecimal realityChildIncome=childDetail.getRealityStaticsIncome();
+                            if(teamLevel==5){
+                                if(childDetail.getTeamLevel()==4 ){
+                                    diffManageReward=BigDecimal.ZERO ;
+                                }else if(childDetail.getTeamLevel()==3){
+                                    diffManageReward= diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                                }else if(childDetail.getTeamLevel()==2){
+                                    diffManageReward= diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
+                                }else if(childDetail.getTeamLevel()==1){
+                                    diffManageReward=diffManageReward.add(realityStaticsIncome.multiply(new BigDecimal(0.15)));
+                                }
+                            }
+                            if(teamLevel==4){
+                                 if(childDetail.getTeamLevel()==3){
+                                    diffManageReward= diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                                }else if(childDetail.getTeamLevel()==2){
+                                    diffManageReward= diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
+                                }else if(childDetail.getTeamLevel()==1){
+                                    diffManageReward=diffManageReward.add(realityStaticsIncome.multiply(new BigDecimal(0.15)));
+                                }
+                            }
+                            if(teamLevel==3){
+                                 if(childDetail.getTeamLevel()==2){
+                                    diffManageReward= diffManageReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                                }else if(childDetail.getTeamLevel()==1){
+                                    diffManageReward=diffManageReward.add(realityStaticsIncome.multiply(new BigDecimal(0.1)));
+                                }
+                            }
+                            if(teamLevel==2){
+                                if(childDetail.getTeamLevel()==1){
+                                    diffManageReward=diffManageReward.add(realityStaticsIncome.multiply(new BigDecimal(0.05)));
+                                }
+                            }
+
                             //级差制算法 上级社区级别高于下级
                             BigDecimal childCommunityManageReward=childDetail.getCommunitySumManageReward();
                             if(childCommunityManageReward != null){
@@ -684,7 +720,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     }
 
                 }
-                e.setCommunityManageReward(communityManageReward);
+
+                e.setCommunityManageReward(communityManageReward.subtract(diffManageReward));
+                e.setLevelDifferenceReward(diffManageReward);
                 balanceUserCoinVolumeDetailDao.updateById(e);
             });
 
@@ -720,8 +758,8 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     }
                 }
                 balanceDetail.setEqualityReward(equalityReward);
-                balanceDetail.setSumRevenue(equalityReward.add(balanceDetail.getDetailIncome()).add(balanceDetail.getCommunityManageReward()));
-                balanceDetail.setDetailReward(balanceDetail.getCommunityManageReward().add(equalityReward));
+                balanceDetail.setSumRevenue(equalityReward.add(balanceDetail.getDetailIncome()).add(balanceDetail.getCommunityManageReward()).add(balanceDetail.getLevelDifferenceReward()));
+                balanceDetail.setDetailReward(balanceDetail.getCommunityManageReward().add(equalityReward).add(balanceDetail.getLevelDifferenceReward()));
                 balanceUserCoinVolumeDetailDao.updateById(balanceDetail);
             });
         }
