@@ -79,6 +79,8 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("level_difference_reward")
     private BigDecimal levelDifferenceReward;
 
+    @SqlField("one_level_income")
+    private BigDecimal oneLevelIncome;
 
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
@@ -262,5 +264,13 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
 
     public void setLevelDifferenceReward(BigDecimal levelDifferenceReward) {
         this.levelDifferenceReward = levelDifferenceReward;
+    }
+
+    public BigDecimal getOneLevelIncome() {
+        return oneLevelIncome;
+    }
+
+    public void setOneLevelIncome(BigDecimal oneLevelIncome) {
+        this.oneLevelIncome = oneLevelIncome;
     }
 }

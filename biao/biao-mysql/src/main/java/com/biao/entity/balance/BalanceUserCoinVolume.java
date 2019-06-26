@@ -78,6 +78,9 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("valid_num")
     private int validNum;
 
+    @SqlField("one_invite")
+    private int oneInvite;
+
     @SqlField("mobile")
     private String mobile;
 
@@ -315,5 +318,13 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setDifferentialReward(BigDecimal differentialReward) {
         this.differentialReward = differentialReward;
+    }
+
+    public int getOneInvite() {
+        return oneInvite;
+    }
+
+    public void setOneInvite(int oneInvite) {
+        this.oneInvite = oneInvite;
     }
 }

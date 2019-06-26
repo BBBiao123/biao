@@ -33,6 +33,7 @@ public class BalanceCoinVolumeVO implements Serializable {
     private BigDecimal sumRevenue;
     private BigDecimal yesterdayRevenue;
     private int validNum;
+    private int oneInvite;
     private int ordNum;
     private String userName;
     private String createStr;

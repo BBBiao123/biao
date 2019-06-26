@@ -40,4 +40,8 @@ public interface BalanceUserCoinVolumeDetailDao {
     @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail t2 WHERE (t2.refer_id NOT IN" +
             "( SELECT t.user_id FROM js_plat_user_coin_incomedetail t where t.version=1 ) or  t2.refer_id is null )and t2.version=1  order by t2.create_date desc")
     List<BalanceUserCoinVolumeDetail> findSuprer();
+
+    @Select("SELECT " + BalanceUserCoinVolumeDetailSqlBuild.columns + " FROM js_plat_user_coin_incomedetail t WHERE t.team_level >= 1 and t.version=1 AND  " +
+            "t.user_id NOT IN ( SELECT t2.refer_id FROM js_plat_user_coin_incomedetail t2 where t2.team_level>=1 and t2.version=1) order by t.create_date desc")
+    List<BalanceUserCoinVolumeDetail> findByNotReferId();
 }
