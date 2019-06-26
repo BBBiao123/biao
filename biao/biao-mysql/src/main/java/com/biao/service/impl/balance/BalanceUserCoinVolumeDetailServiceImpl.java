@@ -646,9 +646,17 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 if(!flag && balanceDetail2.getTeamLevel()>0){
                     balanceVolumeDetailList3.add(balanceDetail2);
                 }
+                BigDecimal communityManageReward=balanceDetail2.getCommunityManageReward();
+                if(balanceDetail2.getTeamLevel()==5){
+                    BigDecimal goalBonus=goalStaticsIncomeMap.get(balanceDetail2.getCoinSymbol());
+                    communityManageReward.add(goalBonus);
+                    balanceDetail2.setCommunityManageReward(communityManageReward);
+                    balanceUserCoinVolumeDetailDao.updateById(balanceDetail2);
+                }
+
             });
         }
-        treeCalcUserDetailRewardList(balanceVolumeDetailList3,true);
+        treeCalcUserDetailRewardList(balanceVolumeDetailList3,map,true);
 
 //        if (CollectionUtils.isNotEmpty(balanceVolumeDetailList)) {
 //
@@ -773,7 +781,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * @param userList
      * @return
      */
-    public  void treeCalcUserDetailRewardList(List<BalanceUserCoinVolumeDetail> userList,boolean flag) {
+    public  void treeCalcUserDetailRewardList(List<BalanceUserCoinVolumeDetail> userList,Map<String ,BigDecimal> map,boolean flag) {
         if (CollectionUtils.isNotEmpty(userList)) {
             List<BalanceUserCoinVolumeDetail> fatherDetailAllList=new ArrayList<BalanceUserCoinVolumeDetail>();
             userList.forEach(balanceDetail3->{
@@ -798,7 +806,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 balanceDetail3.setCommunityManageReward(benMangReward);
                 balanceUserCoinVolumeDetailDao.updateById(balanceDetail3);
                 if(benTeamLevel!=0){
-                    calcFatherUserList(balanceDetail3,balanceDetail3,flag,true);
+                    calcFatherUserList(balanceDetail3,balanceDetail3,map,flag,true,0);
                 }
                 List<BalanceUserCoinVolumeDetail> fatherDetailList3= balanceUserCoinVolumeDetailDao.findByUserIdAndCoin(balanceDetail3.getReferId(),balanceDetail3.getCoinSymbol());
                 if(benTeamLevel==0){
@@ -816,7 +824,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     fatherDetailAllList.addAll(fatherDetailList3);
                 }
             });
-            treeCalcUserDetailRewardList(fatherDetailAllList,false);
+            treeCalcUserDetailRewardList(fatherDetailAllList,map,false);
         }
     }
 
@@ -825,7 +833,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * @param userList
      * @param sumIncome
      */
-    public  void  calcFatherUserList(BalanceUserCoinVolumeDetail userDetail,BalanceUserCoinVolumeDetail userReferDetail,boolean flag,boolean equalFlag) {
+    public  void  calcFatherUserList(BalanceUserCoinVolumeDetail userDetail,BalanceUserCoinVolumeDetail userReferDetail,Map<String ,BigDecimal> map,boolean flag,boolean equalFlag,int superTeamLevel) {
         List<BalanceUserCoinVolumeDetail> fatherDetailList3= balanceUserCoinVolumeDetailDao.findByUserIdAndCoin(userReferDetail.getReferId(),userReferDetail.getCoinSymbol());
         int benTeamLevel=userDetail.getTeamLevel();
         BalanceUserCoinVolumeDetail fatherDetail3=null;
@@ -845,53 +853,56 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             if(fatherDetail3.getEqualityReward() != null){
                 fatherEqualReward=fatherDetail3.getEqualityReward();
             }
-            if(fatherTeamLevel==benTeamLevel){
-                if(equalFlag){
-                    //平级奖
-                    fatherEqualReward=fatherEqualReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                }
-                equalFlag=false;
-            } else if(fatherTeamLevel<benTeamLevel){
+            if(superTeamLevel != fatherTeamLevel) {
 
-            } else{
-                if(fatherTeamLevel==5){
-                    if(benTeamLevel==4 ){
+                if (fatherTeamLevel == benTeamLevel) {
+                    if (equalFlag) {
+                        //平级奖
+                        BigDecimal userIncome=userDetail.getDynamicsIncome().add(userDetail.getStaticsIncome()).add(userDetail.getLevelDifferenceReward()).add(userDetail.getCommunityManageReward());
+                        fatherEqualReward = fatherEqualReward.add(userIncome.multiply(map.get("equalReward")));
+                    }
+                    equalFlag = false;
+                } else if (fatherTeamLevel < benTeamLevel) {
 
-                    }else if(benTeamLevel==3){
-                        fatherDiffReward= fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                    }else if(benTeamLevel==2){
-                        fatherDiffReward= fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                    }else if(benTeamLevel==1){
-                        fatherDiffReward=fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
+                } else {
+                    if (fatherTeamLevel == 5) {
+                        if (benTeamLevel == 4) {
+
+                        } else if (benTeamLevel == 3) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                        } else if (benTeamLevel == 2) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
+                        } else if (benTeamLevel == 1) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
+                        }
                     }
-                }
-                if(fatherTeamLevel==4){
-                    if(benTeamLevel==3){
-                        fatherDiffReward= fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                    }else if(benTeamLevel==2){
-                        fatherDiffReward= fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                    }else if(benTeamLevel==1){
-                        fatherDiffReward=fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
+                    if (fatherTeamLevel == 4) {
+                        if (benTeamLevel == 3) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                        } else if (benTeamLevel == 2) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
+                        } else if (benTeamLevel == 1) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
+                        }
                     }
-                }
-                if(fatherTeamLevel==3){
-                    if(benTeamLevel==2){
-                        fatherDiffReward= fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                    }else if(benTeamLevel==1){
-                        fatherDiffReward=fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
+                    if (fatherTeamLevel == 3) {
+                        if (benTeamLevel == 2) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                        } else if (benTeamLevel == 1) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
+                        }
                     }
-                }
-                if(fatherTeamLevel==2){
-                    if(benTeamLevel==1){
-                        fatherDiffReward=fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                    if (fatherTeamLevel == 2) {
+                        if (benTeamLevel == 1) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
+                        }
                     }
                 }
                 fatherDetail3.setEqualityReward(fatherEqualReward);
                 fatherDetail3.setLevelDifferenceReward(fatherDiffReward);
                 balanceUserCoinVolumeDetailDao.updateById(fatherDetail3);
             }
-
-            calcFatherUserList(userDetail,fatherDetail3,false,equalFlag);
+            calcFatherUserList(userDetail,fatherDetail3,map,false,equalFlag,fatherDetail3.getTeamLevel());
         }
 
 
