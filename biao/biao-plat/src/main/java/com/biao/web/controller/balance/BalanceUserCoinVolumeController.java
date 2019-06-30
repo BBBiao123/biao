@@ -272,7 +272,18 @@ public class BalanceUserCoinVolumeController {
                     balanceChangeUserCoinVolume.setMail(e.getMail());
                     balanceChangeUserCoinVolume.setMobile(e.getMobile());
                     balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
-                    userCoinVolumeExService.updateOutcome(null,balanceCoinVolumeVO.getCoinNum(),e.getId(),balanceUserCoinVolume.getCoinSymbol(),false);
+                    UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), balanceCoinVolumeVO.getName());
+                    BigDecimal userCoinIncome=userVolume.getVolume();
+                    BigDecimal userCoinIncome2=BigDecimal.ZERO;
+                    userCoinIncome=  userCoinIncome.setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if(balanceCoinVolumeVO.getCoinNum().compareTo(userCoinIncome)==0){
+                        userCoinIncome2=userVolume.getVolume();
+                    }else if(balanceCoinVolumeVO.getCoinNum().compareTo(userCoinIncome)<0){
+                        userCoinIncome2=balanceCoinVolumeVO.getCoinNum();
+                    }else {
+                        return GlobalMessageResponseVo.newErrorInstance("资产不足...");
+                    }
+                    userCoinVolumeExService.updateOutcome(null,userCoinIncome2,e.getId(),balanceUserCoinVolume.getCoinSymbol(),false);
                     return GlobalMessageResponseVo
                             .newSuccessInstance("操作成功！");
                 });
@@ -598,12 +609,7 @@ public class BalanceUserCoinVolumeController {
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
                     balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());;
                     balanceUserCoinVolume.setFlag(1);
-                    if( StringUtils.isNotEmpty(balanceChangeCoinVolumeVO.getId()) &&  !"null".equals(balanceChangeCoinVolumeVO.getId())){
-                        balanceChangeUserCoinVolumeService.updateById(balanceUserCoinVolume);
-                    }else{
-
-                        balanceChangeUserCoinVolumeService.save(balanceUserCoinVolume);
-                    }
+                    balanceChangeUserCoinVolumeService.save(balanceUserCoinVolume);
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceChangeCoinVolumeVO.getUserId(),balanceChangeCoinVolumeVO.getCoinSymbol());
                     listVolume.forEach(balanceUserCoinVolume2 -> {
                         balanceUserCoinVolume2.setCoinBalance(balanceUserCoinVolume2.getCoinBalance().subtract(balanceChangeCoinVolumeVO.getCoinNum()));
