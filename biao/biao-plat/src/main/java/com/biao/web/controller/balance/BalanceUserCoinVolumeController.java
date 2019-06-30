@@ -231,6 +231,7 @@ public class BalanceUserCoinVolumeController {
                 .cast(RedisSessionUser.class)
                 .map(e -> {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
+                    System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getName());
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getName());
                             if (CollectionUtils.isNotEmpty(listVolume)) {
                                 balanceUserCoinVolume=listVolume.get(0);
@@ -239,7 +240,6 @@ public class BalanceUserCoinVolumeController {
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
-                    balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
                     if(balanceUserCoinVolume.getCoinBalance() !=null){
                         balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
                     }else{
@@ -255,10 +255,13 @@ public class BalanceUserCoinVolumeController {
                         balanceUserCoinVolume.setDayRate(balancePlatDayRateConfig.getOneDayRate());
                     }
                     balanceUserCoinVolume.setReferId(e.getReferId());
-                    if( StringUtils.isNotEmpty(balanceCoinVolumeVO.getId()) &&  !"null".equals(balanceCoinVolumeVO.getId())){
+                    System.out.println("主键ID-----"+balanceUserCoinVolume.getId());
+                    if( StringUtils.isNotEmpty(balanceUserCoinVolume.getId()) &&  !"null".equals(balanceUserCoinVolume.getId())){
+                        System.out.println("主键ID-----更新："+balanceUserCoinVolume.getId());
                         balanceUserCoinVolumeService.updateById(balanceUserCoinVolume);
                     }else{
-
+                        System.out.println("主键ID-----插入"+balanceUserCoinVolume.getId());
+                        balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
                         balanceUserCoinVolumeService.save(balanceUserCoinVolume);
                     }
                     BalanceChangeUserCoinVolume   balanceChangeUserCoinVolume =new BalanceChangeUserCoinVolume();
@@ -473,9 +476,16 @@ public class BalanceUserCoinVolumeController {
                             coinVolumeVO.setTeamLevel(balanceVolume.getTeamLevel());
                             coinVolumeVO.setValidNum(balanceVolume.getValidNum());
                             coinVolumeVO.setTeamAmount(balanceVolume.getTeamAmount());
+                            coinVolumeVO.setCoinBalance(balanceVolume.getCoinBalance());
                         }else{
                             coinVolumeVO.setTeamLevel("V0");
                             coinVolumeVO.setValidNum(0);
+                            coinVolumeVO.setTeamAmount(BigDecimal.ZERO);
+                        }
+                        if(coinVolumeVO.getTeamLevel() == null){
+                            coinVolumeVO.setTeamLevel("V0");
+                        }
+                        if(coinVolumeVO.getTeamAmount() == null){
                             coinVolumeVO.setTeamAmount(BigDecimal.ZERO);
                         }
                         String userName=null;

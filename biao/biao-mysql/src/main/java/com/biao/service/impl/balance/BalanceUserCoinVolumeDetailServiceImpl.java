@@ -474,9 +474,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                             //重写规则
                         }
                         if(length>5){
-                            if( i<=length-5){
-                                if(dayRate.compareTo(new BigDecimal(0.005))<0) {
-                                    dayRate= dayRate.add(new BigDecimal(0.001));
+                            if( i<length-5){
+                                if(dayRate.compareTo(new BigDecimal(0.0025))<0) {
+                                    dayRate= dayRate.add(new BigDecimal(0.0005));
                                 }
 
                             }
@@ -631,7 +631,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                      len=detailGoalist.size();
                  }
                  if(len != 0){
-                     coinIncome=coinIncome.divide(new BigDecimal(len));
+                     coinIncome=coinIncome.multiply(new BigDecimal(0.05)).divide(new BigDecimal(len));
                  }
                  goalStaticsIncomeMap.put(coin.getName(),coinIncome);
              }
@@ -793,15 +793,15 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 }
                 int  benTeamLevel=balanceDetail3.getTeamLevel();
                 if(benTeamLevel==5){
-                    benMangReward=  benMangReward.add(benChildIncome.multiply(new BigDecimal(0.20)));
+                    benMangReward=  benMangReward.add(benChildIncome.multiply(new BigDecimal(0.30)));
                 }else if(benTeamLevel==4 ){
-                    benMangReward=  benMangReward.add(benChildIncome.multiply(new BigDecimal(0.20)));
+                    benMangReward=  benMangReward.add(benChildIncome.multiply(new BigDecimal(0.25)));
                 }else if(benTeamLevel==3){
-                    benMangReward= benMangReward.add(benChildIncome.multiply(new BigDecimal(0.15)));
+                    benMangReward= benMangReward.add(benChildIncome.multiply(new BigDecimal(0.20)));
                 }else if(benTeamLevel==2){
-                    benMangReward= benMangReward.add(benChildIncome.multiply(new BigDecimal(0.1)));
+                    benMangReward= benMangReward.add(benChildIncome.multiply(new BigDecimal(0.15)));
                 }else if(benTeamLevel==1){
-                    benMangReward=benMangReward.add(benChildIncome.multiply(new BigDecimal(0.05)));
+                    benMangReward=benMangReward.add(benChildIncome.multiply(new BigDecimal(0.1)));
                 }
                 balanceDetail3.setCommunityManageReward(benMangReward);
                 balanceUserCoinVolumeDetailDao.updateById(balanceDetail3);
@@ -867,13 +867,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 } else {
                     if (fatherTeamLevel == 5) {
                         if (benTeamLevel == 4) {
-
-                        } else if (benTeamLevel == 3) {
                             fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                        } else if (benTeamLevel == 2) {
+                        } else if (benTeamLevel == 3) {
                             fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                        } else if (benTeamLevel == 1) {
+                        } else if (benTeamLevel == 2) {
                             fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
+                        } else if (benTeamLevel == 1) {
+                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.20)));
                         }
                     }
                     if (fatherTeamLevel == 4) {
