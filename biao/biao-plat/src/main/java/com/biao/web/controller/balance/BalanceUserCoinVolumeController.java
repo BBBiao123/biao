@@ -607,9 +607,13 @@ public class BalanceUserCoinVolumeController {
                 .map(e -> {
                     BalanceChangeUserCoinVolume  balanceUserCoinVolume=new BalanceChangeUserCoinVolume();
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
-                    balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());;
+                    balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());
                     balanceUserCoinVolume.setFlag(1);
                     balanceChangeUserCoinVolumeService.save(balanceUserCoinVolume);
+                    BalanceChangeUserCoinVolume  balanceUserCoinVolumeUpdate=new BalanceChangeUserCoinVolume();
+                    BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolumeUpdate);
+                    balanceUserCoinVolumeUpdate.setTakeOutDate(LocalDateTime.now());
+                    balanceChangeUserCoinVolumeService.updateById(balanceUserCoinVolumeUpdate);
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceChangeCoinVolumeVO.getUserId(),balanceChangeCoinVolumeVO.getCoinSymbol());
                     listVolume.forEach(balanceUserCoinVolume2 -> {
                         balanceUserCoinVolume2.setCoinBalance(balanceUserCoinVolume2.getCoinBalance().subtract(balanceChangeCoinVolumeVO.getCoinNum()));
