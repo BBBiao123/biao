@@ -233,10 +233,10 @@ public class BalanceUserCoinVolumeController {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getName());
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getName());
-                            if (CollectionUtils.isNotEmpty(listVolume)) {
-                                balanceUserCoinVolume=listVolume.get(0);
-                            }
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
+                    if (CollectionUtils.isNotEmpty(listVolume)) {
+                        balanceUserCoinVolume.setId(listVolume.get(0).getId());
+                    }
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
                     balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
@@ -707,7 +707,7 @@ public class BalanceUserCoinVolumeController {
                         if(takeOutTime != null){
                             String takeOutTimeStr=df.format(takeOutTime);
                             coinVolumeVO.setTakeOutTimeStr(takeOutTimeStr);
-                            coinVolumeVO.setCreateStr(takeOutTimeStr);
+                           // coinVolumeVO.setCreateStr(takeOutTimeStr);
                         }
                         if(coinVolumeVO.getCoinNum() != null){
                             coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
