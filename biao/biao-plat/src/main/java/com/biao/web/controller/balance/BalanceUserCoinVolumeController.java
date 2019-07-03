@@ -236,6 +236,8 @@ public class BalanceUserCoinVolumeController {
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
                     if (CollectionUtils.isNotEmpty(listVolume)) {
                         balanceUserCoinVolume.setId(listVolume.get(0).getId());
+                        balanceUserCoinVolume.setValidNum(listVolume.get(0).getValidNum());
+                        balanceUserCoinVolume.setOneInvite(listVolume.get(0).getOneInvite());
                     }
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
@@ -609,6 +611,8 @@ public class BalanceUserCoinVolumeController {
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
                     balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());
                     balanceUserCoinVolume.setFlag(1);
+                    balanceUserCoinVolume.setMobile(e.getMobile());
+                    balanceUserCoinVolume.setMail(e.getMail());
                     balanceChangeUserCoinVolumeService.save(balanceUserCoinVolume);
                     BalanceChangeUserCoinVolume  balanceUserCoinVolumeUpdate=new BalanceChangeUserCoinVolume();
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolumeUpdate);
