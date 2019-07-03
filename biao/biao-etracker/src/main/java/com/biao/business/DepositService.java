@@ -63,7 +63,7 @@ public class DepositService {
     public void executeDepositETH(Transaction transaction) throws Exception {
         CoinAddress coinAddress = coinAddressDao.findByAddress(transaction.getTo());
         if (Objects.isNull(coinAddress)) {
-            logger.error("该地址不存在{}:", transaction.getTo());
+//            logger.error("该地址不存在{}:", transaction.getTo());
             return;
         }
         //如果hash 存在
@@ -134,6 +134,7 @@ public class DepositService {
             depositLog.setAddress(to);
             depositLog.setId(SnowFlake.createSnowFlake().nextIdString());
             depositLog.setBlockNumber(BigInteger.ZERO);
+            depositLog.setRaiseStatus(0);
             depositLogDao.insert(depositLog);
         } else {
             logger.info("该充值记录已经被记录等待确认:{}", hash);
@@ -141,25 +142,29 @@ public class DepositService {
     }
 
     public List<DepositLog> findETHDepositLog() {
-        return depositLogDao.findAllByCoinSymbolAndRaiseStatus("ETH", 1);
+        return depositLogDao.findAllByCoinSymbolAndRaiseStatus("ETH", 0);
     }
 
     public void executeETHRaise(DepositLog depositLog) {
         String fromAddress = Environment.fromAddress;
         //将txId 状态 更新到提现表
-        String txId = TransactionClient.sendETH(depositLog.getAddress().trim(), fromAddress, depositLog.getVolume().subtract(BigDecimal.valueOf(0.0005)));
+        logger.info("归集操作    fromAddress {}, despositLog  {}", Environment.fromAddress,depositLog.toString());
+        String txId = TransactionClient.sendETH(depositLog.getAddress().trim(), fromAddress, depositLog.getVolume().subtract(BigDecimal.valueOf(0.00052)));
         logger.info("eth deposit raise:{} volume:{} txid:{}", depositLog.getAddress(), depositLog.getVolume(), txId);
         long result = depositLogDao.updateRaiseStatusById(2, depositLog.getId());
 
     }
 
     public List<DepositLog> findErc20DepositLog() {
-
-        return depositLogDao.findAllByCoinTypelAndRaiseStatus("1", 1);
+        logger.info("--------------");
+        List<DepositLog>  depositLogs = depositLogDao.findAllByCoinTypelAndRaiseStatus("1", 0);
+        logger.info("------  " + depositLogs.size());
+        return depositLogs;
 
     }
 
     public void executeErc20Raise(DepositLog depositLog) {
+        logger.info("歸集 ： " + depositLog.toString());
         if (depositLog.getCoinSymbol().equals("ETH")) return;
 
         String symbol = depositLog.getCoinSymbol().toUpperCase();
@@ -177,6 +182,8 @@ public class DepositService {
         if (decimals == 0) {
            // bdAmount = new BigDecimal(addrAmount);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.WEI).toBigInteger();
+        } else if (decimals == 2) {
+            amount =depositLog.getVolume().divide(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.KWEI).toBigInteger();

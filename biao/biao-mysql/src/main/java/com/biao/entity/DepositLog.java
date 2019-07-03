@@ -123,4 +123,21 @@ public class DepositLog extends BaseEntity {
     public void setRaiseStatus(Integer raiseStatus) {
         this.raiseStatus = raiseStatus;
     }
+
+    @Override
+    public String toString() {
+        return "DepositLog{" +
+                "userId='" + userId + '\'' +
+                ", coinId='" + coinId + '\'' +
+                ", coinType='" + coinType + '\'' +
+                ", status=" + status +
+                ", raiseStatus=" + raiseStatus +
+                ", address='" + address + '\'' +
+                ", txId='" + txId + '\'' +
+                ", volume=" + volume +
+                ", coinSymbol='" + coinSymbol + '\'' +
+                ", confirms=" + confirms +
+                ", blockNumber=" + blockNumber +
+                '}';
+    }
 }

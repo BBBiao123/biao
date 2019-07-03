@@ -90,7 +90,7 @@ public class ScheduledTasks {
         logger.info("confirm erc20 withdraw status end  ....");
     }
 
-    //@Scheduled(fixedRate = 1000 * 60 * 2)
+    @Scheduled(fixedRate = 1000 * 60 * 2)
     public void resendERCToken() {
         logger.info("resend err20  start ....");
         try {
@@ -112,13 +112,16 @@ public class ScheduledTasks {
 
     @Scheduled(fixedRate = 1000 * 60 * 2)
     public void confirmWithdrawERC20() {
-        logger.info("confirm eth blockNumber  start ....");
+        logger.info("confirm eth erc20  withdraw  start ....");
         try {
             List<WithdrawLog> list = withdrawService.findErc20WithdrawLog();
+            logger.info("提現記錄條數 ： "+String.valueOf(list.size()));
             if (CollectionUtils.isEmpty(list)) return;
             list.forEach(withdrawLog -> {
                 try {
+                    logger.info("提現start：-- "+ withdrawLog.getAddress());
                     if (!CheckUtil.checkEthAddress(withdrawLog.getAddress())) return;
+                    logger.info("-- ");
                     withdrawService.executeWithdrawERC20(withdrawLog);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -127,7 +130,7 @@ public class ScheduledTasks {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.info("confirm eth blockNumber end  ....");
+        logger.info("confirm eth erc20  withdraw end  ....");
     }
 
     @Scheduled(fixedRate = 1000 * 60 * 5)
@@ -159,7 +162,7 @@ public class ScheduledTasks {
      */
     @Scheduled(cron = "0 0/5 * * * ?")
     public void raiseDepositLog() {
-        logger.info(" eth token  withdraw start ....");
+        logger.info(" eth token  collect start ....");
         try {
             List<DepositLog> ethDepositLogList = depositService.findETHDepositLog();
             if (CollectionUtils.isEmpty(ethDepositLogList)) {
@@ -176,7 +179,7 @@ public class ScheduledTasks {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.info(" eth token withdraw end  ....");
+        logger.info(" eth token collect end  ....");
     }
 
 
@@ -186,9 +189,10 @@ public class ScheduledTasks {
      */
 //    @Scheduled(cron = "0 0/5 * * * ?")
     public void raiseErc20DepositLog() {
-        logger.info(" eth token  withdraw start ....");
+        logger.info(" eth erc20 token  collect start ....");
         try {
             List<DepositLog> erc20DepositLogList = depositService.findErc20DepositLog();
+            logger.info("查找充值記錄條數： " + erc20DepositLogList.size());
             if (CollectionUtils.isEmpty(erc20DepositLogList)) {
                 return;
             }
@@ -203,7 +207,7 @@ public class ScheduledTasks {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.info(" eth token withdraw end  ....");
+        logger.info(" eth erc20 token collect end  ....");
     }
 
 }

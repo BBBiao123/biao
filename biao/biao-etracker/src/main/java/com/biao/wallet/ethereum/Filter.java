@@ -66,9 +66,9 @@ public class Filter {
         Subscription subscription = web3j.
                 transactionObservable().
                 subscribe(transaction -> {
-                    logger.info("transaction come in");
+//                    logger.info("transaction come in");
                     BigDecimal volume = Convert.fromWei(new BigDecimal(transaction.getValue()), Convert.Unit.ETHER);
-                    logger.info("hash:" + transaction.getHash() + "from:" + transaction.getFrom() + "to:" + transaction.getTo() + "volume:" + volume);
+//                    logger.info("hash:" + transaction.getHash() + "from:" + transaction.getFrom() + "to:" + transaction.getTo() + "volume:" + volume);
 
                     //if(TOKEN_ADDRESS_MAP.get())
                     if (Objects.isNull(transaction.getTo())) return;

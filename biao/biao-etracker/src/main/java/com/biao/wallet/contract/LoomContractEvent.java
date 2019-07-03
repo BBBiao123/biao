@@ -67,8 +67,11 @@ public class LoomContractEvent {
             logger.info("symbol{},from{},to{},value{}", symbol, typedResponse._from, typedResponse._to, typedResponse._value);
 
             BigDecimal volume = BigDecimal.ZERO;
+            logger.info("volume: {}", typedResponse._value);
             if (decimals == 0) {
                 volume = new BigDecimal(typedResponse._value);
+            } else if (decimals == 2) {
+                volume =new BigDecimal(typedResponse._value).divide(new BigDecimal(100));
             } else if (decimals == 6) {
                 volume = Convert.fromWei(new BigDecimal(typedResponse._value), Convert.Unit.MWEI);
             } else if (decimals == 8) {
