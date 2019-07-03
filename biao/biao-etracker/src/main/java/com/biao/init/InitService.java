@@ -12,6 +12,7 @@ import org.web3j.protocol.http.HttpService;
 
 import java.io.IOException;
 
+import static com.biao.constant.Constant.TOKEN_ADDRESS_MAP;
 import static com.biao.constant.Constant.TOKEN_MAP;
 
 /**
@@ -27,6 +28,7 @@ public class InitService implements CommandLineRunner {
     @Autowired
     private Filter filter;
 
+
     @Autowired
     public InitService(LoomContractEvent loomContractEvent) {
         this.loomContractEvent = loomContractEvent;
@@ -37,5 +39,7 @@ public class InitService implements CommandLineRunner {
 
         Web3j web3j = Web3j.build(new HttpService(Environment.RPC_URL));
         filter.newTransactionFilter(web3j);
+        String symbol = "SIXEXTOKEN";
+        loomContractEvent.ContractFilter(web3j,symbol,TOKEN_ADDRESS_MAP.get(symbol), TOKEN_MAP.get(symbol).getDecimals());
     }
 }

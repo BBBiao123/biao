@@ -27,10 +27,10 @@ import static com.biao.constant.Constant.TOKEN_MAP;
 public class Application {
     public static void main(String[] args) {
 
-        String symbol = "UES";
-        String contractAddress = "0x479Bb409743D07cF47e2cf692BfF62d174e72AF1";
+        String symbol = "SIXEXTOKEN";
+        String contractAddress = "0x204fd80f6ad13e709dcbbf6f5e1f89b19f4b016d";
         TOKEN_ADDRESS_MAP.put(symbol, contractAddress);
-        Token token = new Token(contractAddress,18);
+        Token token = new Token(contractAddress,2);
         TOKEN_MAP.put(symbol,token);
 
 
