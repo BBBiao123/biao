@@ -29,7 +29,7 @@
         <module>biao-im</module>
         <module>biao-robot-unsafe</module>
         <module>biao-kline</module>
-
+        <module>bbex-robot</module>
     </modules>
     <packaging>pom</packaging>
 

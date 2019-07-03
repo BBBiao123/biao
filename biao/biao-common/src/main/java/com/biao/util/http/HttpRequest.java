@@ -1,12 +1,17 @@
 package com.biao.util.http;
 
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * HTTP网络请求
@@ -168,5 +173,25 @@ public class HttpRequest {
             }
         }
         return sendPost(url, paramStr);
+    }
+
+    public static void main(String[] args) throws IOException {
+        Map<String, String> param =  new HashMap<>();
+        param.put("stoken","3bb592c5036c41d9885e73d0b684bd92");
+        String result =  HttpRequest.sendGet("http://www.coceu.com/biao/balance/volume/change",param);
+        System.out.println(result);
+
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        OkHttpClient client = mBuilder
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
+        Request request = new Request.Builder()
+                .url("http://www.coceu.com/biao/user/invotes?currentPage=0&showCount=10")
+                .addHeader("stoken","3bb592c5036c41d9885e73d0b684bd92")
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        System.out.println(response.body().toString());
     }
 }

@@ -76,6 +76,9 @@ public class CmsController {
                 pageList.getList().forEach(article -> {
                     RedisCmsArticle bannerVO = new RedisCmsArticle();
                     BeanUtils.copyProperties(article, bannerVO);
+                   if(bannerVO.getImage() != null && bannerVO.getImage().length()>0){
+                       bannerVO.setImage(bannerVO.getImage().replace("/_thumbs",""));
+                   }
                     datas.add(bannerVO);
                 });
                 redisDataVOs = datas;

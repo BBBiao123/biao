@@ -1,8 +1,10 @@
 package com.biao.task.execute;
 
-import com.biao.business.*;
+import com.biao.business.BlockNumberService;
+import com.biao.business.CoinAddressService;
+import com.biao.business.DepositService;
+import com.biao.business.WithdrawService;
 import com.biao.entity.DepositLog;
-import com.biao.entity.EthTokenWithdraw;
 import com.biao.entity.WithdrawLog;
 import com.biao.util.CheckUtil;
 import org.slf4j.Logger;
@@ -185,7 +187,7 @@ public class ScheduledTasks {
     /**
      * ETH erc20 归集 1是归集中 2归集完成 9 归集失败
      */
-    @Scheduled(cron = "0 0/5 * * * ?")
+//    @Scheduled(cron = "0 0/5 * * * ?")
     public void raiseErc20DepositLog() {
         logger.info(" eth erc20 token  collect start ....");
         try {

@@ -1,0 +1,23 @@
+## 访问的交易网地址；
+url: http://47.244.153.103:8083
+##url: http://127.0.0.1:8083
+## 地址信息；
+token: 09fabb70bcb84a28bc98b82424ff99dd
+## 交易时间定义 s;
+tradeTime: 1
+##获取volume的工厂算法；
+volumeFactory: com.bbex.robot.RandomRobotVolume
+##获取price的工厂算法；
+priceFactory: com.bbex.robot.RandomRobotPrice
+### jdbcurl prod
+jdbcUrl: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbex?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+jdbcUser: photoadmin
+jdbcPass: Photo123456
+#jdbcUrl: jdbc:mysql://rm-t4nl1jg9gi7bbe9w6.mysql.singapore.rds.aliyuncs.com:3306/bbex-test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+#jdbcUser: szwd_db
+#jdbcPass: Hrsd@2018Admin&
+### 可以用于登录的帐号密码；
+loginUser: 18320995395
+loginPass: Nv9Qo19gEEqRDjr63/HyjCxJYuCHrzx+t7pdLqtSZigNqwWh2Q8I/9wDN/1cVM4Rn37taLhpfpfNDyS5Jz0PQcF382PrD2Vu+eU7sl7k411Xllz+nFGmS4KwTWBdGf9pbzBXihpD1wmV6mLoWkmrHiXnOdzMNRSnFdm9oGoWuL0=
+apiKey: 069GLa6opE1aXbWwOrcdxUi6ZdkbC61wiTihfxSDyIb7P8p0rbgKKTcqLoEVJSRy
+skey: u3kni9Rfa1WA0cWfVYlMALafGydXi4bXAiWuXo6iAS5CMQqxeFRnc0wTCmMWLFOj

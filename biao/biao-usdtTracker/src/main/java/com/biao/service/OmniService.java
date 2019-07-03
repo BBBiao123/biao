@@ -142,6 +142,7 @@ public class OmniService {
     public void usdtSendTask() {
         final List<WithdrawLog> withdrawLogs = withdrawLogDao.findAllByCoinSymbolAndStatus(TradePairEnum.USDT.getKey(),
                 Integer.valueOf(WithdrawStatusEnum.AUDIT_PASS.getCode()));
+        LOGGER.info("usdt提现查询结果： " + withdrawLogs.toString());
         if (CollectionUtils.isNotEmpty(withdrawLogs)) {
             LOGGER.info("=========提现条数为===={}", withdrawLogs.size());
             for (WithdrawLog withdraw : withdrawLogs) {
@@ -251,7 +252,9 @@ public class OmniService {
 
     public void executeAddress() throws Exception {
         try {
+            LOGGER.info("定时执行生成usdt地址开始");
             AddressConfig addressConfig = addressConfigDao.findByName(UsdtConstants.USDT_SMYBOL);
+            LOGGER.info("查询生成地址的币种： " + addressConfig.toString());
             if (Objects.isNull(addressConfig)) {
                 return;
             }
@@ -260,6 +263,7 @@ public class OmniService {
             }
             List<CoinAddress> addressesList = new ArrayList<>(10);
             Coin coin = coinDao.findByName(UsdtConstants.USDT_SMYBOL);
+            LOGGER.info("查询生成地址的币种： " + coin.toString());
             if (!Objects.isNull(coin)) {
                 for (int i = 0; i < count; i++) {
                     CoinAddress coinAddress = buildCoinAddr(coin);
@@ -288,6 +292,7 @@ public class OmniService {
         String address = "";
         try {
             final Address newAddress = omniClient.getNewAddress();
+            LOGGER.info("获取区块上的一个新地址： " + newAddress.toBase58());
             return newAddress.toBase58();
         } catch (IOException e) {
             e.printStackTrace();

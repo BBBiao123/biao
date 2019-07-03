@@ -61,11 +61,26 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("equality_reward")
     private BigDecimal equalityReward;
 
-    @SqlField("sum_income")
-    private BigDecimal sumIncome;
+    @SqlField("sum_revenue")
+    private BigDecimal sumRevenue;
 
     @SqlField("refer_id")
     private String referId;
+
+    @SqlField("valid_num")
+    private int validNum;
+
+    @SqlField("community_sum_manage_reward")
+    private BigDecimal communitySumManageReward;
+
+    @SqlField("team_coin_record")
+    private BigDecimal teamCoinRecord;
+
+    @SqlField("level_difference_reward")
+    private BigDecimal levelDifferenceReward;
+
+    @SqlField("one_level_income")
+    private BigDecimal oneLevelIncome;
 
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
@@ -201,13 +216,23 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
         this.equalityReward = equalityReward;
     }
 
-    public BigDecimal getSumIncome() {
-        return sumIncome;
+    public BigDecimal getSumRevenue() {
+        return sumRevenue;
     }
 
-    public void setSumIncome(BigDecimal sumIncome) {
-        this.sumIncome = sumIncome;
+    public void setSumRevenue(BigDecimal sumRevenue) {
+        this.sumRevenue = sumRevenue;
     }
+
+    public int getValidNum() {
+        return validNum;
+    }
+
+    public void setValidNum(int validNum) {
+        this.validNum = validNum;
+    }
+
+
 
     public String getReferId() {
         return referId;
@@ -215,5 +240,37 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
 
     public void setReferId(String referId) {
         this.referId = referId;
+    }
+
+    public BigDecimal getCommunitySumManageReward() {
+        return communitySumManageReward;
+    }
+
+    public void setCommunitySumManageReward(BigDecimal communitySumManageReward) {
+        this.communitySumManageReward = communitySumManageReward;
+    }
+
+    public BigDecimal getTeamCoinRecord() {
+        return teamCoinRecord;
+    }
+
+    public void setTeamCoinRecord(BigDecimal teamCoinRecord) {
+        this.teamCoinRecord = teamCoinRecord;
+    }
+
+    public BigDecimal getLevelDifferenceReward() {
+        return levelDifferenceReward;
+    }
+
+    public void setLevelDifferenceReward(BigDecimal levelDifferenceReward) {
+        this.levelDifferenceReward = levelDifferenceReward;
+    }
+
+    public BigDecimal getOneLevelIncome() {
+        return oneLevelIncome;
+    }
+
+    public void setOneLevelIncome(BigDecimal oneLevelIncome) {
+        this.oneLevelIncome = oneLevelIncome;
     }
 }

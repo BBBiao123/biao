@@ -1,14 +1,20 @@
 package com.biao.execute;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-
+import com.biao.config.AliYunCardCheckConfig;
 import com.biao.config.BalanceDayRateConfig;
+import com.biao.enums.CardStatusEnum;
+import com.biao.enums.KlineTimeEnum;
+import com.biao.enums.TradePairEnum;
+import com.biao.enums.UserCardStatusEnum;
+import com.biao.pojo.CardStatuScanCheckDTO;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
+import com.biao.service.impl.MkDividendRuleTaskServiceImpl;
+import com.biao.service.impl.MkPromoteRuleTaskServiceImpl;
+import com.biao.service.impl.UserCoinVolumeBillTaskServiceImpl;
+import com.biao.service.kline.KlineMinDateTransfer;
+import com.biao.service.register.UserRegisterLotteryService;
+import com.biao.vo.OfflineCoinVolumeDayVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +22,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.biao.config.AliYunCardCheckConfig;
-import com.biao.enums.CardStatusEnum;
-import com.biao.enums.KlineTimeEnum;
-import com.biao.enums.TradePairEnum;
-import com.biao.enums.UserCardStatusEnum;
-import com.biao.pojo.CardStatuScanCheckDTO;
-import com.biao.service.impl.MkDividendRuleTaskServiceImpl;
-import com.biao.service.impl.MkPromoteRuleTaskServiceImpl;
-import com.biao.service.impl.UserCoinVolumeBillTaskServiceImpl;
-import com.biao.service.kline.KlineMinDateTransfer;
-import com.biao.service.register.UserRegisterLotteryService;
-import com.biao.vo.OfflineCoinVolumeDayVO;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @Component
 public class ScheduledTasks {
@@ -118,8 +117,8 @@ public class ScheduledTasks {
     private Mk2MemberReleaseService mk2MemberReleaseService;
 
 
-   // @Scheduled(cron = "0 0/1 * * * ?")
-     public void createKlineDataForOneMinute() {
+    // @Scheduled(cron = "0 0/1 * * * ?")
+    public void createKlineDataForOneMinute() {
         if (logger.isDebugEnabled()) {
             logger.debug("========== createKlineDataForOneMinute  start ==========");
         }
@@ -379,7 +378,7 @@ public class ScheduledTasks {
     /**
      * 手续费打款至指定账户(每小时执行一次)
      */
-   // @Scheduled(cron = "0 0 0/1 * * ?")
+    // @Scheduled(cron = "0 0 0/1 * * ?")
     public void triggerRemitFeeToPlatAccount() {
         logger.info("exexute triggerRemitFeeToPlatAccount  start ....");
         mkDividendRuleTaskService.triggerRemitFeeToPlatAccount();
@@ -389,7 +388,7 @@ public class ScheduledTasks {
     /**
      * 挖矿定时任务
      */
-   // @Scheduled(cron = "0 0 2 * * ?")
+    // @Scheduled(cron = "0 0 2 * * ?")
     public void triggerMiningTask() {
         logger.info("exexute triggerMiningDayTask  start ....");
         mkRuleTaskCoreService.triggerMiningDayTask();
@@ -399,7 +398,7 @@ public class ScheduledTasks {
     /**
      * 挖矿团队排名争霸
      */
-   // @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     public void triggerTeamMinningSortTask() {
         logger.info("exexute triggerTeamMinningSortTask  start ....");
         mk2MiningTeamSortTaskService.doSortTeamMinging();
@@ -409,7 +408,7 @@ public class ScheduledTasks {
     /**
      * 会员币释放
      */
-   // @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     public void triggerReleaseTask() {
         logger.info("exexute triggerReleaseTask  start ....");
         mk2MemberReleaseService.releaseLockVolume();
@@ -470,8 +469,8 @@ public class ScheduledTasks {
     /**
      * 会员推广定时任务(每小时执行一次)
      */
-   // @Scheduled(cron = "0 0 0/1 * * ?")
-    //@Scheduled(fixedRate = 20000)
+     @Scheduled(cron = "0 0 0/1 * * ?")
+    @Scheduled(fixedRate = 20000)
     public void triggerPromoteTask() {
         logger.info("exexute triggerPromoteDayTask  start ....");
         mkRuleTaskCoreService.triggerPromoteDayTask();
@@ -640,7 +639,7 @@ public class ScheduledTasks {
     /**
      * 用户注册推荐人送奖励任务  每天凌晨3点执行
      */
-   // @Scheduled(cron = "0 0 3 * * ?")
+    // @Scheduled(cron = "0 0 3 * * ?")
     public void registerReferLottery() {
         logger.info("exexute registerReferLottery  start ....");
         userRegisterLotteryService.executeLotteryRefer();
@@ -738,7 +737,7 @@ public class ScheduledTasks {
     /**
      * 取消C2C订单(每分钟执行一次)
      */
-    @Scheduled(cron = "0 0/1 * * * ?")
+//    @Scheduled(cron = "0 0/1 * * * ?")
     //@Scheduled(fixedRate = 20000)
     public void doCancelOrderDetail() {
 
@@ -779,23 +778,26 @@ public class ScheduledTasks {
      * 余币宝收益,每天00:00AM
      */
     @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0/59 0 0/1 * * ?")
     public void balanceIncomeDetail() {
-
         logger.info("exexute balanceIncomeDetail  start ....");
 //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
         //静态收益和平级奖的利率支持配置
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
         dayRateMap.put("oneDayRate",balanceDayRateConfig.getOneDayRate());
         dayRateMap.put("secondDayRate",balanceDayRateConfig.getSecondDayRate());
+        dayRateMap.put("threeDayRate",balanceDayRateConfig.getThreeDayRate());
         dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
         //每天收益和奖励计算
         balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+        balanceUserCoinVolumeDetailService.balanceIncomeCount();
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
+
     /**
      * 余币宝统计,每天8:00AM
      */
-    @Scheduled(cron = "0 0 8 * * ?")
+   // @Scheduled(cron = "0 0 8 * * ?")
     public void balanceIncomeCount() {
         logger.info("exexute balanceIncomeCount  start ....");
         balanceUserCoinVolumeDetailService.balanceIncomeCount();

@@ -1,4 +1,4 @@
-management:
+﻿management:
   health:
     mail:
       enabled: false
@@ -14,7 +14,7 @@ spring:
     ansi:
       enabled: always
   profiles:
-    active: dev
+    active: test
 
 
 

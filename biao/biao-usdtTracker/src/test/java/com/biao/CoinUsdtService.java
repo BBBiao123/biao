@@ -38,7 +38,7 @@ public class CoinUsdtService {
 
     public static void main(String args[]) throws Exception {
         URI uri = new URI("http://47.52.237.209:18111/");
-        OmniClient omniClient = new OmniClient(MainNetParams.get(), uri, "btcwpy", "btcwpy");
+        OmniClient omniClient = new OmniClient(MainNetParams.get(), uri, "wpybtc", "wpybtc");
         Address newAddress = omniClient.getNewAddress();
         System.out.println(newAddress.toBase58());
 //        Coin coin= omniClient.getBalance();

@@ -20,23 +20,23 @@ spring:
     active: dev
   datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbbex-test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+        url: jdbc:mysql://rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306/bbex?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
         username: photoadmin
         password: Photo123456
         hikari:
             maxLifetime: 1765000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上
             maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
   redis:
-#    password: foobaredbbexONE123
+    password: foobaredbbexONE123
     host: 47.244.153.103
-    port: 6800
+    port: 6379
 
 
 
 #url: http://47.74.159.134:8545/
 fromAddress:
-url: http://127.0.0.1:5555/
-password: 123123123
+url: http://47.75.198.192:8098/
+password: wupengyu
 path:
 web3j:
   admin-client: true

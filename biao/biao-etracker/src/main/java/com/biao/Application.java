@@ -13,11 +13,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import tk.mybatis.spring.annotation.MapperScan;
 
-import java.math.BigInteger;
 import java.util.stream.Collectors;
 
-import static com.biao.constant.Constant.TOKEN_ADDRESS_MAP;
-import static com.biao.constant.Constant.TOKEN_MAP;
+import static  com.biao.constant.Constant.*;
 
 @SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @Import(value = {RedisConfiguration.class})
@@ -26,7 +24,6 @@ import static com.biao.constant.Constant.TOKEN_MAP;
 @EnableTransactionManagement
 public class Application {
     public static void main(String[] args) {
-
         String symbol = "SIXEXTOKEN";
         String contractAddress = "0x204fd80f6ad13e709dcbbf6f5e1f89b19f4b016d";
         TOKEN_ADDRESS_MAP.put(symbol, contractAddress);

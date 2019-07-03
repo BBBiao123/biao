@@ -5,11 +5,9 @@ package com.biao.init;
  */
 
 public class Environment {
-    public static String RPC_URL = "http://127.0.0.1:5555/";
-    public static String fromAddress = "0x30188628a9f8345844adf08569863318bc0e6745";
-    public static String ETH_ACCOUNT_PWD = "123123123";
-    public static String password = "123123123";
+    public static String RPC_URL = "http://47.75.198.192:8098/";
+    public static String fromAddress = "0x908de49bd25e88ed115381ee95f2d7554c652c7f";
+    public static String ETH_ACCOUNT_PWD = "wupengyu";
+    public static String password = "wupengyu";
     public static String WALLET_PATH = "";
-
-
 }
