@@ -117,6 +117,7 @@ public class WithdrawService {
         logger.info("symbol:{},contractAddress:{}", symbol, contractAddress);
         //获取钱包代币余额
         BigInteger addrAmount = TokenClient.getTokenBalance(web3j, fromAddress, contractAddress);
+        logger.info("钱包代币余额：" + addrAmount);
         BigDecimal bdAmount = BigDecimal.ZERO;
         BigInteger amount = BigInteger.ZERO;
         if (decimals == 0) {

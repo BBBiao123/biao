@@ -187,7 +187,7 @@ public class ScheduledTasks {
     /**
      * ETH erc20 归集 1是归集中 2归集完成 9 归集失败
      */
-//    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void raiseErc20DepositLog() {
         logger.info(" eth erc20 token  collect start ....");
         try {

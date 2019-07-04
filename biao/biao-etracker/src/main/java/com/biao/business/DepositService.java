@@ -157,7 +157,7 @@ public class DepositService {
 
     public List<DepositLog> findErc20DepositLog() {
         logger.info("--------------");
-        List<DepositLog>  depositLogs = depositLogDao.findAllByCoinTypelAndRaiseStatus("1", 0);
+        List<DepositLog>  depositLogs = depositLogDao.findAllByCoinTypeAndRaiseStatus("1", 0);
         logger.info("------  " + depositLogs.size());
         return depositLogs;
 
@@ -207,6 +207,7 @@ public class DepositService {
         logger.info("bdAmount{},Volume{}", bdAmount, depositLog.getVolume());
 
         BigInteger addressAmount = TransactionClient.getBalance(depositLog.getAddress());
+        logger.info("地址所有資產： " + addressAmount);
         if(addressAmount.compareTo(BigInteger.ZERO)<0) return;
         //将txId 状态 更新到提现表
         String txId = TokenClient.sendTokenTransaction(admin, web3j, depositLog.getAddress(), password, fromAddress, TOKEN_ADDRESS_MAP.get(symbol), amount);

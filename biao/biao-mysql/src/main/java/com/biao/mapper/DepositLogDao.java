@@ -59,7 +59,7 @@ public interface DepositLogDao {
     long updateRaiseStatusById(@Param("raiseStatus") Integer raiseStatus,@Param("id") String id);
 
     @Select("select " + DepositLogSqlBuild.columns + " from js_plat_user_deposit_log where coin_type = #{coinType} and raise_status = #{raiseStatus}")
-    List<DepositLog> findAllByCoinTypelAndRaiseStatus(@Param("coinType") String coinType, @Param("raiseStatus") Integer raiseStatus);
+    List<DepositLog> findAllByCoinTypeAndRaiseStatus(@Param("coinType") String coinType, @Param("raiseStatus") Integer raiseStatus);
 
 
     @Update("update js_plat_user_deposit_log set raise_status=2 where user_id=#{userId}  and coin_symbol= #{coinSymbol} and raise_status =1 ")
