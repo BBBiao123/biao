@@ -2,6 +2,8 @@ package com.biao.wallet.ethereum;
 
 import com.biao.constant.Constant;
 import com.biao.init.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.admin.Admin;
@@ -22,6 +24,10 @@ import java.math.BigInteger;
 
 @Configuration
 public class TransactionClient {
+
+
+    private static Logger logger = LoggerFactory.getLogger(TransactionClient.class);
+
     private volatile static Web3j web3j;
     private volatile static Admin admin;
 
@@ -164,11 +170,14 @@ public class TransactionClient {
 
 
     public static String sendETH(String fromAddress, String toAddress, BigDecimal amount) {
+        logger.info("rpc_url: {}, from: {},  to: {}, amount: {}" , Environment.RPC_URL,fromAddress,toAddress,amount);
+
         web3j = Web3j.build(new HttpService(Environment.RPC_URL));
         admin = Admin.build(new HttpService(Environment.RPC_URL));
         String txhash = "";
         try {
             PersonalUnlockAccount personalUnlockAccount = admin.personalUnlockAccount(fromAddress, Environment.password).send();
+            logger.info(personalUnlockAccount.toString());
             if (!personalUnlockAccount.accountUnlocked()) {
                 System.out.println("unlock fail");
                 return "";
@@ -177,6 +186,7 @@ public class TransactionClient {
             TransactionReceipt receipt = transfer.sendFunds(toAddress, amount, Convert.Unit.ETHER).send();
             txhash = receipt.getTransactionHash();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
 

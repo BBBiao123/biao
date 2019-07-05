@@ -116,6 +116,9 @@ public class ScheduledTasks {
     @Autowired
     private Mk2MemberReleaseService mk2MemberReleaseService;
 
+    @Autowired
+    private RegisterUserCoinService registerUserCoinService;
+
 
     // @Scheduled(cron = "0 0/1 * * * ?")
     public void createKlineDataForOneMinute() {
@@ -348,11 +351,11 @@ public class ScheduledTasks {
 //	 * 每天注册审核通过送币（送糖果，每小时执行一次）
 //	 */
 //	@Scheduled(cron="0 0 0/1 * * ?")
-//	public void regiterCoinGive() {
-//		logger.info("exexute regiterCoinGive  start ....");
-//		registerUserCoinService.registerGiveCoin();
-//		logger.info("exexute regiterCoinGive  end   ....");
-//	}
+	public void regiterCoinGive() {
+		logger.info("exexute regiterCoinGive  start ....");
+		registerUserCoinService.registerGiveCoin();
+		logger.info("exexute regiterCoinGive  end   ....");
+	}
 
     /**
      * 生成用户资产快照
