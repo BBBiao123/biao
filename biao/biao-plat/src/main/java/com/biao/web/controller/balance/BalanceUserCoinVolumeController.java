@@ -3,10 +3,7 @@ package com.biao.web.controller.balance;
 import com.biao.config.BalancePlatDayRateConfig;
 import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.entity.*;
-import com.biao.entity.balance.BalanceChangeUserCoinVolume;
-import com.biao.entity.balance.BalanceUserCoinVolume;
-import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
-import com.biao.entity.balance.BalanceUserVolumeIncomeDetail;
+import com.biao.entity.balance.*;
 import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.pojo.RequestQuery;
@@ -14,10 +11,7 @@ import com.biao.pojo.ResponsePage;
 import com.biao.query.UserFinanceQuery;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
-import com.biao.service.balance.BalanceChangeUserCoinVolumeService;
-import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
-import com.biao.service.balance.BalanceUserCoinVolumeService;
-import com.biao.service.balance.BalanceUserVolumeIncomeDetailService;
+import com.biao.service.balance.*;
 import com.biao.vo.balance.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -61,6 +55,9 @@ public class BalanceUserCoinVolumeController {
 
     @Autowired
     private BalanceUserCoinVolumeService balanceUserCoinVolumeService;
+
+    @Autowired
+    private  BalancePlatJackpotVolumeService balancePlatJackpotVolumeService;
 
     @Autowired
     private BalanceChangeUserCoinVolumeService balanceChangeUserCoinVolumeService;
@@ -719,6 +716,31 @@ public class BalanceUserCoinVolumeController {
                         listVo.add(coinVolumeVO);
                     });
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
+    /**
+     * 查询奖池金额和开奖时间
+     * @return
+     */
+    @GetMapping("/balance/volume/jackpotIncome")
+    public Mono<GlobalMessageResponseVo> findBySumJackpotIncome() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                   List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
+                           if(CollectionUtils.isNotEmpty(jackpotList)){
+                               return GlobalMessageResponseVo.newSuccessInstance(jackpotList.get(0));
+                           }
+                    BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
+                    jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
+                    jackpotDetail.setCoinSymbol("MG");
+                    return GlobalMessageResponseVo.newSuccessInstance(jackpotDetail);
                 });
     }
     /**
