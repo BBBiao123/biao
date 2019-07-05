@@ -3,7 +3,7 @@ package com.biao.collect;
 import com.alibaba.fastjson.JSON;
 import com.biao.config.OmniConfig;
 import com.biao.constant.UsdtConstants;
-import com.biao.entity.CoinCollection;
+import com.biao.entity.DepositLog;
 import com.biao.mapper.CoinCollectionDao;
 import com.biao.mapper.DepositLogDao;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
@@ -50,10 +50,12 @@ public class CollectionService {
      * Collect task.
      */
     public void collectTask() {
-        final List<CoinCollection> cos = coinCollectionDao.findBySymbol(UsdtConstants.USDT_SMYBOL);
-        if (CollectionUtils.isNotEmpty(cos)) {
-            LOGGER.info("=========归集条数为===={}", cos.size());
-            for (CoinCollection cs : cos) {
+//        final List<CoinCollection> cos = coinCollectionDao.findBySymbol(UsdtConstants.USDT_SMYBOL);
+        final List<DepositLog> depositLogList = depositLogDao.findAllByCoinSymbolAndRaiseStatus(UsdtConstants.USDT_SMYBOL, 0);
+        if (CollectionUtils.isNotEmpty(depositLogList)) {
+
+            LOGGER.info("=========归集条数为===={}", depositLogList.size());
+            for (DepositLog cs : depositLogList) {
                 final String txid = collect(cs.getAddress(), omniConfig.getFeeAddr(), omniConfig.getCollectAddr(),
                         cs.getVolume().toPlainString(), omniConfig.getCollectFee());
                 if (StringUtils.isNoneBlank(txid)) {

@@ -63,10 +63,10 @@ user:
     taskFlag: true
 logging:
     level:
-        root: debug
+        root: info
         org.springframework.boot: info
-        org.apache.ibatis: debug
-        com.bbex.bonuspoint: debug
-        com.bbex.lottery: debug
-        com.bbex: debug
+        org.apache.ibatis: info
+        com.bbex.bonuspoint: info
+        com.bbex.lottery: info
+        com.bbex: info
     path: "./logs"

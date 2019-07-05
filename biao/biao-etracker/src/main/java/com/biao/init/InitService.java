@@ -36,7 +36,7 @@ public class InitService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-
+        logger.info("初始化-------------- ");
         Web3j web3j = Web3j.build(new HttpService(Environment.RPC_URL));
         filter.newTransactionFilter(web3j);
         String symbol = "SIXEXTOKEN";

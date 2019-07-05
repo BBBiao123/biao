@@ -1,6 +1,5 @@
 package com.biao.wallet.ethereum;
 
-import com.biao.business.DepositService;
 import com.biao.constant.Constant;
 import com.biao.init.Environment;
 import org.slf4j.Logger;

@@ -52,6 +52,7 @@ public class LoomContractEvent {
         String topicData = EventEncoder.encode(event);
         filter.addSingleTopic(topicData);
 
+        logger.info("监听 " + symbol +" 币种" );
         web3j.ethLogObservable(filter).subscribe(log -> {
             EventValues eventValues = staticExtractEventParameters(event, log);
             MainErcContractObject.TransferEventResponse typedResponse = new MainErcContractObject.TransferEventResponse();
