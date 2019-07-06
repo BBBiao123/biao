@@ -57,6 +57,9 @@ public class BalanceUserCoinVolumeController {
     private BalanceUserCoinVolumeService balanceUserCoinVolumeService;
 
     @Autowired
+    private BalanceUserCoinCountVolumeService balanceUserCoinCountVolumeService;
+
+    @Autowired
     private  BalancePlatJackpotVolumeService balancePlatJackpotVolumeService;
 
     @Autowired
@@ -229,8 +232,9 @@ public class BalanceUserCoinVolumeController {
                 .map(e -> {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getName());
-                    List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getName());
+                    List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getCoinSymbol());
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
+                    balanceUserCoinVolume.setId(null);
                     if (CollectionUtils.isNotEmpty(listVolume)) {
                         balanceUserCoinVolume.setId(listVolume.get(0).getId());
                         balanceUserCoinVolume.setValidNum(listVolume.get(0).getValidNum());
@@ -283,8 +287,7 @@ public class BalanceUserCoinVolumeController {
                         return GlobalMessageResponseVo.newErrorInstance("资产不足...");
                     }
                     userCoinVolumeExService.updateOutcome(null,userCoinIncome2,e.getId(),balanceUserCoinVolume.getCoinSymbol(),false);
-                    return GlobalMessageResponseVo
-                            .newSuccessInstance("操作成功！");
+                    return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
 
@@ -743,6 +746,109 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance(jackpotDetail);
                 });
     }
+
+    /**
+     * 根据用户查询所有币种余额收益信息 支持平台币
+     * @return
+     */
+    @GetMapping("/balance/volume/digIncomeInfo")
+    public Mono<GlobalMessageResponseVo> findIncomeInfo() {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                   BalanceCoinVolumeVO listVo = new BalanceCoinVolumeVO();
+                    //查询余币宝资产信息
+                    List<BalanceUserCoinCountVolume> listVolume = balanceUserCoinCountVolumeService.findAll(e.getId());
+                    if(CollectionUtils.isNotEmpty(listVolume)){
+                        BeanUtils.copyProperties(listVolume.get(0), listVo);
+                    }
+                    BigDecimal balance = new BigDecimal(5000);
+                    BigDecimal balance2 = new BigDecimal(1000);
+                    BigDecimal balance3 = new BigDecimal(200);
+                    BigDecimal dayRate = new BigDecimal(0);
+                        String positionName = "";
+                        if (listVo.getCoinBalance() != null && listVo.getCoinBalance().compareTo(balance3) >= 0) {
+                            if (listVo.getCoinBalance().compareTo(balance) > 0) {
+                                dayRate = dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
+                                positionName = "三级仓";
+                            } else if (listVo.getCoinBalance().compareTo(balance2) > 0) {
+                                dayRate = dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
+                                positionName = "二级仓";
+                            } else {
+                                positionName = "一级仓";
+                                dayRate = dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
+                            }
+                        } else {
+                            positionName = "暂无仓位";
+                        }
+                        listVo.setRise(dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+                        listVo.setPositionName(positionName);
+                        //我的资产
+                        if (listVo.getCoinBalance() != null) {
+                            listVo.setCoinBalance(listVo.getCoinBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setCoinBalance(BigDecimal.ZERO);
+                        }
+                        //
+                        if (listVo.getYesterdayIncome() != null) {
+                            listVo.setYesterdayIncome(listVo.getYesterdayIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setYesterdayIncome(BigDecimal.ZERO);
+                        }
+                        //
+                        if (listVo.getYesterdayReward() != null) {
+                            listVo.setYesterdayReward(listVo.getYesterdayReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setYesterdayReward(BigDecimal.ZERO);
+                        }
+                        //
+                        if (listVo.getTeamAmount() != null) {
+                            listVo.setTeamAmount(listVo.getTeamAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setTeamAmount(BigDecimal.ZERO);
+                        }
+                        //
+                        if (listVo.getTeamCommunityAmount() != null) {
+                            listVo.setTeamCommunityAmount(listVo.getTeamCommunityAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setTeamCommunityAmount(BigDecimal.ZERO);
+                        }
+                        //
+                        if (listVo.getAccumulIncome() != null) {
+                            listVo.setAccumulIncome(listVo.getAccumulIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setAccumulIncome(BigDecimal.ZERO);
+                        }
+                        //
+                        if (listVo.getAccumulReward() != null) {
+                            listVo.setAccumulReward(listVo.getAccumulReward().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setAccumulReward(BigDecimal.ZERO);
+                        }
+                        //
+
+                        if (listVo.getTeamLevel() == null) {
+                            listVo.setTeamLevel("V0");
+                        }
+                        UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), listVo.getCoinPaltSymbol());
+                        if (userVolume != null) {
+                            listVo.setUserSurplus(userVolume.getVolume());
+                        }
+                        if (listVo.getUserSurplus() != null) {
+                            listVo.setUserSurplus(listVo.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
+                        } else {
+                            listVo.setUserSurplus(BigDecimal.ZERO);
+                        }
+
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
     /**
      * 主动发起计算收益 for test
      * @return
@@ -758,7 +864,7 @@ public class BalanceUserCoinVolumeController {
         dayRateMap.put("threeDayRate",new BigDecimal(0.008));
         dayRateMap.put("equalReward",new BigDecimal(0.1));
         //每天收益和奖励计算
-        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+//        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
         LOGGER.info("exexute balanceIncomeDetail  end   ....");
         Mono<SecurityContext> context

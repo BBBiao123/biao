@@ -2,6 +2,7 @@ package com.biao.service.balance;
 
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
+import com.biao.vo.TradePairVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,7 +32,7 @@ public interface BalanceUserCoinVolumeDetailService {
     List<BalanceUserCoinVolumeDetail> findAll(String userId);
 
    void  balanceIncomeDetail();
-    void  balanceIncomeDetailNew(Map<String , BigDecimal> map);
+    void  balanceIncomeDetailNew(Map<String , BigDecimal> map,Map<String,TradePairVO>  tradePairMap);
 
 
    void  balanceIncomeCount();
