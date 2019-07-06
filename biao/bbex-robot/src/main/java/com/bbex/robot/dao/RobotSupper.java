@@ -22,14 +22,14 @@ public class RobotSupper extends DBDatabase {
      *
      * @return 对象；
      */
-    public static RobotSupper get() {
+    public static RobotSupper  get() {
         return Holder.INSTNACE;
     }
 
     /**
      * 数据库操作类；
      */
-    private InsolentDBHelper db = new InsolentDBHelper(getJdbcConfig());
+    public InsolentDBHelper db = new InsolentDBHelper(getJdbcConfig());
 
     /**
      * 封装一个可以操作的 数据。
