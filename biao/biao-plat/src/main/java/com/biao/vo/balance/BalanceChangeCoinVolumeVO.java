@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class BalanceChangeCoinVolumeVO implements Serializable {
     private String id;
     private String coinSymbol;
+    private String coinPlatSymbol;
     private String userId;
     private BigDecimal coinNum;
     private String userName;

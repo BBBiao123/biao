@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : local2
-Source Server Version : 50724
-Source Host           : 127.0.0.1:3306
+Source Server         : TEST
+Source Server Version : 50725
+Source Host           : rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306
 Source Database       : bbex
 
 Target Server Type    : MYSQL
-Target Server Version : 50724
+Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-06-17 23:46:38
+Date: 2019-07-06 19:38:49
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,8 +21,9 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `js_plat_user_coin_balancechange`;
 CREATE TABLE `js_plat_user_coin_balancechange` (
   `id` varchar(64) NOT NULL COMMENT '主键id',
-  `create_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_date` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `user_id` varchar(64) DEFAULT NULL COMMENT '用户id',
+  `coin_plat_symbol` varchar(45) DEFAULT NULL COMMENT '平台币种',
   `coin_symbol` varchar(45) DEFAULT NULL COMMENT '币种',
   `update_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `create_by` varchar(64) DEFAULT NULL,
