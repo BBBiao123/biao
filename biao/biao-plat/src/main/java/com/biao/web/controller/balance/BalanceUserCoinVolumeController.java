@@ -231,7 +231,7 @@ public class BalanceUserCoinVolumeController {
                 .cast(RedisSessionUser.class)
                 .map(e -> {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
-                    System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getName());
+                    System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getCoinSymbol());
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getCoinSymbol());
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
                     balanceUserCoinVolume.setId(null);
@@ -242,7 +242,7 @@ public class BalanceUserCoinVolumeController {
                     }
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
-                    balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
+                    balanceUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getCoinSymbol());
                     if(balanceUserCoinVolume.getCoinBalance() !=null){
                         balanceUserCoinVolume.setCoinBalance(balanceUserCoinVolume.getCoinBalance().add(balanceCoinVolumeVO.getCoinNum()));
                     }else{
@@ -270,12 +270,13 @@ public class BalanceUserCoinVolumeController {
                     BalanceChangeUserCoinVolume   balanceChangeUserCoinVolume =new BalanceChangeUserCoinVolume();
                     balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
                     balanceChangeUserCoinVolume.setUserId(balanceCoinVolumeVO.getUserId());
-                    balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getName());
+                    balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getCoinSymbol());
+                    balanceChangeUserCoinVolume.setCoinPlatSymbol("MG");
                     balanceChangeUserCoinVolume.setFlag(0);
                     balanceChangeUserCoinVolume.setMail(e.getMail());
                     balanceChangeUserCoinVolume.setMobile(e.getMobile());
                     balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
-                    UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), balanceCoinVolumeVO.getName());
+                    UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), balanceCoinVolumeVO.getCoinSymbol());
                     BigDecimal userCoinIncome=userVolume.getVolume();
                     BigDecimal userCoinIncome2=BigDecimal.ZERO;
                     userCoinIncome=  userCoinIncome.setScale(2, BigDecimal.ROUND_HALF_UP);

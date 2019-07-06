@@ -23,6 +23,9 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
     @SqlField("coin_symbol")
     private String coinSymbol;
 
+    @SqlField("coin_plat_symbol")
+    private String coinPlatSymbol;
+
     @SqlField("flag")
     private int flag;
 
@@ -104,5 +107,13 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
 
     public void setTakeOutDate(LocalDateTime takeOutDate) {
         this.takeOutDate = takeOutDate;
+    }
+
+    public String getCoinPlatSymbol() {
+        return coinPlatSymbol;
+    }
+
+    public void setCoinPlatSymbol(String coinPlatSymbol) {
+        this.coinPlatSymbol = coinPlatSymbol;
     }
 }
