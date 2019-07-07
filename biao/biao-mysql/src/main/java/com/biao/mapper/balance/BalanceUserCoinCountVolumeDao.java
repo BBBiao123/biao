@@ -38,4 +38,7 @@ public interface BalanceUserCoinCountVolumeDao {
 
     @Select("select count(DISTINCT t.user_id) from js_plat_user_coin_balance t")
     int findByCountNum();
+
+    @Select("select "+ BalanceUserCoinCountVolumeSqlBuild.columns +" from js_plat_user_coin_balance_count  order by coin_balance desc  LIMIT 10")
+    List<BalanceUserCoinCountVolume> findByTopJackpot();
 }

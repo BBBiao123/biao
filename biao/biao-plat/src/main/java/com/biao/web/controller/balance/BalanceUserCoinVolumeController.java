@@ -266,6 +266,33 @@ public class BalanceUserCoinVolumeController {
                         System.out.println("主键ID-----插入"+balanceUserCoinVolume.getId());
                         balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
                         balanceUserCoinVolumeService.save(balanceUserCoinVolume);
+                        List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
+
+                        BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
+                        if(CollectionUtils.isNotEmpty(jackpotList)){
+                            jackpotDetail=jackpotList.get(0);
+                        }
+                        if(jackpotDetail.getAllCoinIncome() != null){
+                            jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().add(new BigDecimal(100)));
+                        }else{
+                            jackpotDetail.setAllCoinIncome(new BigDecimal(100));
+                        }
+                        if(jackpotDetail.getRewardDate() == null){
+                            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                            LocalDateTime time = LocalDateTime.now();
+                            String localTime = df.format(time);
+                            LocalDateTime ldt = LocalDateTime.parse("2019-08-01 20:00:00",df);
+                            jackpotDetail.setRewardDate(ldt);
+                        }
+                        if(jackpotDetail.getCoinSymbol() == null){
+                            jackpotDetail.setCoinSymbol("MG");
+                        }
+                        if( StringUtils.isNotEmpty(jackpotDetail.getId()) &&  !"null".equals(jackpotDetail.getId())){
+                            balancePlatJackpotVolumeService.updateById(jackpotDetail);
+                        }else{
+                            jackpotDetail.setCreateDate(LocalDateTime.now());
+                            balancePlatJackpotVolumeService.save(jackpotDetail);
+                        }
                     }
                     BalanceChangeUserCoinVolume   balanceChangeUserCoinVolume =new BalanceChangeUserCoinVolume();
                     balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
@@ -743,6 +770,11 @@ public class BalanceUserCoinVolumeController {
                            }
                     BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
                     jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
+                    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime time = LocalDateTime.now();
+                    String localTime = df.format(time);
+                    LocalDateTime ldt = LocalDateTime.parse("2019-08-01 20:00:00",df);
+                    jackpotDetail.setRewardDate(ldt);
                     jackpotDetail.setCoinSymbol("MG");
                     return GlobalMessageResponseVo.newSuccessInstance(jackpotDetail);
                 });

@@ -60,6 +60,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     @Autowired(required = false)
     private BalanceUserCoinCountVolumeDao balanceUserCoinCountVolumeDao;
 
+    @Autowired(required = false)
+    private BalancePlatJackpotVolumeDetailDao balancePlatJackpotVolumeDetailDao;
+
     @Override
     public String save(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail) {
         String id = SnowFlake.createSnowFlake().nextIdString();
@@ -1109,6 +1112,53 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
        return equalList;
     }
 
+/***
+ *
+ */
+  @Override
+  public void  balanceJackpotIncomeCount(){
 
+      List<BalanceUserCoinCountVolume> countVolumeList=balanceUserCoinCountVolumeDao.findByTopJackpot();
+      List<BalancePlatJackpotVolumeDetail> jackpotVolumeList=balancePlatJackpotVolumeDetailDao.findByUserIdAndCoin("MG")  ;
+      if(CollectionUtils.isNotEmpty(jackpotVolumeList)){
+          BalancePlatJackpotVolumeDetail jackpotVolume=jackpotVolumeList.get(0);
+          BigDecimal allIncome=jackpotVolume.getAllCoinIncome();
+          BigDecimal subIncome=BigDecimal.ZERO;
+          if(allIncome != null && allIncome.compareTo(BigDecimal.ZERO)>0){
+              if(CollectionUtils.isNotEmpty(countVolumeList)){
+                 int len=countVolumeList.size();
+                  for(int i=0;i<len;i++){
+                      BalanceUserCoinCountVolume countVolume=countVolumeList.get(i);
+                      BigDecimal avgIncome=BigDecimal.ZERO;
+                      if(i==0){
+                          avgIncome=allIncome.multiply(new BigDecimal(0.1));
+                          subIncome=subIncome.add(avgIncome);
+                      }else if(i==1){
+                          avgIncome=allIncome.multiply(new BigDecimal(0.06));
+                          subIncome=subIncome.add(avgIncome);
+                      }else if(i==2){
+                          avgIncome=allIncome.multiply(new BigDecimal(0.04));
+                          subIncome=subIncome.add(avgIncome);
+                      }else if(i==3){
+                          avgIncome=allIncome.multiply(new BigDecimal(0.02));
+                          subIncome=subIncome.add(avgIncome);
+                      }else{
+                          avgIncome=allIncome.multiply(new BigDecimal(0.005));
+                          subIncome=subIncome.add(avgIncome);
+                      }
+                      userCoinVolumeExService.updateIncome(null,avgIncome,countVolume.getUserId(),jackpotVolume.getCoinSymbol(),false);
+                  }
+                  jackpotVolume.setAllCoinIncome(allIncome.subtract(subIncome));
+                  LocalDateTime localTime=LocalDateTime.now();
+                  jackpotVolume.setRewardDate(localTime.plusDays(10));
+                  balancePlatJackpotVolumeDetailDao.updateById(jackpotVolume);
+              }
+          }
+
+      }
+
+
+
+  }
 
 }

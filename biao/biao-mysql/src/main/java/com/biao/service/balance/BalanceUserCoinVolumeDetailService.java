@@ -34,8 +34,9 @@ public interface BalanceUserCoinVolumeDetailService {
    void  balanceIncomeDetail();
     void  balanceIncomeDetailNew(Map<String , BigDecimal> map,Map<String,TradePairVO>  tradePairMap);
 
-
    void  balanceIncomeCount();
+
+    void  balanceJackpotIncomeCount();
 
 
 }
