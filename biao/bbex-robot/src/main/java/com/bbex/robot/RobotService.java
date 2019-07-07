@@ -22,6 +22,7 @@ public class RobotService {
      */
     private ScheduledExecutorService service;
 
+
     /**
      * 交易对象；
      */
@@ -57,6 +58,9 @@ public class RobotService {
                     0,
                     RobotPamart.get().getRobotCtx().getTradeTime(),
                     TimeUnit.SECONDS));
+
+            RobotConfigRun robotConfigRun = new RobotConfigRun();
+            robotConfigRun.run();
         } catch (Exception ex) {
             logger.error("发生不可修复的异常，系统退出。。。。", ex);
             System.exit(1);
@@ -88,6 +92,7 @@ public class RobotService {
 
         @Override
         public void run() {
+            logger.info("执行线程名称 ： " + Thread.currentThread().getName() + "，  id： " + Thread.currentThread().getId());
             try {
                 buy();
                 sell();
@@ -131,6 +136,50 @@ public class RobotService {
             BigDecimal volume = volumeFactory.volume(weight.getVolumeByRange());
             trade.setVolume(volume);
             return trade;
+        }
+    }
+
+
+    class RobotConfigRun implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(120000l);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                updateConfig();
+            }
+
+        }
+    }
+
+
+    private void updateConfig() {
+        logger.info("检查配置是否需要更新，执行线程名称 ： " + Thread.currentThread().getName() + "，  id： " + Thread.currentThread().getId());
+        RobotPamart.get().reloadParamsCache();
+        if (RobotPamart.get().paramsUpdate()) {
+            try {
+                if (RobotPamart.get().paramsUpdate()) {
+                    logger.info("配置文件有更新，重启调度线程池");
+                    //执行配置文件更新
+                    service.shutdownNow();
+                    logger.info("--------------------##############  shutdown --------------------------------");
+                    Thread.sleep(5000l);
+                    RobotPamart.get().reloadParams();
+                    int size = RobotPamart.get().getParams().size();
+                    service = Executors.newScheduledThreadPool(size, new NameThreadFactory("robot_trade"));
+                    RobotPamart.get().getParams().forEach(k -> service.scheduleAtFixedRate(
+                            new RobotRun(k),
+                            0,
+                            RobotPamart.get().getRobotCtx().getTradeTime(),
+                            TimeUnit.SECONDS));
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

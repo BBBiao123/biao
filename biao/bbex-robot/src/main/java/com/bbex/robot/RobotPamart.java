@@ -25,6 +25,12 @@ public class RobotPamart {
      * 需要机器人帮你交易的交易对信息；
      */
     private List<RobotWeight> params = Lists.newCopyOnWriteArrayList();
+
+    /**
+     * 需要机器人帮你交易的交易对信息；
+     */
+    private List<RobotWeight> paramsCache = Lists.newCopyOnWriteArrayList();
+
     /**
      * 保存所有的url信息；
      */
@@ -72,6 +78,7 @@ public class RobotPamart {
         applyConfig();
         logger.info("初始化配置信息成功！");
     }
+
     /**
      * 配置信息处理；
      */
@@ -88,6 +95,23 @@ public class RobotPamart {
         checkNotNull(robotCtx.getLoginPass(), "params 【LoginPass】 is null");
         checkNotNull(robotCtx.getLoginUser(), "params 【LoginUser】 is null");
         checkNotNull(robotCtx.getUrl(), "params 【Url】 is null");
+    }
+
+    /**
+     * 配置信息处理；
+     */
+    public  void reloadParamsCache() {
+        paramsCache.clear();
+        logger.info("------"+this.getRobotCtx().getJdbcUrl());
+        paramsCache.addAll(new RobotSupper().gerRobotConfig().queryAll());
+    }
+
+    /**
+     * 配置信息处理；
+     */
+    public void reloadParams() {
+        params.clear();
+        params.addAll(new RobotSupper().gerRobotConfig().queryAll());
     }
 
 
@@ -107,6 +131,15 @@ public class RobotPamart {
      */
     public List<RobotWeight> getParams() {
         return Lists.newArrayList(params);
+    }
+
+    /**
+     * 获取一个可以交易对配置信息；
+     *
+     * @return 交易对 ；
+     */
+    public List<RobotWeight> getRealParams() {
+        return params;
     }
 
     /**
@@ -148,6 +181,42 @@ public class RobotPamart {
         Map<String, String> headers = Maps.newHashMap();
         headers.put(Constants.STOKEN, robotCtx.getToken());
         return headers;
+    }
+
+    /**
+     * 是否需要更新配置参数
+     *
+     * @return
+     */
+    public Boolean paramsUpdate() {
+        if (params == null || params.size() < 1) {
+            return false;
+        }
+
+        if (paramsCache == null || paramsCache.size() < 1 || paramsCache.size() != params.size()) {
+            return true;
+        }
+        //比较配置是否被修改
+        for (int i = 0; i < params.size(); i++) {
+            RobotWeight robotWeight = params.get(i);
+            RobotWeight robotWeightCache = paramsCache.get(i);
+            if (!robotWeight.getCoinMain().equals(robotWeightCache.getCoinMain())) {
+                return true;
+            }
+            if (!robotWeight.getCoinOther().equals(robotWeightCache.getCoinOther())) {
+                return true;
+            }
+            if (!robotWeight.getVolumeRange().equals(robotWeightCache.getVolumeRange())) {
+                return true;
+            }
+            if (!robotWeight.getPriceRange().equals(robotWeightCache.getPriceRange())) {
+                return true;
+            }
+            if (!robotWeight.getTradeEnum().equals(robotWeightCache.getTradeEnum())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

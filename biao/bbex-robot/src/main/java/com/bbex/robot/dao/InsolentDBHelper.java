@@ -22,6 +22,7 @@ public class InsolentDBHelper extends DBDatabase implements Closeable {
      */
     private Connection connection;
 
+
     /**
      * @param config config;
      */
@@ -75,7 +76,7 @@ public class InsolentDBHelper extends DBDatabase implements Closeable {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private static Connection getJdbcConnection(String jdbcClass, String url, String user, String pwd) throws SQLException, ClassNotFoundException {
+    public  static Connection getJdbcConnection(String jdbcClass, String url, String user, String pwd) throws SQLException, ClassNotFoundException {
         try {
             Class.forName(jdbcClass);
             return DriverManager.getConnection(url, user, pwd);
@@ -106,4 +107,6 @@ public class InsolentDBHelper extends DBDatabase implements Closeable {
     public void commit() {
         this.commit(connection);
     }
+
+
 }
