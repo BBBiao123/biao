@@ -308,10 +308,10 @@ public class PlatUserServiceImpl implements PlatUserService {
         if (user == null) {
             throw new PlatException(Constants.USER_IS_NULL_ERROR, "用户不存在");
         }
-        boolean match = passwordEncoder.matches(platUser.getPassword(), user.getPassword());
-        if (!match) {
-            throw new PlatException(Constants.USER_VALID_PASSWORD_ERROR, "请输入正确的密码");
-        }
+//        boolean match = passwordEncoder.matches(platUser.getPassword(), user.getPassword());
+//        if (!match) {
+//            throw new PlatException(Constants.USER_VALID_PASSWORD_ERROR, "请输入正确的密码");
+//        }
         PlatUser updateUser = new PlatUser();
         updateUser.setId(platUser.getId());
         updateUser.setExPassword(platUser.getExPassword());

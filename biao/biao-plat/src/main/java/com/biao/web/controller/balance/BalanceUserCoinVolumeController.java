@@ -12,6 +12,8 @@ import com.biao.query.UserFinanceQuery;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
 import com.biao.service.balance.*;
+import com.biao.util.RsaUtils;
+import com.biao.vo.PlatUserVO;
 import com.biao.vo.balance.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -23,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -88,6 +91,9 @@ public class BalanceUserCoinVolumeController {
 
     @Autowired
     private PlatUserDao platUserDao;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 根据用户查询所有币种余额收益信息
@@ -281,7 +287,7 @@ public class BalanceUserCoinVolumeController {
                             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                             LocalDateTime time = LocalDateTime.now();
                             String localTime = df.format(time);
-                            LocalDateTime ldt = LocalDateTime.parse("2019-08-01 20:00:00",df);
+                            LocalDateTime ldt = LocalDateTime.parse(balancePlatDayRateConfig.getRewardDateStr(),df);
                             jackpotDetail.setRewardDate(ldt);
                         }
                         if(jackpotDetail.getCoinSymbol() == null){
@@ -773,7 +779,7 @@ public class BalanceUserCoinVolumeController {
                     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     LocalDateTime time = LocalDateTime.now();
                     String localTime = df.format(time);
-                    LocalDateTime ldt = LocalDateTime.parse("2019-08-01 20:00:00",df);
+                    LocalDateTime ldt = LocalDateTime.parse(balancePlatDayRateConfig.getRewardDateStr(),df);
                     jackpotDetail.setRewardDate(ldt);
                     jackpotDetail.setCoinSymbol("MG");
                     return GlobalMessageResponseVo.newSuccessInstance(jackpotDetail);
@@ -879,6 +885,31 @@ public class BalanceUserCoinVolumeController {
                         }
 
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
+    /**
+     * 资产转出时，验证交易密码
+     * @return
+     */
+    @PostMapping("/balance/volume/vaildExPassword")
+    public Mono<GlobalMessageResponseVo> vaildExPassword(PlatUserVO platUserVO) {
+
+        Mono<SecurityContext> context = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    if(StringUtils.isBlank(e.getExPassword())){
+                        return GlobalMessageResponseVo.newErrorInstance("请先设置交易密码");
+                    }
+                    String exDecryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getExPassword(), RsaUtils.DEFAULT_PRIVATE_KEY);
+                    boolean result = passwordEncoder.matches(exDecryPassword, e.getExPassword());
+                    if (!result) {
+                        return GlobalMessageResponseVo.newErrorInstance("请输入正确的交易密码");
+                    }
+                    return GlobalMessageResponseVo.newSuccessInstance("交易密码验证成功");
                 });
     }
 

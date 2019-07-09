@@ -1148,13 +1148,21 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                       }
                       userCoinVolumeExService.updateIncome(null,avgIncome,countVolume.getUserId(),jackpotVolume.getCoinSymbol(),false);
                   }
-                  jackpotVolume.setAllCoinIncome(allIncome.subtract(subIncome));
-                  LocalDateTime localTime=LocalDateTime.now();
-                  jackpotVolume.setRewardDate(localTime.plusDays(10));
-                  balancePlatJackpotVolumeDetailDao.updateById(jackpotVolume);
+
               }
           }
-
+          jackpotVolume.setAllCoinIncome(allIncome.subtract(subIncome));
+          LocalDateTime localTime=LocalDateTime.now();
+          jackpotVolume.setRewardDate(localTime.plusDays(10));
+          balancePlatJackpotVolumeDetailDao.updateById(jackpotVolume);
+      }else{
+          BalancePlatJackpotVolumeDetail jackpotVolumeDetail=new BalancePlatJackpotVolumeDetail();
+          jackpotVolumeDetail.setAllCoinIncome(BigDecimal.ZERO);
+          LocalDateTime localTime=LocalDateTime.now();
+          jackpotVolumeDetail.setRewardDate(localTime.plusDays(10));
+          String id = SnowFlake.createSnowFlake().nextIdString();
+          jackpotVolumeDetail.setId(id);
+          balancePlatJackpotVolumeDetailDao.insert(jackpotVolumeDetail);
       }
 
 
