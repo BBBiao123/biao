@@ -31,4 +31,8 @@ public interface BalanceUserCoinVolumeService {
 
     List<BalanceUserCoinVolume> findByUserIdAndCoin(String userId,String coinSymbol);
     int findByCountNum();
+
+    List<BalanceUserCoinVolume> findInvitesByUserId(String userId);
+
+    List<BalanceUserCoinVolume> findByAllRank();
 }

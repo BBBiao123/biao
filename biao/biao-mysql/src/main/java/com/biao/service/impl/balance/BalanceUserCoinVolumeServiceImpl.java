@@ -52,4 +52,11 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
         return balanceUserCoinVolumeDao.findByCountNum();
     }
 
+    public  List<BalanceUserCoinVolume> findInvitesByUserId(String userId){
+        return  balanceUserCoinVolumeDao.findInvitesByUserId(userId);
+    }
+    @Override
+    public List<BalanceUserCoinVolume> findByAllRank() {
+        return balanceUserCoinVolumeDao.findByAllRank();
+    }
 }
