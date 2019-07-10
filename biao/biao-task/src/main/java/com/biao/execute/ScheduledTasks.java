@@ -1,5 +1,6 @@
 package com.biao.execute;
 
+import com.biao.coin.CoinMainService;
 import com.biao.config.AliYunCardCheckConfig;
 import com.biao.config.BalanceDayRateConfig;
 import com.biao.enums.CardStatusEnum;
@@ -7,6 +8,7 @@ import com.biao.enums.KlineTimeEnum;
 import com.biao.enums.TradePairEnum;
 import com.biao.enums.UserCardStatusEnum;
 import com.biao.pojo.CardStatuScanCheckDTO;
+import com.biao.redis.RedisCacheManager;
 import com.biao.service.*;
 import com.biao.service.balance.BalanceUserCoinVolumeDetailService;
 import com.biao.service.impl.MkDividendRuleTaskServiceImpl;
@@ -14,18 +16,28 @@ import com.biao.service.impl.MkPromoteRuleTaskServiceImpl;
 import com.biao.service.impl.UserCoinVolumeBillTaskServiceImpl;
 import com.biao.service.kline.KlineMinDateTransfer;
 import com.biao.service.register.UserRegisterLotteryService;
+import com.biao.util.DateUtils;
+import com.biao.vo.KlineVO;
 import com.biao.vo.OfflineCoinVolumeDayVO;
+import com.biao.vo.TradePairVO;
+import com.biao.vo.redis.RedisExPairVO;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -118,6 +130,24 @@ public class ScheduledTasks {
 
     @Autowired
     private RegisterUserCoinService registerUserCoinService;
+
+    private final RedisCacheManager redisCacheManager;
+
+    private final RedisTemplate redisTemplate;
+
+    @Autowired
+    private CoinMainService coinMainService;
+
+    @Autowired
+    public ScheduledTasks(
+            final RedisTemplate redisTemplate,
+            final RedisCacheManager redisCacheManager
+    ) {
+
+        this.redisTemplate = redisTemplate;
+        this.redisCacheManager = redisCacheManager;
+    }
+
 
 
     // @Scheduled(cron = "0 0/1 * * * ?")
@@ -792,7 +822,17 @@ public class ScheduledTasks {
         dayRateMap.put("threeDayRate",balanceDayRateConfig.getThreeDayRate());
         dayRateMap.put("equalReward",balanceDayRateConfig.getEqualReward());
         //每天收益和奖励计算
-        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+        Map<String, List<TradePairVO>>  allTrade= buildAllTradePair();
+        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+        if(allTrade !=null && allTrade.size()>0){
+            for(String key : allTrade.keySet()){
+                List<TradePairVO> list=allTrade.get(key);
+                for (TradePairVO vo:list){
+                    tradePairMap.put(vo.getCoinOther(),vo);
+                }
+            }
+        }
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,tradePairMap);
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
@@ -800,10 +840,100 @@ public class ScheduledTasks {
     /**
      * 余币宝统计,每天8:00AM
      */
-   // @Scheduled(cron = "0 0 8 * * ?")
+//    @Scheduled(cron = "0 0 8 * * ?")
     public void balanceIncomeCount() {
         logger.info("exexute balanceIncomeCount  start ....");
-        balanceUserCoinVolumeDetailService.balanceIncomeCount();
+        Map<String, List<TradePairVO>>  allTrade= buildAllTradePair();
+        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+        if(allTrade !=null && allTrade.size()>0){
+            for(String key : allTrade.keySet()){
+                List<TradePairVO> list=allTrade.get(key);
+                for (TradePairVO vo:list){
+                    tradePairMap.put(vo.getCoinOther(),vo);
+                }
+            }
+        }
         logger.info("exexute balanceIncomeCount  end   ....");
+    }
+    /**
+     * 交易界面交易对信息.
+     *
+     * @return Map map
+     */
+
+    public Map<String, List<TradePairVO>> buildAllTradePair() {
+        List<RedisExPairVO> allExpair = redisCacheManager.acquireAllExpair();
+
+        final List<RedisExPairVO> sortList = allExpair.stream()
+                .sorted(Comparator.comparing(RedisExPairVO::getSort))
+                .sorted(Comparator.comparing(RedisExPairVO::getType))
+                .collect(Collectors.toList());
+
+        Map<String, List<RedisExPairVO>> listMap = sortList
+                .stream()
+                .collect(Collectors.groupingBy(RedisExPairVO::getPairOne));
+
+        Map<String, List<RedisExPairVO>> sortMap = Maps.newLinkedHashMap();
+
+        for (String main : coinMainService.getList()) {
+            if (CollectionUtils.isNotEmpty(listMap.get(main))) {
+                sortMap.put(main, listMap.get(main));
+            }
+        }
+
+        Map<String, List<TradePairVO>> resultMap = Maps.newLinkedHashMap();
+
+        sortMap.forEach((k, v) -> {
+            List<TradePairVO> vos = Lists.newArrayList();
+            for (RedisExPairVO exPair : v) {
+                final KlineVO klineVO = (KlineVO) redisTemplate.opsForHash().get(buildKey(exPair.getPairOne(), exPair.getPairOther()),
+                        DateUtils.formaterLocalDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0))));
+                TradePairVO vo = new TradePairVO();
+                vo.setCoinMain(exPair.getPairOne());
+                vo.setCoinOther(exPair.getPairOther());
+                vo.setPricePrecision(exPair.getPricePrecision());
+                vo.setVolumePrecision(exPair.getVolumePrecision());
+                vo.setVolumePercent(exPair.getVolumePercent());
+                vo.setType(exPair.getType());
+                if (Objects.nonNull(klineVO)) {
+                    vo.setHighestPrice(new BigDecimal(klineVO.getH()));
+                    vo.setDayCount(new BigDecimal(klineVO.getV()));
+                    vo.setLowerPrice(new BigDecimal(klineVO.getL()));
+                    vo.setFirstPrice(new BigDecimal(klineVO.getO()));
+                    vo.setLatestPrice(new BigDecimal(klineVO.getC()));
+                    BigDecimal rise = new BigDecimal(0);
+                    if (vo.getFirstPrice().compareTo(new BigDecimal(0)) != 0) {
+                        rise = vo.getLatestPrice().subtract(vo.getFirstPrice())
+                                .divide(vo.getFirstPrice(), 8, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    }
+                    vo.setRise(rise.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+                } else {
+                    vo.setDayCount(new BigDecimal(0.00));
+                    vo.setFirstPrice(new BigDecimal(0.00));
+                    vo.setLowerPrice(new BigDecimal(0.00));
+                    vo.setHighestPrice(new BigDecimal(0.00));
+                    vo.setLatestPrice(new BigDecimal(0.00));
+                    vo.setRise("0.00");
+                }
+
+                vos.add(vo);
+            }
+            resultMap.put(k, vos);
+        });
+        return resultMap;
+    }
+    public String buildKey(String coinMain, String coinOther) {
+        return "kline:" + coinMain + "_" + coinOther + ":1d";
+    }
+
+    /**
+     * 挖矿开奖设置，每10天执行一次开奖
+     */
+    @Scheduled(cron = "0 0 20 1/10 * ?")
+//    @Scheduled(cron = "0 4 16 * * ?")
+    public void balanceJackpotIncomeCount() {
+        logger.info("exexute balanceJackpotIncomeCount  start ....");
+        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount();
+        logger.info("exexute balanceJackpotIncomeCount  end   ....");
     }
 }

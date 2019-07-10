@@ -56,14 +56,23 @@ public class CollectionService {
 
             LOGGER.info("=========归集条数为===={}", depositLogList.size());
             for (DepositLog cs : depositLogList) {
+                //如果就是归集地址本身，不需要做归集操作
+                if (cs.getAddress().equals(omniConfig.getCollectAddr())) {
+                    depositLogDao.updateRaiseStatusSuccess(cs.getUserId(), UsdtConstants.USDT_SMYBOL);
+                    continue;
+                }
+
                 final String txid = collect(cs.getAddress(), omniConfig.getFeeAddr(), omniConfig.getCollectAddr(),
                         cs.getVolume().toPlainString(), omniConfig.getCollectFee());
                 if (StringUtils.isNoneBlank(txid)) {
-                    coinCollectionDao.updateStatusById(cs.getId());
+//                    coinCollectionDao.updateStatusById(cs.getId());
                     // 更新归集归集日志为 2
                     depositLogDao.updateRaiseStatusSuccess(cs.getUserId(), UsdtConstants.USDT_SMYBOL);
                     LOGGER.info("=====归集成功,返回txid:{},归集记录为:==========={}", txid,
                             cs.getId());
+                } else {
+                    depositLogDao.updateRaiseStatusFail(cs.getUserId(), UsdtConstants.USDT_SMYBOL);
+                    LOGGER.info("=====归集失败======= ");
                 }
 
             }
@@ -74,9 +83,12 @@ public class CollectionService {
         try {
             //查询USDT地址UTXO
             List<UtxoInfo> listunspent = client.invoke("listunspent", new Object[]{0, 99999999, new String[]{fromaddr}}, ArrayList.class);
+            LOGGER.info(" from address : " + fromaddr + "  toaddr : " + toaddr);
+            LOGGER.info(" listtunspent.size : " + listunspent.size());
             //查询BTC地址UTXO
             // 自己拼接input,USDT地址放在第一个，旷工费地址放在下面就可以了 凌晨3点钟效率最高转账
             List<UtxoInfo> arrayList = client.invoke("listunspent", new Object[]{0, 99999999, new String[]{feeaddr}}, ArrayList.class);
+            LOGGER.info(" arrayList.size : " + arrayList.size());
             UtxoInfo usdtinput = JSON.parseObject(JSON.toJSONString(listunspent.get(0)), UtxoInfo.class);
             UtxoInfo btcinput = JSON.parseObject(JSON.toJSONString(arrayList.get(0)), UtxoInfo.class);
             //USDT

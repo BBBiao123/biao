@@ -28,6 +28,8 @@ public class BalancePlatJackpotVolumeDetail extends BaseEntity {
     @SqlField("all_coin_income")
     private BigDecimal allCoinIncome;
 
+    private long rewardTime;
+
     public String getCoinSymbol() {
         return coinSymbol;
     }
@@ -50,5 +52,13 @@ public class BalancePlatJackpotVolumeDetail extends BaseEntity {
 
     public void setAllCoinIncome(BigDecimal allCoinIncome) {
         this.allCoinIncome = allCoinIncome;
+    }
+
+    public long getRewardTime() {
+        return rewardTime;
+    }
+
+    public void setRewardTime(long rewardTime) {
+        this.rewardTime = rewardTime;
     }
 }

@@ -982,19 +982,19 @@ public class PlatUserController {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
         }
         String oldExpassword = user.getExPassword();
-        String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getPassword(), RsaUtils.DEFAULT_PRIVATE_KEY);
+//        String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getPassword(), RsaUtils.DEFAULT_PRIVATE_KEY);
         String exDecryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getExPassword(), RsaUtils.DEFAULT_PRIVATE_KEY);
-        if (decryPassword.equals(exDecryPassword)) {
-            com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
-                    com.biao.reactive.data.mongo.disruptor.DisruptorData.
-                            buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "交易密码不能和登录密码一致",
-                                    user.getId(), user.getMobile(), user.getMail()));
-            throw new PlatException(Constants.GLOBAL_ERROR_CODE, "交易密码不能和登录密码一致");
-        }
+//        if (decryPassword.equals(exDecryPassword)) {
+//            com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+//                    com.biao.reactive.data.mongo.disruptor.DisruptorData.
+//                            buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "交易密码不能和登录密码一致",
+//                                    user.getId(), user.getMobile(), user.getMail()));
+//            throw new PlatException(Constants.GLOBAL_ERROR_CODE, "交易密码不能和登录密码一致");
+//        }
         LocalDateTime lockDate = userConfig.plusHours();
         String decodeExPassword = passwordEncoder.encode(exDecryPassword);
         PlatUser platUser = new PlatUser();
-        platUser.setPassword(decryPassword);
+//        platUser.setPassword(decryPassword);
         platUser.setExPassword(decodeExPassword);
         platUser.setId(user.getId());
         platUser.setLockDate(lockDate);

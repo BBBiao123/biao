@@ -166,10 +166,13 @@ public class OmniService {
                 return;
             }
             UserCoinVolume userCoinVolume = userCoinVolumeDao.findByUserIdAndCoinSymbol(withdraw.getUserId(), withdraw.getCoinSymbol());
+            LOGGER.info("提现查询用户余额："  +userCoinVolume.toString());
             if (!Objects.isNull(userCoinVolume)) {
 
-                final BigDecimal outLockVolume = userCoinVolume.getOutLockVolume();
+                final BigDecimal outLockVolume = userCoinVolume.getVolume().subtract(userCoinVolume.getLockVolume());
+                LOGGER.info("outLockVolume " + outLockVolume);
                 if (outLockVolume.compareTo(BigDecimal.ZERO) <= 0) {
+                    LOGGER.info(" outLockVolume < 0 ");
                     return;
                 }
                 BigDecimal result = outLockVolume.subtract(withdraw.getVolume());
@@ -346,7 +349,6 @@ public class OmniService {
         if (dataMap == null) {
             return;
         }
-
         //如果不是usdt
         Object propertyid = dataMap.get("propertyid");
         if (Objects.isNull(propertyid)) {
@@ -363,6 +365,12 @@ public class OmniService {
         if (!pass) {
             final String invalidReason = String.valueOf(dataMap.get("invalidreason"));
             LOGGER.error(invalidReason);
+            return;
+        }
+
+        final String typeInt = String.valueOf(dataMap.get("type_int").toString());
+        if("185".equals(typeInt)){
+            LOGGER.info("處理凍結代筆");
             return;
         }
 
@@ -447,6 +455,7 @@ public class OmniService {
         depositLog.setAddress(address);
         depositLog.setId(SnowFlake.createSnowFlake().nextIdString());
         depositLog.setBlockNumber(BigInteger.ZERO);
+        depositLog.setRaiseStatus(0);
         depositLogDao.insert(depositLog);
     }
 
