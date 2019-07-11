@@ -92,7 +92,7 @@ public class DepositService {
     }
 
     /**
-     * LOOM交易监听
+     * erc20交易监听
      *
      * @param
      */
@@ -151,12 +151,21 @@ public class DepositService {
         logger.info("归集操作    fromAddress {}, despositLog  {}", Environment.fromAddress,depositLog.toString());
         String txId = TransactionClient.sendETH(depositLog.getAddress().trim(), fromAddress, depositLog.getVolume().subtract(BigDecimal.valueOf(0.00052)));
         logger.info("eth deposit raise:{} volume:{} txid:{}", depositLog.getAddress(), depositLog.getVolume(), txId);
-        long result = depositLogDao.updateRaiseStatusById(2, depositLog.getId());
+        if(org.springframework.util.StringUtils.isEmpty(txId)){
+            depositLogDao.updateRaiseStatusById(9, depositLog.getId());
+            logger.info("归集失败，修改归集状态为失败");
+
+        }else {
+            long result = depositLogDao.updateRaiseStatusById(2, depositLog.getId());
+            logger.info("归集成功，修改归集状态成功");
+        }
+
+
 
     }
 
     public List<DepositLog> findErc20DepositLog() {
-        logger.info("--------------");
+        logger.info("--------------查找erc20 代币充值记录 dao");
         List<DepositLog>  depositLogs = depositLogDao.findAllByCoinTypeAndRaiseStatus("1", 0);
         logger.info("------  " + depositLogs.size());
         return depositLogs;
@@ -164,7 +173,7 @@ public class DepositService {
     }
 
     public void executeErc20Raise(DepositLog depositLog) {
-        logger.info("歸集 ： " + depositLog.toString());
+        logger.info("歸集ERC 20  ： " + depositLog.toString());
         if (depositLog.getCoinSymbol().equals("ETH")) return;
 
         String symbol = depositLog.getCoinSymbol().toUpperCase();
@@ -183,7 +192,7 @@ public class DepositService {
            // bdAmount = new BigDecimal(addrAmount);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.WEI).toBigInteger();
         } else if (decimals == 2) {
-            amount =depositLog.getVolume().divide(new BigDecimal(100)).toBigInteger();
+            amount =depositLog.getVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.KWEI).toBigInteger();
