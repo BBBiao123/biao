@@ -232,7 +232,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
 
             });
         }
-
+        balanceUserCoinVolumeDetailDao.deleteByVersion();
     }
     @Override
     public void balanceIncomeDetail(){
@@ -408,9 +408,12 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             } else{
                 childRateSec=map.get("oneDayRate");
             }
-            if(platPrice.compareTo(BigDecimal.ZERO)>0){
-                childCommunityList.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
-            }
+//            if(platPrice.compareTo(BigDecimal.ZERO)>0){
+//                childCommunityList.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
+//            }
+
+                childCommunityList.add(childCoinBalance.multiply(childRateSec));
+
             List<PlatUser> platList= platUserDao.findInvitesById(user.getId());
             if (CollectionUtils.isNotEmpty(platList)) {
                 treeCommunityUserList(platList, tradePairMap, childSumRecordList, validList,childCommunityList,map,platPrice);
@@ -442,6 +445,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * 静态收益计算和动态收益1和3计算
      */
     public void staticsIncomeAndPartDynamics(Map<String ,BigDecimal> map,Map<String,TradePairVO>  tradePairMap){
+        List<PlatUser> platUserList=balanceUserCoinCountVolumeDao.findPlatUserAll();
         List<BalanceUserCoinVolume>  balanceUserCoinVolumeList2= balanceUserCoinVolumeDao.findCoinAll();
         Map<String,List<BalanceUserCoinCountVolume>> balanceUserCoinVolumeMap=new HashMap<String,List<BalanceUserCoinCountVolume>>();
         if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList2)) {
@@ -459,14 +463,15 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             }
 
         }
-
-        for(String key:balanceUserCoinVolumeMap.keySet()){
-            List<BalanceUserCoinCountVolume>  countlist=balanceUserCoinVolumeMap.get(key);
+        for(PlatUser platUser:platUserList){
             BalanceUserCoinCountVolume balanceCountVolume =new BalanceUserCoinCountVolume();
-
+            List<BalanceUserCoinCountVolume> balanceCountList= balanceUserCoinCountVolumeDao.findByUserId(platUser.getId());
+            if (CollectionUtils.isNotEmpty(balanceCountList)) {
+                balanceCountVolume=balanceCountList.get(0);
+            }
+            List<BalanceUserCoinCountVolume>  countlist=balanceUserCoinVolumeMap.get(platUser.getId());
             BigDecimal coinBalance=BigDecimal.ZERO;
             if (CollectionUtils.isNotEmpty(countlist)) {
-                balanceCountVolume=countlist.get(0);
                 for(BalanceUserCoinCountVolume countVolume: countlist){
                     BigDecimal lastPrice=BigDecimal.ZERO;
                     BigDecimal coinCount=BigDecimal.ZERO;
@@ -483,13 +488,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         coinCount=countVolume.getCoinBalance();
                     }
                     coinBalance=coinBalance.add(coinCount);
-
                 }
-            }
-            balanceCountVolume.setId(null);
-            List<BalanceUserCoinCountVolume> balanceCountList= balanceUserCoinCountVolumeDao.findByUserId(balanceCountVolume.getUserId());
-            if (CollectionUtils.isNotEmpty(balanceCountList)) {
-                balanceCountVolume=balanceCountList.get(0);
             }
             balanceCountVolume.setCoinBalance(coinBalance);
             balanceCountVolume.setCoinSymbol("USDT");
@@ -502,11 +501,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 String id = SnowFlake.createSnowFlake().nextIdString();
                 balanceCountVolume.setId(id);
                 balanceCountVolume.setCreateDate(LocalDateTime.now());
+                balanceCountVolume.setUserId(platUser.getId());
+                balanceCountVolume.setReferId(platUser.getReferId());
                 balanceUserCoinCountVolumeDao.insert(balanceCountVolume);
             }
-
         }
-        List<BalanceUserCoinCountVolume>  balanceUserCoinVolumeList= balanceUserCoinCountVolumeDao.findAll();
+
+        List<BalanceUserCoinCountVolume>  balanceUserCoinVolumeList= balanceUserCoinCountVolumeDao.findCoinAll();
         if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList)) {
             balanceUserCoinVolumeList.forEach(e->{
                 //用户静态收益计算 begin
@@ -572,9 +573,12 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     }
                     if(platPrice.compareTo(BigDecimal.ZERO)>0 ) {
                         dynamicsIncomeTotal = dynamicsIncomeTotal.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec).multiply(new BigDecimal(0.5)));
-                        oneLevelIncome =   oneLevelIncome.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
                         communityStaticsIncome = communityStaticsIncome.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
                     }
+
+//                    dynamicsIncomeTotal = dynamicsIncomeTotal.add(childCoinBalance.multiply(childRateSec).multiply(new BigDecimal(0.5)));
+//                    communityStaticsIncome = communityStaticsIncome.add(childCoinBalance.multiply(childRateSec));
+
                     childTeamSumRecord= childTeamSumRecord.add(childCoinBalance);
 
                     List<PlatUser> childAllPlatUserList = platUserDao.findInvitesById(platUser.getId());
@@ -616,14 +620,24 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 //收益率通过配置计算
                 BigDecimal selfCoinBalance=e.getCoinBalance();
                 if(platPrice.compareTo(BigDecimal.ZERO)>0) {
-                    if(selfCoinBalance.compareTo(balance)>0){
-                        staticsIncomeTotal=staticsIncomeTotal.add(selfCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(map.get("threeDayRate")));
-                    }else if (selfCoinBalance.compareTo(balance2)>0){
-                        staticsIncomeTotal=staticsIncomeTotal.add(selfCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(map.get("secondDayRate")));
-                    }else{
-                        staticsIncomeTotal=staticsIncomeTotal.add(selfCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(map.get("oneDayRate")));
+                    if (selfCoinBalance.compareTo(balance) > 0) {
+                        staticsIncomeTotal = staticsIncomeTotal.add(selfCoinBalance.divide(platPrice, 16, BigDecimal.ROUND_HALF_UP).multiply(map.get("threeDayRate")));
+                    } else if (selfCoinBalance.compareTo(balance2) > 0) {
+                        staticsIncomeTotal = staticsIncomeTotal.add(selfCoinBalance.divide(platPrice, 16, BigDecimal.ROUND_HALF_UP).multiply(map.get("secondDayRate")));
+                    } else {
+                        staticsIncomeTotal = staticsIncomeTotal.add(selfCoinBalance.divide(platPrice, 16, BigDecimal.ROUND_HALF_UP).multiply(map.get("oneDayRate")));
                     }
                 }
+
+//
+//                    if(selfCoinBalance.compareTo(balance)>0){
+//                        staticsIncomeTotal=staticsIncomeTotal.add(selfCoinBalance.multiply(map.get("threeDayRate")));
+//                    }else if (selfCoinBalance.compareTo(balance2)>0){
+//                        staticsIncomeTotal=staticsIncomeTotal.add(selfCoinBalance.multiply(map.get("secondDayRate")));
+//                    }else{
+//                        staticsIncomeTotal=staticsIncomeTotal.add(selfCoinBalance.multiply(map.get("oneDayRate")));
+//                    }
+
 
                 List<BalanceChangeUserCoinVolume> balanceChangeList=balanceChangeUserCoinVolumeDao.findChangeByUserId(e.getUserId());
                 if (CollectionUtils.isNotEmpty(balanceChangeList)) {
@@ -734,244 +748,148 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     /**
      * 计算社区管理奖
      */
-    public void  calcManagementAward(Map<String ,BigDecimal> map,Map<String,TradePairVO>  tradePairMap){
-        List<BalanceUserCoinVolumeDetail>  balanceVolumeDetailList=balanceUserCoinVolumeDetailDao.findAll();
+    public void  calcManagementAward(Map<String ,BigDecimal> map,Map<String,TradePairVO>  tradePairMap) {
+        List<BalanceUserCoinVolumeDetail> balanceVolumeDetailList = balanceUserCoinVolumeDetailDao.findAll();
         //全网络静态收益加权平均分红
-       Map<String,BigDecimal>  goalStaticsIncomeMap=new HashMap<String,BigDecimal> ();
+        Map<String, BigDecimal> goalStaticsIncomeMap = new HashMap<String, BigDecimal>();
         List<Coin> coinList = coinDao.findAll();
-        TradePairVO tradePair=tradePairMap.get("MG");
-        BigDecimal platPrice=BigDecimal.ZERO;
-        if(tradePair != null && tradePair.getLatestPrice() != null){
-            platPrice=tradePair.getLatestPrice();
-        }
-        if(CollectionUtils.isNotEmpty(coinList)){
-             for(Coin coin:coinList){
-                 List<BalanceUserCoinCountVolume>  allVolumeList= balanceUserCoinCountVolumeDao.findByCoin(coin.getName());
-                 List<BalanceUserCoinVolumeDetail>  detailGoalist=balanceUserCoinVolumeDetailDao.findGlobalByCoin(coin.getName());
-                 BigDecimal coinIncome=new BigDecimal(0);
-
-                 //V5等级个数
-                 int len=0;
-                 if(CollectionUtils.isNotEmpty(allVolumeList)){
-                     for(BalanceUserCoinCountVolume balanceUserCoinVolume : allVolumeList){
-                         BigDecimal dayRate=new BigDecimal(0);
-                         BigDecimal balance=new BigDecimal(5000);
-                         BigDecimal balance2=new BigDecimal(1000);
-                         if(balanceUserCoinVolume.getCoinBalance().compareTo(balance)>0){
-                             dayRate=map.get("threeDayRate");
-                         }else if (balanceUserCoinVolume.getCoinBalance().compareTo(balance2)>0){
-                             dayRate=map.get("secondDayRate");
-                         } else{
-                             dayRate=map.get("oneDayRate");
-                         }
-                         if(platPrice.compareTo(BigDecimal.ZERO)>0){
-                             coinIncome.add(balanceUserCoinVolume.getCoinBalance().divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(dayRate));
-                         }
-                     }
-                 }
-                 if(CollectionUtils.isNotEmpty(detailGoalist)){
-                     len=detailGoalist.size();
-                 }
-                 if(len != 0){
-                     coinIncome=coinIncome.multiply(new BigDecimal(0.05)).divide(new BigDecimal(len));
-                 }
-                 goalStaticsIncomeMap.put(coin.getName(),coinIncome);
-             }
+        TradePairVO tradePair = tradePairMap.get("MG");
+        BigDecimal platPrice = BigDecimal.ZERO;
+        if (tradePair != null && tradePair.getLatestPrice() != null) {
+            platPrice = tradePair.getLatestPrice();
         }
 
-        List<BalanceUserCoinVolumeDetail>  balanceVolumeDetailList2=balanceUserCoinVolumeDetailDao.findAll();
-        List<BalanceUserCoinVolumeDetail>  balanceVolumeDetailList3=new ArrayList<BalanceUserCoinVolumeDetail>();
-        if(CollectionUtils.isNotEmpty(balanceVolumeDetailList2)) {
-            balanceVolumeDetailList2.forEach(balanceDetail2->{
-                List<PlatUser> childDetailList2 = platUserDao.findInvitesById(balanceDetail2.getUserId());
-                boolean flag =treeCommunityUserDetailList(childDetailList2);
-                if(!flag && balanceDetail2.getTeamLevel()>0){
-                    balanceVolumeDetailList3.add(balanceDetail2);
+        List<BalanceUserCoinVolumeDetail> detailGoalist = balanceUserCoinVolumeDetailDao.findAll();
+        BigDecimal coinStIncome = new BigDecimal(0);
+        //V5等级个数
+        int len = 0;
+        if (CollectionUtils.isNotEmpty(detailGoalist)) {
+            for (BalanceUserCoinVolumeDetail balanceUserCoinVolume : detailGoalist) {
+                coinStIncome = coinStIncome.add(balanceUserCoinVolume.getStaticsIncome());
+                if (balanceUserCoinVolume.getTeamLevel() == 5) {
+                    len++;
                 }
-                BigDecimal communityManageReward=balanceDetail2.getCommunityManageReward();
-                if(balanceDetail2.getTeamLevel()==5){
-                    BigDecimal goalBonus=goalStaticsIncomeMap.get(balanceDetail2.getCoinSymbol());
-                    communityManageReward.add(goalBonus);
-                    balanceDetail2.setCommunityManageReward(communityManageReward);
-                    balanceUserCoinVolumeDetailDao.updateById(balanceDetail2);
-                }
+            }
 
-            });
         }
-        treeCalcUserDetailRewardList(balanceVolumeDetailList3,map,true);
+        if (len != 0) {
+            coinStIncome = coinStIncome.multiply(new BigDecimal(0.05)).divide(new BigDecimal(len));
+        }
 
+        List<BalanceUserCoinVolumeDetail> balanceVolumeDetailList2 = balanceUserCoinVolumeDetailDao.findAll();
+        //社区管理奖
+        if (CollectionUtils.isNotEmpty(balanceVolumeDetailList2)) {
+            for (BalanceUserCoinVolumeDetail volumeDetail : balanceVolumeDetailList2) {
+                List<BigDecimal> countList = new ArrayList<>();
+                BigDecimal communityMagageReward = BigDecimal.ZERO;
+                BigDecimal communityStaticIncome = BigDecimal.ZERO;
+                if (volumeDetail.getTeamLevel() != 0) {
+                    treeCalcUserDetailRewardList(volumeDetail, volumeDetail, countList);
+                }
+                if (CollectionUtils.isNotEmpty(countList)) {
+                    for (BigDecimal countDetail : countList) {
+                        communityMagageReward = communityMagageReward.add(countDetail);
+                        communityStaticIncome=communityStaticIncome.add(countDetail);
+                    }
+                }
+                if (volumeDetail.getTeamLevel() > 0) {
+                    int teamLevel = volumeDetail.getTeamLevel();
+                    if (teamLevel == 5) {
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.30));
+                        communityMagageReward = communityMagageReward.add(coinStIncome);
+                    } else if (teamLevel == 4) {
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.25));
+                    } else if (teamLevel == 3) {
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.20));
+                    } else if (teamLevel == 2) {
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.15));
+                    } else if (teamLevel == 1) {
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.10));
+                    }
+                    volumeDetail.setCommunityManageReward(communityMagageReward);
+                    volumeDetail.setCommunityStaticsIncome(communityStaticIncome);
+                    balanceUserCoinVolumeDetailDao.updateById(volumeDetail);
+                }
+            }
+        }
+        //级差奖
+        List<BalanceUserCoinVolumeDetail> balanceVolumeDetailList3 = balanceUserCoinVolumeDetailDao.findAll();
+        if (CollectionUtils.isNotEmpty(balanceVolumeDetailList3)) {
+            for (BalanceUserCoinVolumeDetail volumeDetail : balanceVolumeDetailList3) {
+                if (volumeDetail.getTeamLevel() >= 2) {
+                    treeCalcUserDiffRewardList(volumeDetail, volumeDetail);
+                    balanceUserCoinVolumeDetailDao.updateById(volumeDetail);
+                }
+            }
+        }
+
+
+        //平级奖
+        List<BalanceUserCoinVolumeDetail> balanceVolumeDetailList4 = balanceUserCoinVolumeDetailDao.findAll();
+        if (CollectionUtils.isNotEmpty(balanceVolumeDetailList4)) {
+            for (BalanceUserCoinVolumeDetail volumeDetail : balanceVolumeDetailList4) {
+                if (volumeDetail.getTeamLevel() >= 1) {
+                    treeCalcUserEequalRewardList(volumeDetail, volumeDetail,map);
+                    balanceUserCoinVolumeDetailDao.updateById(volumeDetail);
+                }
+            }
+        }
     }
+    public  void treeCalcUserDetailRewardList(BalanceUserCoinVolumeDetail userDetail,BalanceUserCoinVolumeDetail userSelfDetail,List<BigDecimal> countList) {
+        if (userDetail !=null) {
+            List<BalanceUserCoinVolumeDetail>   childDetailList=    balanceUserCoinVolumeDetailDao.findAllByReferId(userDetail.getUserId(),"USDT");
+            if(CollectionUtils.isNotEmpty(childDetailList)){
+               for(BalanceUserCoinVolumeDetail childDetail:childDetailList){
+                   if(childDetail.getTeamLevel() != 0){
+                       continue;
+                   }
+                   countList.add(childDetail.getStaticsIncome());
+                   treeCalcUserDetailRewardList(childDetail,userSelfDetail,countList);
+               }
+            }
+
+        }
+    }
+
+    public  void treeCalcUserDiffRewardList(BalanceUserCoinVolumeDetail userDetail,BalanceUserCoinVolumeDetail userSelfDetail) {
+        if (userDetail !=null) {
+            List<BalanceUserCoinVolumeDetail>   childDetailList=    balanceUserCoinVolumeDetailDao.findAllByReferId(userDetail.getUserId(),"USDT");
+            if(CollectionUtils.isNotEmpty(childDetailList)){
+                for(BalanceUserCoinVolumeDetail childDetail:childDetailList){
+                    if(childDetail.getTeamLevel()>=userSelfDetail.getTeamLevel()){
+                        continue;
+                    }
+                    int chaLevel=userSelfDetail.getTeamLevel()-childDetail.getTeamLevel();
+                    BigDecimal levelDifferenceReward=childDetail.getCommunityStaticsIncome().multiply(new BigDecimal(0.05)).multiply(new BigDecimal(chaLevel));
+                    userSelfDetail.setLevelDifferenceReward(userSelfDetail.getLevelDifferenceReward().add(levelDifferenceReward));
+                    treeCalcUserDiffRewardList(childDetail,userSelfDetail);
+                }
+            }
+
+        }
+    }
+    public  void treeCalcUserEequalRewardList(BalanceUserCoinVolumeDetail userDetail,BalanceUserCoinVolumeDetail userSelfDetail,Map<String,BigDecimal> map) {
+        if (userDetail !=null) {
+            List<BalanceUserCoinVolumeDetail>   childDetailList=    balanceUserCoinVolumeDetailDao.findAllByReferId(userDetail.getUserId(),"USDT");
+            if(CollectionUtils.isNotEmpty(childDetailList)){
+                for(BalanceUserCoinVolumeDetail childDetail:childDetailList){
+                    if(childDetail.getTeamLevel()==userSelfDetail.getTeamLevel()){
+                            //平级奖
+                        BigDecimal userIncome = childDetail.getDynamicsIncome().add(childDetail.getStaticsIncome()).add(childDetail.getLevelDifferenceReward()).add(childDetail.getCommunityManageReward());
+                        userIncome=userIncome.multiply(map.get("equalReward"));
+                        userSelfDetail.setEqualityReward(userSelfDetail.getEqualityReward().add(userIncome));
+                        continue;
+                    }
+                    treeCalcUserEequalRewardList(childDetail,userSelfDetail,map);
+                }
+            }
+
+        }
+    }
+
 
     /**
-     *
-     * @param userList
-     * @return
-     */
-    public  void treeCalcUserDetailRewardList(List<BalanceUserCoinVolumeDetail> userList,Map<String ,BigDecimal> map,boolean flag) {
-        if (CollectionUtils.isNotEmpty(userList)) {
-            List<BalanceUserCoinVolumeDetail> fatherDetailAllList=new ArrayList<BalanceUserCoinVolumeDetail>();
-            userList.forEach(balanceDetail3->{
-                //本-社区管理奖
-                BigDecimal benMangReward=BigDecimal.ZERO;
-                BigDecimal benChildIncome=balanceDetail3.getOneLevelIncome();
-                if(flag){
-                    benChildIncome=balanceDetail3.getCommunityStaticsIncome();
-                }
-                int  benTeamLevel=balanceDetail3.getTeamLevel();
-                if(benTeamLevel==5){
-                    benMangReward=  benMangReward.add(benChildIncome.multiply(new BigDecimal(0.30)));
-                }else if(benTeamLevel==4 ){
-                    benMangReward=  benMangReward.add(benChildIncome.multiply(new BigDecimal(0.25)));
-                }else if(benTeamLevel==3){
-                    benMangReward= benMangReward.add(benChildIncome.multiply(new BigDecimal(0.20)));
-                }else if(benTeamLevel==2){
-                    benMangReward= benMangReward.add(benChildIncome.multiply(new BigDecimal(0.15)));
-                }else if(benTeamLevel==1){
-                    benMangReward=benMangReward.add(benChildIncome.multiply(new BigDecimal(0.1)));
-                }
-                balanceDetail3.setCommunityManageReward(benMangReward);
-                balanceUserCoinVolumeDetailDao.updateById(balanceDetail3);
-                if(benTeamLevel!=0){
-                    PlatUser  platUser=platUserDao.findById(balanceDetail3.getUserId());
-                    calcFatherUserList(platUser,platUser,map,flag,true,0);
-                }
-                PlatUser platFatherUser=platUserDao.findById(balanceDetail3.getReferId());
-
-
-                BalanceUserCoinVolumeDetail userDetail=null;
-                if(platFatherUser != null){
-                    List<BalanceUserCoinVolumeDetail>  userColumeDetailList= balanceUserCoinVolumeDetailDao.findByVersionUserId(platFatherUser.getId());
-                    if (CollectionUtils.isNotEmpty(userColumeDetailList)) {
-                        userDetail=userColumeDetailList.get(0);
-                    }else {
-                        userDetail=new BalanceUserCoinVolumeDetail();
-                        userDetail.setUserId(platFatherUser.getId());
-                    }
-                }
-
-
-
-                if(benTeamLevel==0 && userDetail != null){
-
-                    BigDecimal benChildIncome2=balanceDetail3.getOneLevelIncome();
-                    if(flag){
-                        benChildIncome2=balanceDetail3.getCommunityStaticsIncome();
-                    }
-                    if(userDetail.getOneLevelIncome() != null){
-                        userDetail.setOneLevelIncome(userDetail.getOneLevelIncome().add(benChildIncome2));
-                    }else{
-                        userDetail.setOneLevelIncome(benChildIncome2);
-                    }
-
-                }
-                if ( userDetail !=null) {
-                    fatherDetailAllList.add(userDetail);
-                }
-            });
-            treeCalcUserDetailRewardList(fatherDetailAllList,map,false);
-        }
-    }
-
-    /**
-     *
-     * @param userList
-     * @param sumIncome
-     */
-    public  void  calcFatherUserList(PlatUser platUser,PlatUser userReferDetail,Map<String ,BigDecimal> map,boolean flag,boolean equalFlag,int superTeamLevel) {
-
-        List<BalanceUserCoinVolumeDetail> userColumeDetailList = balanceUserCoinVolumeDetailDao.findByVersionUserId(platUser.getId());
-        BalanceUserCoinVolumeDetail userDetail = null;
-        BalanceUserCoinVolumeDetail fatherDetail3 = null;
-        if (CollectionUtils.isNotEmpty(userColumeDetailList)) {
-            userDetail = userColumeDetailList.get(0);
-        }
-        PlatUser platFatherUser = platUserDao.findById(userReferDetail.getReferId());
-        if (platFatherUser != null) {
-            List<BalanceUserCoinVolumeDetail> fatherDetailList3 = balanceUserCoinVolumeDetailDao.findByVersionUserId(platFatherUser.getId());
-            int benTeamLevel = userDetail.getTeamLevel();
-
-            BigDecimal realityChildIncome = userDetail.getOneLevelIncome();
-            if (flag) {
-                realityChildIncome = userDetail.getCommunityStaticsIncome();
-            }
-
-
-        if (CollectionUtils.isNotEmpty(fatherDetailList3)) {
-            fatherDetail3 = fatherDetailList3.get(0);
-            int fatherTeamLevel = fatherDetail3.getTeamLevel();
-            BigDecimal fatherDiffReward = BigDecimal.ZERO;
-            BigDecimal fatherEqualReward = BigDecimal.ZERO;
-            if (fatherDetail3.getLevelDifferenceReward() != null) {
-                fatherDiffReward = fatherDetail3.getLevelDifferenceReward();
-            }
-            if (fatherDetail3.getEqualityReward() != null) {
-                fatherEqualReward = fatherDetail3.getEqualityReward();
-            }
-            if (superTeamLevel != fatherTeamLevel) {
-
-                if (fatherTeamLevel == benTeamLevel) {
-                    if (equalFlag) {
-                        //平级奖
-                        BigDecimal userIncome = userDetail.getDynamicsIncome().add(userDetail.getStaticsIncome()).add(userDetail.getLevelDifferenceReward()).add(userDetail.getCommunityManageReward());
-                        fatherEqualReward = fatherEqualReward.add(userIncome.multiply(map.get("equalReward")));
-                    }
-                    equalFlag = false;
-                } else if (fatherTeamLevel < benTeamLevel) {
-
-                } else {
-                    if (fatherTeamLevel == 5) {
-                        if (benTeamLevel == 4) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                        } else if (benTeamLevel == 3) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                        } else if (benTeamLevel == 2) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
-                        } else if (benTeamLevel == 1) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.20)));
-                        }
-                    }
-                    if (fatherTeamLevel == 4) {
-                        if (benTeamLevel == 3) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                        } else if (benTeamLevel == 2) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                        } else if (benTeamLevel == 1) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.15)));
-                        }
-                    }
-                    if (fatherTeamLevel == 3) {
-                        if (benTeamLevel == 2) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                        } else if (benTeamLevel == 1) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.1)));
-                        }
-                    }
-                    if (fatherTeamLevel == 2) {
-                        if (benTeamLevel == 1) {
-                            fatherDiffReward = fatherDiffReward.add(realityChildIncome.multiply(new BigDecimal(0.05)));
-                        }
-                    }
-                }
-                fatherDetail3.setEqualityReward(fatherEqualReward);
-                fatherDetail3.setLevelDifferenceReward(fatherDiffReward);
-                balanceUserCoinVolumeDetailDao.updateById(fatherDetail3);
-            }
-
-        }
-    }
-
-        if(platFatherUser !=null ){
-            int teamLevel=0;
-            if(fatherDetail3 !=null){
-                teamLevel=fatherDetail3.getTeamLevel();
-            }
-            calcFatherUserList(platUser,platFatherUser,map,false,equalFlag,teamLevel);
-        }
-
-
-    }
-    /**
-     * 动态收益2和平级奖
+     * 动态收益2
      */
     public void  calcIncomeAndEqualAward(Map<String ,BigDecimal> map){
         //动态收益2，从最顶层计算，依次类推

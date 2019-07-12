@@ -19,6 +19,9 @@ public interface BalanceUserCoinVolumeDetailDao {
     @UpdateProvider(type = BalanceUserCoinVolumeDetailSqlBuild.class, method = "updateById")
     long updateById(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail);
 
+    @Delete("DELETE FROM js_plat_user_coin_incomedetail where version=1 ")
+    long deleteByVersion();
+
     @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail where  user_id = #{userId} order by create_date desc")
     List<BalanceUserCoinVolumeDetail> findByUserId(@Param("userId") String userId);
 
@@ -41,8 +44,8 @@ public interface BalanceUserCoinVolumeDetailDao {
             "( SELECT t.user_id FROM js_plat_user_coin_incomedetail t where t.version=1 ) or  t2.refer_id is null )and t2.version=1  order by t2.create_date desc")
     List<BalanceUserCoinVolumeDetail> findSuprer();
 
-    @Select("SELECT " + BalanceUserCoinVolumeDetailSqlBuild.columns + " FROM js_plat_user_coin_incomedetail t WHERE t.team_level >= 1 and t.version=1 AND  " +
-            "t.user_id NOT IN ( SELECT t2.refer_id FROM js_plat_user_coin_incomedetail t2 where t2.team_level>=1 and t2.version=1) order by t.create_date desc")
+    @Select("SELECT " + BalanceUserCoinVolumeDetailSqlBuild.columns + " FROM js_plat_user_coin_incomedetail t WHERE t.version=1 AND  " +
+            "t.user_id NOT IN ( SELECT t2.refer_id FROM js_plat_user_coin_incomedetail t2 where  t2.version=1 and t2.refer_id is not null) order by t.create_date desc")
     List<BalanceUserCoinVolumeDetail> findByNotReferId();
 
     @Select("select " + BalanceUserCoinVolumeDetailSqlBuild.columns + " from js_plat_user_coin_incomedetail where  user_id = #{userId} and version=1 order by create_date desc")
