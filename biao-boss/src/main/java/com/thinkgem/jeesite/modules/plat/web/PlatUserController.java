@@ -5,14 +5,13 @@ package com.thinkgem.jeesite.modules.plat.web;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.JedisUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.utils.TimeUtils;
+import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.plat.entity.JsPlatUserOplog;
-import com.thinkgem.jeesite.modules.plat.entity.PlatUser;
-import com.thinkgem.jeesite.modules.plat.entity.UserCoinVolume;
+import com.thinkgem.jeesite.modules.plat.dao.CoinDao;
+import com.thinkgem.jeesite.modules.plat.dao.Mk2PopularizeRegisterCoinDao;
+import com.thinkgem.jeesite.modules.plat.dao.Mk2PopularizeRegisterConfDao;
+import com.thinkgem.jeesite.modules.plat.dao.UserCoinVolumeDao;
+import com.thinkgem.jeesite.modules.plat.entity.*;
 import com.thinkgem.jeesite.modules.plat.enums.MessageTemplateCode;
 import com.thinkgem.jeesite.modules.plat.enums.PlatUserOplogTypeEnum;
 import com.thinkgem.jeesite.modules.plat.service.*;
@@ -31,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -63,7 +63,17 @@ public class PlatUserController extends BaseController {
 
     @Autowired
     private SmsMessageService smsMessageService;
-    
+    @Autowired
+    private Mk2PopularizeRegisterConfDao mk2PopularizeRegisterConfDao;
+
+    @Autowired
+    private Mk2PopularizeRegisterCoinDao mk2PopularizeRegisterCoinDao;
+
+    @Autowired
+    private CoinDao coinDao;
+    @Autowired
+    UserCoinVolumeDao userCoinVolumeDao;
+
     @Value("${image.url}")
     private String imageUrl;
 
@@ -209,6 +219,7 @@ public class PlatUserController extends BaseController {
             dbPlatUser.setAuditDate(TimeUtils.curTimeLocal());
             dbPlatUser.setCardLevel(2);
             content = "审核通过";
+            this.giveCoin(dbPlatUser);
         }
         if("19".equals(platUser.getCardStatus()) && dbPlatUser.getCardLevel()!=null && dbPlatUser.getCardLevel() == 2) {
         	//重置身份审核
@@ -718,6 +729,60 @@ public class PlatUserController extends BaseController {
         Instant instant = lockDate.toInstant();
         ZoneId zone = ZoneId.systemDefault();
         return LocalDateTime.ofInstant(instant, zone);
+    }
+
+    private void giveCoin(PlatUser platUser){
+        Mk2PopularizeRegisterConf conf = null;
+        //第一步
+        //查询注册送币规则
+        List<Mk2PopularizeRegisterConf> confList = mk2PopularizeRegisterConfDao.findEffective();
+        if (!CollectionUtils.isEmpty(confList)) {
+            conf = confList.get(0);
+        }
+        Coin coin = coinDao.findByName(conf.getCoinSymbol());
+        conf.setCoinId(coin.getId());
+        //第二步  给实名认证通过用户送币
+        UserCoinVolume coinVolume=new UserCoinVolume();
+        coinVolume.setUserId(platUser.getId());
+        coinVolume.setCoinId(coin.getId());
+        coinVolume=userCoinVolumeDao.findByUserIdAndCoinId(coinVolume);
+        BigDecimal vol = new BigDecimal(conf.getRegisterVolume().toString());
+        if(coinVolume==null){
+            UserCoinVolume coinVolumeNew=new UserCoinVolume();
+            coinVolumeNew.setId(SnowFlake.createSnowFlake().nextIdString());
+            coinVolumeNew.setVolume(vol);
+            coinVolumeNew.setTotalVolume(vol);
+            coinVolumeNew.setCoinSymbol(conf.getCoinSymbol());
+            coinVolumeNew.setUserId(platUser.getId());
+            coinVolumeNew.setMail(platUser.getMail());
+            coinVolumeNew.setMobile(platUser.getMobile());
+            coinVolumeNew.setCoinId(conf.getCoinId());
+            coinVolumeNew.setLockVolume(new BigDecimal(0));
+            userCoinVolumeDao.insert(coinVolumeNew);
+        }else{
+            coinVolume.setVolume(coinVolume.getVolume().add(vol));
+            coinVolume.setTotalVolume(coinVolume.getTotalVolume().add(vol));
+            userCoinVolumeDao.update(coinVolume);
+        }
+        //第三步
+        //给送币记录表中插入数据
+        Mk2PopularizeRegisterCoin registerCoin = new Mk2PopularizeRegisterCoin();
+        registerCoin.setId(SnowFlake.createSnowFlake().nextIdString());
+        registerCoin.setMail(platUser.getMail());
+        registerCoin.setMobile(platUser.getMobile());
+        registerCoin.setRegisterConfId(conf.getId());
+        registerCoin.setConfName(conf.getName());
+        registerCoin.setUserId(platUser.getId());
+        registerCoin.setUserName(platUser.getRealName());
+        registerCoin.setVolume(conf.getRegisterVolume());
+        registerCoin.setCoinId(conf.getCoinId());
+        registerCoin.setCoinSymbol(conf.getCoinSymbol());
+        registerCoin.setStatus("2");
+        mk2PopularizeRegisterCoinDao.insertRegisterCoin(registerCoin);
+        //第四步
+        //更新规则表，已送出币数量，剩余数量
+        conf.setGiveVolume(conf.getGiveVolume()+conf.getRegisterVolume());
+        mk2PopularizeRegisterConfDao.update(conf);
     }
 
 }

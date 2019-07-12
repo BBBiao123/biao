@@ -109,6 +109,35 @@
 			#{status}
 		)
 	</insert>
+	<insert id="insertRegisterCoin">
+		INSERT INTO mk2_popularize_register_coin(
+		    id,
+			register_conf_id,
+			conf_name,
+			user_id,
+			user_name,
+			volume,
+			coin_id,
+			coin_symbol,
+			for_user_id,
+			mail ,
+		    mobile ,
+			status
+		) VALUES (
+	    	#{id},
+			#{registerConfId},
+			#{confName},
+			#{userId},
+			#{userName},
+			#{volume},
+			#{coinId},
+			#{coinSymbol},
+			#{forUserId},
+			#{mail},
+			#{mobile},
+			#{status}
+		)
+	</insert>
 	
 	<update id="update">
 		UPDATE mk2_popularize_register_coin SET 	

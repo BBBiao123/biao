@@ -26,11 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-//import com.biao.service.UserCoinVolumeService;
+import com.biao.service.UserCoinVolumeService;
 
 @Service("MkPromoteRuleTaskService_2")
 public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkPromoteRuleTaskService {
@@ -48,8 +49,8 @@ public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkP
     @Autowired
     private Mk2PopularizeTaskLogDao mk2PopularizeTaskLogDao;
 
-//    @Autowired
-//    private UserCoinVolumeService userCoinVolumeService;
+    @Autowired
+    private UserCoinVolumeService userCoinVolumeService;
 
     @Autowired
     private RegisterUserCoinService registerUserCoinService;
@@ -126,7 +127,6 @@ public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkP
 
         //2、 查询审核通过的送币用户
         List<PlatUser> userList = platUserDao.findAuditByBeginAndEnd(DateUtils.formaterLocalDateTime(lastDateTime), DateUtils.formaterLocalDateTime(curDateTime));
-        ;
 //        long taskLogCount = mk2PopularizeTaskLogDao.queryCountAll();
 //        if (taskLogCount < 1) {
 //            userList = platUserDao.findFormerAudit(curDate);
@@ -248,11 +248,11 @@ public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkP
      * 送币到用户的用户资产账户
      */
     private void transferCoin() {
-//        List<Mk2PopularizeRegisterCoin> registerCoins = mk2PopularizeRegisterCoinDao.findTransfer(DateUtils.getCurrentDate());
-//        registerCoins.forEach(e -> {
-//            userCoinVolumeService.updateIncome(null, new BigDecimal(e.getVolume()), e.getUserId(), e.getCoinSymbol());
-//            mk2PopularizeRegisterCoinDao.updateTransferSuccess(e.getId());
-//        });
+        List<Mk2PopularizeRegisterCoin> registerCoins = mk2PopularizeRegisterCoinDao.findTransfer(DateUtils.getCurrentDate());
+        registerCoins.forEach(e -> {
+            userCoinVolumeService.updateIncome(null, new BigDecimal(e.getVolume()), e.getUserId(), e.getCoinSymbol());
+            mk2PopularizeRegisterCoinDao.updateTransferSuccess(e.getId());
+        });
     }
 
     /**
