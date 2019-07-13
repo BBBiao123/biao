@@ -261,6 +261,7 @@ public class BalanceUserCoinVolumeController {
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getCoinSymbol());
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getCoinSymbol());
+                    List<BalanceUserCoinVolume> flaglist =balanceUserCoinVolumeService.findAll(balanceCoinVolumeVO.getUserId());
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
                     balanceUserCoinVolume.setId(null);
                     if (CollectionUtils.isNotEmpty(listVolume)) {
@@ -294,8 +295,10 @@ public class BalanceUserCoinVolumeController {
                         System.out.println("主键ID-----插入"+balanceUserCoinVolume.getId());
                         balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
                         balanceUserCoinVolumeService.save(balanceUserCoinVolume);
-                        List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
 
+                    }
+                    if (!CollectionUtils.isNotEmpty(flaglist)) {
+                        List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
                         BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
                         if(CollectionUtils.isNotEmpty(jackpotList)){
                             jackpotDetail=jackpotList.get(0);
@@ -1340,7 +1343,17 @@ public class BalanceUserCoinVolumeController {
         dayRateMap.put("threeDayRate",new BigDecimal(0.008));
         dayRateMap.put("equalReward",new BigDecimal(0.1));
         //每天收益和奖励计算
-//        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+        Map<String, List<TradePairVO>>  allTrade= platDataHandler.buildAllTradePair();
+        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+        if(allTrade !=null && allTrade.size()>0){
+            for(String key : allTrade.keySet()){
+                List<TradePairVO> list=allTrade.get(key);
+                for (TradePairVO vo:list){
+                    tradePairMap.put(vo.getCoinOther(),vo);
+                }
+            }
+        }
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,tradePairMap);
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
         LOGGER.info("exexute balanceIncomeDetail  end   ....");
         Mono<SecurityContext> context
