@@ -5,6 +5,7 @@ import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.entity.*;
 import com.biao.entity.balance.*;
 import com.biao.handler.PlatDataHandler;
+import com.biao.mapper.CoinDao;
 import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.pojo.RequestQuery;
@@ -78,6 +79,9 @@ public class BalanceUserCoinVolumeController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private CoinDao coinDao;
 
     @Autowired
     private TradeDetailService tradeDetailService;
@@ -984,52 +988,44 @@ public class BalanceUserCoinVolumeController {
     @GetMapping("/balance/volume/jackpotIncome")
     public Mono<GlobalMessageResponseVo> findBySumJackpotIncome() {
 
-        Mono<SecurityContext> context
-                = ReactiveSecurityContextHolder.getContext();
+        BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
+       List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
+               if(CollectionUtils.isNotEmpty(jackpotList)){
+                   jackpotDetail=jackpotList.get(0);
+               }
+               if(jackpotDetail.getAllCoinIncome() == null){
+                   jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
+               }
 
-        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
-                .map(s -> s.getAuthentication().getPrincipal())
-                .cast(RedisSessionUser.class)
-                .map(e -> {
-                    BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
-                   List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
-                           if(CollectionUtils.isNotEmpty(jackpotList)){
-                               jackpotDetail=jackpotList.get(0);
-                           }
-                           if(jackpotDetail.getAllCoinIncome() == null){
-                               jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
-                           }
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime time = LocalDateTime.now();
+        LocalDateTime ldt = LocalDateTime.parse(balancePlatDayRateConfig.getRewardDateStr(),df);
+        Duration duration = Duration.between(ldt,time);
+        long days = duration.toDays(); //相差的天数
+        long hours = duration.toHours();//相差的小时数
+        long minutes = duration.toMinutes();//相差的分钟数
+        long millis = duration.toMillis();//相差毫秒数
+        if(millis<0){
+            duration = Duration.between(time,ldt);
+            millis = duration.toMillis();//相差毫秒数
+        }else{
+            long modDays=days%10;
+            long chaMillis=millis-days*24*60*60*1000;
+            millis=(10-modDays)*24*60*60*1000-chaMillis;
+        }
+        int day = Math.round(millis / 1000 / 60 / 60 / 24);
+        // 时
+        int hour = Math.round(millis / 1000 / 60 / 60 % 24);
+        // 分
+        int minute = Math.round(millis / 1000 / 60 % 60);
+        // 秒
+        int second = Math.round(millis / 1000 % 60);
 
-                    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime time = LocalDateTime.now();
-                    LocalDateTime ldt = LocalDateTime.parse(balancePlatDayRateConfig.getRewardDateStr(),df);
-                    Duration duration = Duration.between(ldt,time);
-                    long days = duration.toDays(); //相差的天数
-                    long hours = duration.toHours();//相差的小时数
-                    long minutes = duration.toMinutes();//相差的分钟数
-                    long millis = duration.toMillis();//相差毫秒数
-                    if(millis<0){
-                        duration = Duration.between(time,ldt);
-                        millis = duration.toMillis();//相差毫秒数
-                    }else{
-                        long modDays=days%10;
-                        long chaMillis=millis-days*24*60*60*1000;
-                        millis=(10-modDays)*24*60*60*1000-chaMillis;
-                    }
-                    int day = Math.round(millis / 1000 / 60 / 60 / 24);
-                    // 时
-                    int hour = Math.round(millis / 1000 / 60 / 60 % 24);
-                    // 分
-                    int minute = Math.round(millis / 1000 / 60 % 60);
-                    // 秒
-                    int second = Math.round(millis / 1000 % 60);
+        System.out.println(String.format("%s天%s时%s分%s秒", day, hour, minute, second));
 
-                    System.out.println(String.format("%s天%s时%s分%s秒", day, hour, minute, second));
-
-                    jackpotDetail.setRewardTime(millis);
-                    jackpotDetail.setCoinSymbol("MG");
-                    return GlobalMessageResponseVo.newSuccessInstance(jackpotDetail);
-                });
+        jackpotDetail.setRewardTime(millis);
+        jackpotDetail.setCoinSymbol("MG");
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(jackpotDetail));
     }
 
     /**
@@ -1328,6 +1324,33 @@ public class BalanceUserCoinVolumeController {
         }
 
     }
+
+    /**
+     *
+     * @return
+     */
+    @GetMapping("/balance/volume/coinList")
+    public Mono<GlobalMessageResponseVo> findCoinList() {
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    List<Coin> listVo=new ArrayList<Coin>();
+                    String[] coinArr=balancePlatDayRateConfig.getCoinSmybol().split(",");
+                    for(String coinName: coinArr) {
+                        Coin coinVo = coinDao.findByName(coinName);
+                        if (coinVo != null) {
+                            listVo.add(coinVo);
+                        }
+                    }
+
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
     /**
      * 主动发起计算收益 for test
      * @return
@@ -1365,6 +1388,8 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
+
+
 
 }
 
