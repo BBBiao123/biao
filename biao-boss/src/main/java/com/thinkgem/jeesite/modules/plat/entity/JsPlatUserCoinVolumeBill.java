@@ -4,11 +4,8 @@
 package com.thinkgem.jeesite.modules.plat.entity;
 
 import java.math.BigDecimal;
-
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.Length;
-
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 

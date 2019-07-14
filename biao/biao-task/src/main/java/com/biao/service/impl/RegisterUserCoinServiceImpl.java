@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.biao.service.UserCoinVolumeService;
+//import com.biao.service.UserCoinVolumeService;
 
 @Service("MkPromoteRuleTaskService_2")
 public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkPromoteRuleTaskService {
@@ -49,8 +49,6 @@ public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkP
     @Autowired
     private Mk2PopularizeTaskLogDao mk2PopularizeTaskLogDao;
 
-    @Autowired
-    private UserCoinVolumeService userCoinVolumeService;
 
     @Autowired
     private RegisterUserCoinService registerUserCoinService;
@@ -248,11 +246,11 @@ public class RegisterUserCoinServiceImpl implements RegisterUserCoinService, MkP
      * 送币到用户的用户资产账户
      */
     private void transferCoin() {
-        List<Mk2PopularizeRegisterCoin> registerCoins = mk2PopularizeRegisterCoinDao.findTransfer(DateUtils.getCurrentDate());
-        registerCoins.forEach(e -> {
-            userCoinVolumeService.updateIncome(null, new BigDecimal(e.getVolume()), e.getUserId(), e.getCoinSymbol());
-            mk2PopularizeRegisterCoinDao.updateTransferSuccess(e.getId());
-        });
+//        List<Mk2PopularizeRegisterCoin> registerCoins = mk2PopularizeRegisterCoinDao.findTransfer(DateUtils.getCurrentDate());
+//        registerCoins.forEach(e -> {
+//            userCoinVolumeService.updateIncome(null, new BigDecimal(e.getVolume()), e.getUserId(), e.getCoinSymbol());
+//            mk2PopularizeRegisterCoinDao.updateTransferSuccess(e.getId());
+//        });
     }
 
     /**

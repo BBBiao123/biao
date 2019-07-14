@@ -41,5 +41,9 @@ public class CoinService extends CrudService<CoinDao, Coin> {
 	public void delete(Coin coin) {
 		super.delete(coin);
 	}
+
+	public Coin findByName(String coinSymbol) {
+		return dao.findByName(coinSymbol);
+	}
 	
 }

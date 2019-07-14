@@ -88,6 +88,7 @@
 	
 	<insert id="insert">
 		INSERT INTO mk2_popularize_register_coin(
+		    id,
 			register_conf_id,
 			conf_name,
 			user_id,
@@ -98,6 +99,7 @@
 			for_user_id,
 			status
 		) VALUES (
+		    #{id},
 			#{registerConfId},
 			#{confName},
 			#{userId},
