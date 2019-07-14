@@ -30,4 +30,5 @@ public class BalanceChangeCoinVolumeVO implements Serializable {
     private int flag;
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     protected LocalDateTime createDate;
+    private String exPassword;
 }
