@@ -1,0 +1,10 @@
+spring:
+  dev_model: false
+  output:
+    ansi:
+      enabled: always
+  profiles:
+    active: dev
+
+#日志级别
+    
