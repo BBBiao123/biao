@@ -264,6 +264,7 @@ public class BalanceUserCoinVolumeController {
                     }
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getCoinSymbol());
+                    balanceUserCoinVolume.setCoinBalance(BigDecimal.ZERO);
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getCoinSymbol());
                     List<BalanceUserCoinVolume> flaglist =balanceUserCoinVolumeService.findAll(balanceCoinVolumeVO.getUserId());
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
@@ -272,6 +273,7 @@ public class BalanceUserCoinVolumeController {
                         balanceUserCoinVolume.setId(listVolume.get(0).getId());
                         balanceUserCoinVolume.setValidNum(listVolume.get(0).getValidNum());
                         balanceUserCoinVolume.setOneInvite(listVolume.get(0).getOneInvite());
+                        balanceUserCoinVolume.setCoinBalance(listVolume.get(0).getCoinBalance());
                     }
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
@@ -762,6 +764,8 @@ public class BalanceUserCoinVolumeController {
 
                         }
                         coinVolumeVO.setUserName(userName);
+                        coinVolumeVO.setCoinSymbol("USDT");
+                        coinVolumeVO.setCoinPlatSymbol("MG");
                         listVo.add(coinVolumeVO);
 
                     });
@@ -995,6 +999,8 @@ public class BalanceUserCoinVolumeController {
                }
                if(jackpotDetail.getAllCoinIncome() == null){
                    jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
+               }else{
+                   jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
                }
 
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -1009,9 +1015,11 @@ public class BalanceUserCoinVolumeController {
             duration = Duration.between(time,ldt);
             millis = duration.toMillis();//相差毫秒数
         }else{
-            long modDays=days%10;
-            long chaMillis=millis-days*24*60*60*1000;
-            millis=(10-modDays)*24*60*60*1000-chaMillis;
+//            long modDays=days%10;
+//            long chaMillis=millis-days*24*60*60*1000;
+            long modHours=hours%6;
+            long chaMillis=millis-hours*60*60*1000;
+            millis=(6-modHours)*60*60*1000-chaMillis;
         }
         int day = Math.round(millis / 1000 / 60 / 60 / 24);
         // 时
@@ -1389,6 +1397,20 @@ public class BalanceUserCoinVolumeController {
                 });
     }
 
+    @GetMapping("/balance/jackpot")
+    public void balanceJackpotIncomeCount() {
+        Map<String, List<TradePairVO>>  allTrade=platDataHandler.buildAllTradePair();
+        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+        if(allTrade !=null && allTrade.size()>0){
+            for(String key : allTrade.keySet()){
+                List<TradePairVO> list=allTrade.get(key);
+                for (TradePairVO vo:list){
+                    tradePairMap.put(vo.getCoinOther(),vo);
+                }
+            }
+        }
+        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
+    }
 
 
 }
