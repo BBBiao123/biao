@@ -125,7 +125,7 @@ public class WithdrawService {
             amount = Convert.toWei(withdraw.getRealVolume(), Convert.Unit.WEI).toBigInteger();
         } else if (decimals == 2) {
             bdAmount =new BigDecimal(addrAmount).divide(new BigDecimal(100));
-            amount = withdraw.getRealVolume().divide(new BigDecimal(100)).toBigInteger();
+            amount = withdraw.getRealVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
             bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(withdraw.getRealVolume(), Convert.Unit.KWEI).toBigInteger();
