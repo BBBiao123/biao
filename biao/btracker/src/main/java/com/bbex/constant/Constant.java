@@ -1,6 +1,6 @@
 package com.bbex.constant;
 
-import com.bbex.entity.CoinAddress;
+import com.biao.entity.CoinAddress;
 
 import java.util.HashMap;
 
