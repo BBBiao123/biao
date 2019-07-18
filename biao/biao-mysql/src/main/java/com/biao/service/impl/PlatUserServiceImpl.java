@@ -102,10 +102,14 @@ public class PlatUserServiceImpl implements PlatUserService {
             throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码冲突,请重新注册");
         }
         if (StringUtils.isNotBlank(platUser.getInviteCode())) {
-            Optional.ofNullable(platUserDao.findIdByInviteCode(platUser.getInviteCode())).ifPresent(userId -> {
+            Optional<String> optional = Optional.ofNullable(platUserDao.findIdByInviteCode(platUser.getInviteCode()));
+            optional.ifPresent(userId -> {
                 platUser.setReferId(userId);
                 platUser.setReferInviteCode(platUser.getInviteCode());
             });
+            optional.orElseThrow(() -> new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码不正确！"));
+        } else {
+            throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码补不能为空！");
         }
         // ==邀请码校验
         if (isValidInvoteCode) {
@@ -249,7 +253,7 @@ public class PlatUserServiceImpl implements PlatUserService {
         if (eixst == null) {
             throw new PlatException(Constants.USER_IS_NULL_ERROR, "用户不存在");
         }
-        if (eixst.getCardStatus() != null && (eixst.getCardStatus().equals(Integer.parseInt(UserCardStatusEnum.APPLY.getCode()))||eixst.getCardStatus().equals(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode())))) {
+        if (eixst.getCardStatus() != null && (eixst.getCardStatus().equals(Integer.parseInt(UserCardStatusEnum.APPLY.getCode())) || eixst.getCardStatus().equals(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode())))) {
             throw new PlatException(Constants.USER_CARD_PASS_ERROR, "用户已经认证,不能再次认证");
         }
         //验证身份证是否绑定了
@@ -269,12 +273,13 @@ public class PlatUserServiceImpl implements PlatUserService {
             throw new PlatException(Constants.UPDATE_ERROR, "更新失败");
         }
     }
-    
+
     @Transactional
     @Override
     public void updateNickNameById(PlatUser platUser) {
-    	PlatUser updateUser = new PlatUser();
-        updateUser.setNickName(platUser.getNickName());;
+        PlatUser updateUser = new PlatUser();
+        updateUser.setNickName(platUser.getNickName());
+        ;
         updateUser.setId(platUser.getId());
         this.updateById(updateUser);
     }
@@ -405,59 +410,59 @@ public class PlatUserServiceImpl implements PlatUserService {
     public Long findByImages(String imageName) {
         return platUserDao.findExistByImages(imageName);
     }
-    
+
     @Transactional
     @Override
     public void userCardStatuScanCheck(CardStatuScanCheckDTO cardStatuScanCheckDTO) {
-    	List<PlatUser> platUsers = platUserDao.findByNeedCardStatusChech(cardStatuScanCheckDTO.getContryCode(), cardStatuScanCheckDTO.getCardLevel(),
-    			cardStatuScanCheckDTO.getCardStatus(), cardStatuScanCheckDTO.getCardStatusCheckTime());
-    	if(CollectionUtils.isNotEmpty(platUsers)) {
-    		platUsers.stream().filter(platUser->StringUtils.isNotBlank(platUser.getIdCard())&&StringUtils.isNotBlank(platUser.getRealName())).forEach(platUser->{
-    			//调用阿里接口认证
-    			PlatUser updatePlatUser = new PlatUser();
-    			updatePlatUser.setId(platUser.getId());
-    			try {
-    				SyncCardCheck cardCheck = new SyncCardCheck(cardStatuScanCheckDTO.getAppKey(), cardStatuScanCheckDTO.getAppSecret());
-					boolean body = cardCheck.safrv_cert_checkBool(cardStatuScanCheckDTO.getUserId(),cardStatuScanCheckDTO.getVerifyKey(),
-							platUser.getRealName(), platUser.getIdCard(), 
-							platUser.getId());
-					if(body) {
-						//阿里云审核通过
-						updatePlatUser.setCardLevel(CardStatusEnum.CARD_STATUS_ONE.getCode());
-						updatePlatUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.PASS.getCode()));
-						//如果用户照片上传
-						if(StringUtils.isNotBlank(platUser.getCardDownId()) && StringUtils.isNotBlank(platUser.getCardUpId())) {
-							//v2审核中
-							updatePlatUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
-						}
-					}else {
-						updatePlatUser.setCardStatusCheckTime(platUser.getCardStatusCheckTime()==null?1:(platUser.getCardStatusCheckTime()+1));
-						updatePlatUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.NO_PASS.getCode()));
-						updatePlatUser.setCardStatusReason("身份审核不通过");
-						PlatUserOplog platUserOplog = new PlatUserOplog();
-						platUserOplog.setType(PlatUserOplogTypeEnum.IDCARD_CHECH_AUTH.getCode());
-						platUserOplog.setContent("身份证号:" + platUser.getIdCard() + ",真实姓名:" + platUser.getRealName()+",阿里云身份审核不通过.");
-	                    platUserOplog.setCreateBy(platUser.getId());
-	                    platUserOplog.setCreateByName("plat");
-	                    platUserOplog.setCreateDate(LocalDateTime.now());
-	                    platUserOplog.setMail(platUser.getMail());
-	                    platUserOplog.setMobile(platUser.getMobile());
-	                    platUserOplog.setRealName(platUser.getRealName());
-	                    platUserOplog.setReason("阿里云身份审核不通过.");
-	                    platUserOplog.setUserId(platUser.getId());
-	                    platUserOplog.setId(SnowFlake.createSnowFlake().nextIdString());
-	                    platUserOplog.setUpdateDate(LocalDateTime.now());
-	                    platUserOplog.setUpdateByName("plat");
-	                    platUserOplog.setUpdateBy(platUser.getId());
-						platUserOplogDao.insert(platUserOplog);
-					}
-					logger.info("用户id:{},阿里云身份认证结果result:{}",platUser.getId(),body);
-					
-				} catch (UnsupportedEncodingException e) {
-					updatePlatUser.setCardStatusCheckTime(platUser.getCardStatusCheckTime()==null?1:(platUser.getCardStatusCheckTime()+1));
-					PlatUserOplog platUserOplog = new PlatUserOplog();
-					platUserOplog.setType(PlatUserOplogTypeEnum.IDCARD_CHECH_AUTH.getCode());
-					platUserOplog.setContent("身份证号:" + platUser.getIdCard() + ",真实姓名:" + platUser.getRealName()+",阿里云身份证审核api调用失败");
+        List<PlatUser> platUsers = platUserDao.findByNeedCardStatusChech(cardStatuScanCheckDTO.getContryCode(), cardStatuScanCheckDTO.getCardLevel(),
+                cardStatuScanCheckDTO.getCardStatus(), cardStatuScanCheckDTO.getCardStatusCheckTime());
+        if (CollectionUtils.isNotEmpty(platUsers)) {
+            platUsers.stream().filter(platUser -> StringUtils.isNotBlank(platUser.getIdCard()) && StringUtils.isNotBlank(platUser.getRealName())).forEach(platUser -> {
+                //调用阿里接口认证
+                PlatUser updatePlatUser = new PlatUser();
+                updatePlatUser.setId(platUser.getId());
+                try {
+                    SyncCardCheck cardCheck = new SyncCardCheck(cardStatuScanCheckDTO.getAppKey(), cardStatuScanCheckDTO.getAppSecret());
+                    boolean body = cardCheck.safrv_cert_checkBool(cardStatuScanCheckDTO.getUserId(), cardStatuScanCheckDTO.getVerifyKey(),
+                            platUser.getRealName(), platUser.getIdCard(),
+                            platUser.getId());
+                    if (body) {
+                        //阿里云审核通过
+                        updatePlatUser.setCardLevel(CardStatusEnum.CARD_STATUS_ONE.getCode());
+                        updatePlatUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.PASS.getCode()));
+                        //如果用户照片上传
+                        if (StringUtils.isNotBlank(platUser.getCardDownId()) && StringUtils.isNotBlank(platUser.getCardUpId())) {
+                            //v2审核中
+                            updatePlatUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.TWO_APPLY.getCode()));
+                        }
+                    } else {
+                        updatePlatUser.setCardStatusCheckTime(platUser.getCardStatusCheckTime() == null ? 1 : (platUser.getCardStatusCheckTime() + 1));
+                        updatePlatUser.setCardStatus(Integer.parseInt(UserCardStatusEnum.NO_PASS.getCode()));
+                        updatePlatUser.setCardStatusReason("身份审核不通过");
+                        PlatUserOplog platUserOplog = new PlatUserOplog();
+                        platUserOplog.setType(PlatUserOplogTypeEnum.IDCARD_CHECH_AUTH.getCode());
+                        platUserOplog.setContent("身份证号:" + platUser.getIdCard() + ",真实姓名:" + platUser.getRealName() + ",阿里云身份审核不通过.");
+                        platUserOplog.setCreateBy(platUser.getId());
+                        platUserOplog.setCreateByName("plat");
+                        platUserOplog.setCreateDate(LocalDateTime.now());
+                        platUserOplog.setMail(platUser.getMail());
+                        platUserOplog.setMobile(platUser.getMobile());
+                        platUserOplog.setRealName(platUser.getRealName());
+                        platUserOplog.setReason("阿里云身份审核不通过.");
+                        platUserOplog.setUserId(platUser.getId());
+                        platUserOplog.setId(SnowFlake.createSnowFlake().nextIdString());
+                        platUserOplog.setUpdateDate(LocalDateTime.now());
+                        platUserOplog.setUpdateByName("plat");
+                        platUserOplog.setUpdateBy(platUser.getId());
+                        platUserOplogDao.insert(platUserOplog);
+                    }
+                    logger.info("用户id:{},阿里云身份认证结果result:{}", platUser.getId(), body);
+
+                } catch (UnsupportedEncodingException e) {
+                    updatePlatUser.setCardStatusCheckTime(platUser.getCardStatusCheckTime() == null ? 1 : (platUser.getCardStatusCheckTime() + 1));
+                    PlatUserOplog platUserOplog = new PlatUserOplog();
+                    platUserOplog.setType(PlatUserOplogTypeEnum.IDCARD_CHECH_AUTH.getCode());
+                    platUserOplog.setContent("身份证号:" + platUser.getIdCard() + ",真实姓名:" + platUser.getRealName() + ",阿里云身份证审核api调用失败");
                     platUserOplog.setCreateBy(platUser.getId());
                     platUserOplog.setCreateByName("plat");
                     platUserOplog.setCreateDate(LocalDateTime.now());
@@ -470,16 +475,16 @@ public class PlatUserServiceImpl implements PlatUserService {
                     platUserOplog.setUpdateDate(LocalDateTime.now());
                     platUserOplog.setUpdateByName("plat");
                     platUserOplog.setUpdateBy(platUser.getId());
-					platUserOplogDao.insert(platUserOplog);
-					logger.error("阿里云身份证审核api,error:{}",e);
-				}
-    			updatePlatUser.setUpdateDate(LocalDateTime.now());
-    			platUserDao.updateById(updatePlatUser);
-    			
-    			//清空用户的缓存
-    			
-    			
-    		});
-    	}
+                    platUserOplogDao.insert(platUserOplog);
+                    logger.error("阿里云身份证审核api,error:{}", e);
+                }
+                updatePlatUser.setUpdateDate(LocalDateTime.now());
+                platUserDao.updateById(updatePlatUser);
+
+                //清空用户的缓存
+
+
+            });
+        }
     }
 }

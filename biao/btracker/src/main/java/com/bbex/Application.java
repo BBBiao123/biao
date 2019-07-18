@@ -1,6 +1,6 @@
 package com.bbex;
 
-import com.bbex.configuration.redis.RedisConfiguration;
+import com.biao.configuration.redis.RedisConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

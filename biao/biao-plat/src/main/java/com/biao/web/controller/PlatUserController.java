@@ -128,6 +128,10 @@ public class PlatUserController {
         String validCode = platUserVO.getCode();
         PlatUser platUser = new PlatUser();
         platUser.setIsAward("0");  //默认未奖励送币
+        //如果没有邀请码，不让注册
+        if(StringUtils.isEmpty(platUserVO.getInviteCode())){
+            return Mono.just(GlobalMessageResponseVo.newErrorInstance("邀请码为空！"));
+        }
         if (registerType == 1) {
             //手机注册,验证验证码
             platUser.setUsername(platUserVO.getMobile());

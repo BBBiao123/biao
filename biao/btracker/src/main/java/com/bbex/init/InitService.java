@@ -40,9 +40,7 @@ public class InitService implements CommandLineRunner {
      //final Bitcoin bitcoin = new BitcoinJSONRPCClient(url);
      try {
       bitcoinEventProcessor.receiveCoins();
-     } catch (BitcoinException e) {
-      e.printStackTrace();
-     } catch (MalformedURLException e) {
+     } catch (Exception e) {
       e.printStackTrace();
      }
     }

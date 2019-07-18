@@ -3,7 +3,7 @@ package com.bbex.task.execute;
 import com.azazar.bitcoin.jsonrpcclient.BitcoinJSONRPCClient;
 import com.bbex.business.CoinAddressService;
 import com.bbex.business.WithdrawService;
-import com.bbex.entity.WithdrawLog;
+import com.biao.entity.WithdrawLog;
 import com.bbex.listener.btc.BitcoinEventProcessor;
 import com.bbex.util.CheckUtil;
 import com.bbex.util.RpcClient;

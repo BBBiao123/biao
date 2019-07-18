@@ -93,9 +93,26 @@
             <artifactId>bitcoin-json-rpc-client</artifactId>
             <version>1.1</version>
         </dependency>
+
+        <!--比特币-->
+        <!-- https://mvnrepository.com/artifact/wf.bitcoin/bitcoin-rpc-client -->
+<!--        <dependency>-->
+<!--            <groupId>wf.bitcoin</groupId>-->
+<!--            <artifactId>bitcoin-rpc-client</artifactId>-->
+<!--            <version>1.1.0</version>-->
+<!--        </dependency>-->
+
+<!--        &lt;!&ndash;jsonrpc&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.briandilley.jsonrpc4j</groupId>-->
+<!--            <artifactId>jsonrpc4j</artifactId>-->
+<!--            <version>1.5.3</version>-->
+<!--        </dependency>-->
+
+
         <dependency>
-            <groupId>com.bbex</groupId>
-            <artifactId>bbex-common</artifactId>
+            <groupId>com.biao</groupId>
+            <artifactId>biao-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -149,7 +166,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <version>1.16.18</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>

@@ -1,12 +1,12 @@
 package com.bbex.business;
 
 import com.azazar.bitcoin.jsonrpcclient.BitcoinJSONRPCClient;
-import com.bbex.entity.AddressConfig;
-import com.bbex.entity.Coin;
-import com.bbex.entity.CoinAddress;
-import com.bbex.mapper.AddressConfigDao;
-import com.bbex.mapper.CoinAddressDao;
-import com.bbex.mapper.CoinDao;
+import com.biao.entity.AddressConfig;
+import com.biao.entity.Coin;
+import com.biao.entity.CoinAddress;
+import com.biao.mapper.AddressConfigDao;
+import com.biao.mapper.CoinAddressDao;
+import com.biao.mapper.CoinDao;
 import com.bbex.util.RpcClient;
 import com.bbex.util.SnowFlake;
 import org.apache.commons.lang3.StringUtils;
