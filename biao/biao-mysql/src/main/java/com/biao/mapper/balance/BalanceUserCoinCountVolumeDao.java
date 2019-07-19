@@ -1,6 +1,8 @@
 package com.biao.mapper.balance;
 
+import com.biao.entity.PlatUser;
 import com.biao.entity.balance.BalanceUserCoinCountVolume;
+import com.biao.sql.build.PlatUserSqlBuild;
 import com.biao.sql.build.balance.BalanceUserCoinCountVolumeSqlBuild;
 import org.apache.ibatis.annotations.*;
 
@@ -41,4 +43,10 @@ public interface BalanceUserCoinCountVolumeDao {
 
     @Select("select "+ BalanceUserCoinCountVolumeSqlBuild.columns +" from js_plat_user_coin_balance_count  order by coin_balance desc  LIMIT 10")
     List<BalanceUserCoinCountVolume> findByTopJackpot();
+
+    @Select("select " + PlatUserSqlBuild.simple_columns + " FROM js_plat_user ")
+    List<PlatUser> findPlatUserAll();
+
+    @Select("select " + BalanceUserCoinCountVolumeSqlBuild.columns + " from js_plat_user_coin_balance_count   order by create_date desc")
+    List<BalanceUserCoinCountVolume> findCoinAll();
 }

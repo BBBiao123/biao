@@ -1,0 +1,67 @@
+server:
+  port: 8083
+management:
+  health:
+    mail:
+      enabled: false
+info:
+  app:
+    name: "@project.name@" #从pom.xml中获取
+    description: "@project.description@"
+    version: "@project.version@"
+    spring-boot-version: "@project.parent.version@"
+spring:
+  datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/bbex-dev?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+        username: root
+        password: 123456
+        hikari:
+          maxLifetime: 1765000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上
+          maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+  redis:
+    host: localhost
+    password: 2222
+    port: 6379
+
+mybatis:
+    typeAliasesPackage: com.bbex.entity
+    configLocation: classpath:mybatis/mybatis-config.xml
+bbex:
+   mail:
+        password: aaaa
+        username: aaa@bbex.one
+        alias: bbex
+        sendname: aaaa@bbex.one
+        auth: true
+        host: smtp.bbex.one
+        openssl: true
+        port: 25
+symbol: LTC
+symbolUrl: http://dazi:dazi@127.0.0.1:8885/
+generateAddress: 0
+inviteCodes:
+user:
+  config:
+    lockLength: 24
+  coin-volume-bill:
+    #     执行的节点数量
+    needs: 2
+    #      当前是几号节点，不要重复哦.
+    need: 2
+    #      执行时间S
+    time: 5
+    #是否启动task;
+    taskFlag: false
+logging:
+    level:
+        root: debug
+        org.springframework.boot: debug
+        org.apache.ibatis: debug
+        com.bbex.bonuspoint: debug
+        com.bbex.lottery: debug
+        com.bbex: debug
+        io.netty: debug
+    path: "./logs"
+    config: classpath:logback.xml
+

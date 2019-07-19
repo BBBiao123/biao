@@ -82,6 +82,7 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     @SqlField("one_level_income")
     private BigDecimal oneLevelIncome;
 
+
     public BigDecimal getDynamicsIncome() {
         return dynamicsIncome;
     }
@@ -273,4 +274,6 @@ public class BalanceUserCoinVolumeDetail extends BaseEntity {
     public void setOneLevelIncome(BigDecimal oneLevelIncome) {
         this.oneLevelIncome = oneLevelIncome;
     }
+
+
 }
