@@ -343,10 +343,12 @@ public class BalanceUserCoinVolumeController {
                     UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), balanceCoinVolumeVO.getCoinSymbol());
                     BigDecimal userCoinIncome=userVolume.getVolume();
                     BigDecimal userCoinIncome2=BigDecimal.ZERO;
+                    BigDecimal userCoinIncome3=balanceCoinVolumeVO.getCoinNum();
                     userCoinIncome=  userCoinIncome.setScale(2, BigDecimal.ROUND_HALF_UP);
-                    if(balanceCoinVolumeVO.getCoinNum().compareTo(userCoinIncome)==0){
+                    userCoinIncome3=  userCoinIncome3.setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if(userCoinIncome3.compareTo(userCoinIncome)==0 ){
                         userCoinIncome2=userVolume.getVolume();
-                    }else if(balanceCoinVolumeVO.getCoinNum().compareTo(userCoinIncome)<0){
+                    }else if(userCoinIncome3.compareTo(userCoinIncome)<0){
                         userCoinIncome2=balanceCoinVolumeVO.getCoinNum();
                     }else {
                         return GlobalMessageResponseVo.newErrorInstance("资产不足...");
