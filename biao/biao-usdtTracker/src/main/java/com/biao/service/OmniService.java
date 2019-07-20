@@ -169,7 +169,7 @@ public class OmniService {
             LOGGER.info("提现查询用户余额："  +userCoinVolume.toString());
             if (!Objects.isNull(userCoinVolume)) {
 
-                final BigDecimal outLockVolume = userCoinVolume.getVolume().subtract(userCoinVolume.getLockVolume());
+                final BigDecimal outLockVolume = userCoinVolume.getOutLockVolume();
                 LOGGER.info("outLockVolume " + outLockVolume);
                 if (outLockVolume.compareTo(BigDecimal.ZERO) <= 0) {
                     LOGGER.info(" outLockVolume < 0 ");
