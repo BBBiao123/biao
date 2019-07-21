@@ -572,7 +572,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     } else if(childCoinBalance.compareTo(balance3)>=0){
                         childRateSec=map.get("oneDayRate");
                     }
-                    if(platPrice.compareTo(BigDecimal.ZERO)>0 ) {
+                    if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>0) {
                         dynamicsIncomeTotal = dynamicsIncomeTotal.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec).multiply(new BigDecimal(0.5)));
                         communityStaticsIncome = communityStaticsIncome.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
                     }
@@ -667,7 +667,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         balanceChangeUserCoinVolumeDao.updateById(balanceChangeVolume);
                     }
                 }
-                if(platPrice.compareTo(BigDecimal.ZERO)>0) {
+                if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>0) {
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(dayRate));
                 }
                 BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail=new BalanceUserCoinVolumeDetail();
@@ -791,7 +791,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         communityStaticIncome=communityStaticIncome.add(countDetail);
                     }
                 }
-                if (volumeDetail.getTeamLevel() > 0) {
+                if (volumeDetail.getTeamLevel() > 0 ) {
                     int teamLevel = volumeDetail.getTeamLevel();
                     if (teamLevel == 5) {
                         communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.60));
@@ -805,7 +805,10 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     } else if (teamLevel == 1) {
                         communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.20));
                     }
-                    volumeDetail.setCommunityManageReward(communityMagageReward);
+                    if(volumeDetail.getStaticsIncome().compareTo(BigDecimal.ZERO)>0)
+                    {
+                        volumeDetail.setCommunityManageReward(communityMagageReward);
+                    }
                     volumeDetail.setCommunityStaticsIncome(communityStaticIncome);
                     balanceUserCoinVolumeDetailDao.updateById(volumeDetail);
                 }
@@ -825,7 +828,11 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                               int chaLevel= volumeDetail.getTeamLevel()-coinVolumeDetail.getTeamLevel();
                               countDiffReward=countDiffReward.add(coinVolumeDetail.getCommunityStaticsIncome().multiply(new BigDecimal(0.1)).multiply(new BigDecimal(chaLevel)));
                           }
-                        volumeDetail.setLevelDifferenceReward(countDiffReward);
+                          if(volumeDetail.getStaticsIncome().compareTo(BigDecimal.ZERO)>0)
+                          {
+                              volumeDetail.setLevelDifferenceReward(countDiffReward);
+                          }
+
                         balanceUserCoinVolumeDetailDao.updateById(volumeDetail);
                     }
                 }
@@ -897,7 +904,9 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                             //平级奖
                         BigDecimal userIncome = childDetail.getDynamicsIncome().add(childDetail.getStaticsIncome()).add(childDetail.getLevelDifferenceReward()).add(childDetail.getCommunityManageReward());
                         userIncome=userIncome.multiply(map.get("equalReward"));
-                        userSelfDetail.setEqualityReward(userSelfDetail.getEqualityReward().add(userIncome));
+                        if( userSelfDetail.getStaticsIncome().compareTo(BigDecimal.ZERO)>0){
+                            userSelfDetail.setEqualityReward(userSelfDetail.getEqualityReward().add(userIncome));
+                        }
                         continue;
                     }
                     treeCalcUserEequalRewardList(childDetail,userSelfDetail,map);
@@ -956,7 +965,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             if (CollectionUtils.isNotEmpty(platList)) {
                 //递归遍历下一级
                 //allUserList.addAll(platList);
-                treeSuperUserList(platList,user.getDetailIncome().add(user.getCommunityManageReward()));
+                treeSuperUserList(platList,user.getSumRevenue());
             }
         }
 
