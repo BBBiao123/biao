@@ -1017,11 +1017,11 @@ public class BalanceUserCoinVolumeController {
             duration = Duration.between(time,ldt);
             millis = duration.toMillis();//相差毫秒数
         }else{
-//            long modDays=days%10;
-//            long chaMillis=millis-days*24*60*60*1000;
-            long modHours=hours%6;
-            long chaMillis=millis-hours*60*60*1000;
-            millis=(6-modHours)*60*60*1000-chaMillis;
+            long modDays=days%10;
+            long chaMillis=millis-days*24*60*60*1000;
+//            long modHours=hours%6;
+//            long chaMillis=millis-hours*60*60*1000;
+            millis=(10-modDays)*24*60*60*1000-chaMillis;
         }
         int day = Math.round(millis / 1000 / 60 / 60 / 24);
         // 时
