@@ -1371,10 +1371,10 @@ public class BalanceUserCoinVolumeController {
         //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
         //静态收益和平级奖的利率支持配置
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
-        dayRateMap.put("oneDayRate",new BigDecimal(0.003));
-        dayRateMap.put("secondDayRate",new BigDecimal(0.005));
-        dayRateMap.put("threeDayRate",new BigDecimal(0.008));
-        dayRateMap.put("equalReward",new BigDecimal(0.1));
+        dayRateMap.put("oneDayRate",balancePlatDayRateConfig.getOneDayRate());
+        dayRateMap.put("secondDayRate",balancePlatDayRateConfig.getSecondDayRate());
+        dayRateMap.put("threeDayRate",balancePlatDayRateConfig.getThreeDayRate());
+        dayRateMap.put("equalReward",balancePlatDayRateConfig.getEqualReward());
         //每天收益和奖励计算
         Map<String, List<TradePairVO>>  allTrade= platDataHandler.buildAllTradePair();
         Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();

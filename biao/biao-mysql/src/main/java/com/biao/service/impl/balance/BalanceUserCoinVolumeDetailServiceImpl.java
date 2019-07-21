@@ -613,7 +613,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         if(rateInt>5){
                             rateInt=5;
                         }
-                        BigDecimal addRate=new BigDecimal(0.0005);
+                        BigDecimal addRate=new BigDecimal(0.0003);
                         dayRate= dayRate.add(addRate.multiply(new BigDecimal(rateInt)));
                     }
 
@@ -794,16 +794,16 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 if (volumeDetail.getTeamLevel() > 0) {
                     int teamLevel = volumeDetail.getTeamLevel();
                     if (teamLevel == 5) {
-                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.30));
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.60));
                         communityMagageReward = communityMagageReward.add(coinStIncome);
                     } else if (teamLevel == 4) {
-                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.25));
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.50));
                     } else if (teamLevel == 3) {
-                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.20));
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.40));
                     } else if (teamLevel == 2) {
-                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.15));
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.30));
                     } else if (teamLevel == 1) {
-                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.10));
+                        communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.20));
                     }
                     volumeDetail.setCommunityManageReward(communityMagageReward);
                     volumeDetail.setCommunityStaticsIncome(communityStaticIncome);
@@ -823,7 +823,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                           for(String key:countMap.keySet()){
                               BalanceUserCoinVolumeDetail  coinVolumeDetail=countMap.get(key);
                               int chaLevel= volumeDetail.getTeamLevel()-coinVolumeDetail.getTeamLevel();
-                              countDiffReward=countDiffReward.add(coinVolumeDetail.getCommunityStaticsIncome().multiply(new BigDecimal(0.05)).multiply(new BigDecimal(chaLevel)));
+                              countDiffReward=countDiffReward.add(coinVolumeDetail.getCommunityStaticsIncome().multiply(new BigDecimal(0.1)).multiply(new BigDecimal(chaLevel)));
                           }
                         volumeDetail.setLevelDifferenceReward(countDiffReward);
                         balanceUserCoinVolumeDetailDao.updateById(volumeDetail);
