@@ -572,7 +572,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     } else if(childCoinBalance.compareTo(balance3)>=0){
                         childRateSec=map.get("oneDayRate");
                     }
-                    if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>0) {
+                    if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>=0) {
                         dynamicsIncomeTotal = dynamicsIncomeTotal.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec).multiply(new BigDecimal(0.5)));
                         communityStaticsIncome = communityStaticsIncome.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
                     }
@@ -667,7 +667,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         balanceChangeUserCoinVolumeDao.updateById(balanceChangeVolume);
                     }
                 }
-                if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>0) {
+                if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>=0) {
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(dayRate));
                 }
                 BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail=new BalanceUserCoinVolumeDetail();
@@ -953,7 +953,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             }
         }
         for (BalanceUserCoinVolumeDetail user : userList) {
-            if(length>0 && user.getValidNum()>=3){
+            if(length>0 && user.getValidNum()>=3 && user.getStaticsIncome().compareTo(BigDecimal.ZERO)>0){
                 user.setDynamicsIncome(user.getDynamicsIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
             }
             user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()));
