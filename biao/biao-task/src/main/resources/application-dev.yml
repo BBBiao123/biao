@@ -138,6 +138,7 @@ balance:
   secondDayRate: 0.005
   threeDayRate: 0.008
   equalReward: 0.1
+  rewardDateStr: 2019-08-01 20:00:00
 
 logging:
     level:

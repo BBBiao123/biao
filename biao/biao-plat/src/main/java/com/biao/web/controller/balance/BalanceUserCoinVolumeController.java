@@ -5,6 +5,7 @@ import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.entity.*;
 import com.biao.entity.balance.*;
 import com.biao.handler.PlatDataHandler;
+import com.biao.mapper.CoinDao;
 import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.pojo.RequestQuery;
@@ -78,6 +79,9 @@ public class BalanceUserCoinVolumeController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private CoinDao coinDao;
 
     @Autowired
     private TradeDetailService tradeDetailService;
@@ -240,22 +244,36 @@ public class BalanceUserCoinVolumeController {
     @PostMapping("/balance/volume/add")
     public Mono<GlobalMessageResponseVo> addBalance(BalanceCoinVolumeVO balanceCoinVolumeVO) {
 
-        Mono<SecurityContext> context
-                = ReactiveSecurityContextHolder.getContext();
+        Mono<SecurityContext> context = ReactiveSecurityContextHolder.getContext();
 
         return context.filter(c -> Objects.nonNull(c.getAuthentication()))
                 .map(s -> s.getAuthentication().getPrincipal())
                 .cast(RedisSessionUser.class)
                 .map(e -> {
+
+                    if(StringUtils.isBlank(e.getExPassword())){
+                        return GlobalMessageResponseVo.newErrorInstance("请先设置交易密码");
+                    }
+                    if(StringUtils.isBlank(balanceCoinVolumeVO.getExPassword())){
+                        return GlobalMessageResponseVo.newErrorInstance("请输入交易密码");
+                    }
+                    String exDecryPassword = RsaUtils.decryptByPrivateKey(balanceCoinVolumeVO.getExPassword(), RsaUtils.DEFAULT_PRIVATE_KEY);
+                    boolean result = passwordEncoder.matches(exDecryPassword, e.getExPassword());
+                    if (!result) {
+                        return GlobalMessageResponseVo.newErrorInstance("请输入正确的交易密码");
+                    }
                     BalanceUserCoinVolume  balanceUserCoinVolume=new BalanceUserCoinVolume();
                     System.out.println("用户ID："+balanceCoinVolumeVO.getUserId()+"-----币种："+balanceCoinVolumeVO.getCoinSymbol());
+                    balanceUserCoinVolume.setCoinBalance(BigDecimal.ZERO);
                     List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(balanceCoinVolumeVO.getUserId(),balanceCoinVolumeVO.getCoinSymbol());
+                    List<BalanceUserCoinVolume> flaglist =balanceUserCoinVolumeService.findAll(balanceCoinVolumeVO.getUserId());
                     BeanUtils.copyProperties(balanceCoinVolumeVO,balanceUserCoinVolume );
                     balanceUserCoinVolume.setId(null);
                     if (CollectionUtils.isNotEmpty(listVolume)) {
                         balanceUserCoinVolume.setId(listVolume.get(0).getId());
                         balanceUserCoinVolume.setValidNum(listVolume.get(0).getValidNum());
                         balanceUserCoinVolume.setOneInvite(listVolume.get(0).getOneInvite());
+                        balanceUserCoinVolume.setCoinBalance(listVolume.get(0).getCoinBalance());
                     }
                     balanceUserCoinVolume.setMail(e.getMail());
                     balanceUserCoinVolume.setMobile(e.getMobile());
@@ -283,8 +301,10 @@ public class BalanceUserCoinVolumeController {
                         System.out.println("主键ID-----插入"+balanceUserCoinVolume.getId());
                         balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
                         balanceUserCoinVolumeService.save(balanceUserCoinVolume);
-                        List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
 
+                    }
+                    if (!CollectionUtils.isNotEmpty(flaglist)) {
+                        List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
                         BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
                         if(CollectionUtils.isNotEmpty(jackpotList)){
                             jackpotDetail=jackpotList.get(0);
@@ -323,10 +343,12 @@ public class BalanceUserCoinVolumeController {
                     UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(e.getId(), balanceCoinVolumeVO.getCoinSymbol());
                     BigDecimal userCoinIncome=userVolume.getVolume();
                     BigDecimal userCoinIncome2=BigDecimal.ZERO;
+                    BigDecimal userCoinIncome3=balanceCoinVolumeVO.getCoinNum();
                     userCoinIncome=  userCoinIncome.setScale(2, BigDecimal.ROUND_HALF_UP);
-                    if(balanceCoinVolumeVO.getCoinNum().compareTo(userCoinIncome)==0){
+                    userCoinIncome3=  userCoinIncome3.setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if(userCoinIncome3.compareTo(userCoinIncome)==0 ){
                         userCoinIncome2=userVolume.getVolume();
-                    }else if(balanceCoinVolumeVO.getCoinNum().compareTo(userCoinIncome)<0){
+                    }else if(userCoinIncome3.compareTo(userCoinIncome)<0){
                         userCoinIncome2=balanceCoinVolumeVO.getCoinNum();
                     }else {
                         return GlobalMessageResponseVo.newErrorInstance("资产不足...");
@@ -578,25 +600,159 @@ public class BalanceUserCoinVolumeController {
                     users.forEach(user -> {
                         BalanceCoinVolumeVO coinVolumeVO = new BalanceCoinVolumeVO();
                         BeanUtils.copyProperties(user, coinVolumeVO);
-                        //前期只查USDT
-                        List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeService.findByUserIdAndCoin(user.getId(),"USDT");
-                        if(listVolume != null && listVolume.size()>0){
-                            BalanceUserCoinVolume balanceVolume=listVolume.get(0);
-                            coinVolumeVO.setTeamLevel(balanceVolume.getTeamLevel());
-                            coinVolumeVO.setValidNum(balanceVolume.getValidNum());
-                            coinVolumeVO.setTeamAmount(balanceVolume.getTeamAmount());
-                            coinVolumeVO.setCoinBalance(balanceVolume.getCoinBalance());
-                        }else{
-                            coinVolumeVO.setTeamLevel("V0");
-                            coinVolumeVO.setValidNum(0);
-                            coinVolumeVO.setTeamAmount(BigDecimal.ZERO);
+
+                        Map<String, List<TradePairVO>> tradePairListMap=  platDataHandler.buildAllTradePair();
+                        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+                        if(tradePairListMap !=null && tradePairListMap.size()>0){
+                            for(String key : tradePairListMap.keySet()){
+                                List<TradePairVO> list=tradePairListMap.get(key);
+                                for (TradePairVO vo:list){
+                                    tradePairMap.put(vo.getCoinOther(),vo);
+                                }
+                            }
                         }
-                        if(coinVolumeVO.getTeamLevel() == null){
-                            coinVolumeVO.setTeamLevel("V0");
+                        List<BalanceUserCoinVolume> balanceDetailList=  balanceUserCoinVolumeService.findAll(user.getId());
+                        //我的挖矿总额
+                        BigDecimal coinBalance=BigDecimal.ZERO;
+                        if(CollectionUtils.isNotEmpty(balanceDetailList)){
+                            for(BalanceUserCoinVolume userCoinVolume:balanceDetailList){
+                                TradePairVO  tradePair=tradePairMap.get(userCoinVolume.getCoinSymbol());
+                                BigDecimal  balanceNum=userCoinVolume.getCoinBalance();
+                                if(tradePair != null && tradePair.getLatestPrice() !=null ){
+                                    BigDecimal coinLastPirce=tradePair.getLatestPrice();
+                                    if(coinLastPirce != null){
+                                        balanceNum=balanceNum.multiply(coinLastPirce);
+                                    }
+                                }
+                                coinBalance=coinBalance.add(balanceNum);
+                            }
                         }
-                        if(coinVolumeVO.getTeamAmount() == null){
-                            coinVolumeVO.setTeamAmount(BigDecimal.ZERO);
+                        coinVolumeVO.setCoinBalance(coinBalance);
+                        BigDecimal balance = new BigDecimal(5000);
+                        BigDecimal balance2 = new BigDecimal(1000);
+                        BigDecimal balance3 = new BigDecimal(200);
+                        BigDecimal dayRate = new BigDecimal(0);
+                        String positionName = "";
+                        if (coinVolumeVO.getCoinBalance() != null && coinVolumeVO.getCoinBalance().compareTo(balance3) >= 0) {
+                            if (coinVolumeVO.getCoinBalance().compareTo(balance) > 0) {
+                                dayRate = dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
+                                positionName = "三级仓";
+                            } else if (coinVolumeVO.getCoinBalance().compareTo(balance2) > 0) {
+                                dayRate = dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
+                                positionName = "二级仓";
+                            } else {
+                                positionName = "一级仓";
+                                dayRate = dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
+                            }
+                        } else {
+                            positionName = "暂无仓位";
                         }
+                        coinVolumeVO.setRise(dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+                        coinVolumeVO.setPositionName(positionName);
+
+                        //社区挖矿总额
+                        BigDecimal teamSumRecord=BigDecimal.ZERO;
+                        //小区
+                        BigDecimal teamCommunitySumRecord=BigDecimal.ZERO;
+                        //社区有效用户数
+                        Integer   validNum=0;
+                        //一级邀请人数
+                        int   oneInvite=0;
+                        List<BigDecimal> childTeamSumRecordList=new ArrayList<BigDecimal>();
+                        List<String> validList=new ArrayList<String>();
+
+
+                        List<PlatUser> userList = platUserDao.findInvitesById(user.getId());
+
+                        List<BalanceUserCoinVolume>  childUserVolumeList=new ArrayList<BalanceUserCoinVolume>();
+                        if (CollectionUtils.isNotEmpty(userList)) {
+                            for(PlatUser platUser:userList){
+                                List<BalanceUserCoinVolume>  userVolumeTmpList=balanceUserCoinVolumeService.findAll(platUser.getId());
+                                if(CollectionUtils.isNotEmpty(userVolumeTmpList)){
+                                    childUserVolumeList.addAll(userVolumeTmpList);
+                                }
+                            }
+                        }
+
+                        Map<String,List<BalanceUserCoinVolume>> balanceUserCoinVolumeMap=new HashMap<String,List<BalanceUserCoinVolume>>();
+                        if (CollectionUtils.isNotEmpty(childUserVolumeList)) {
+                            for(BalanceUserCoinVolume balanceUserCoinVolume: childUserVolumeList){
+                                List<BalanceUserCoinVolume> balanceUserCoinCountVolumeList=balanceUserCoinVolumeMap.get(balanceUserCoinVolume.getUserId());
+                                if(CollectionUtils.isNotEmpty(balanceUserCoinCountVolumeList)){
+                                    balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
+                                }else{
+                                    balanceUserCoinCountVolumeList=new ArrayList<BalanceUserCoinVolume>();
+                                    balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
+                                    balanceUserCoinVolumeMap.put(balanceUserCoinVolume.getUserId(),balanceUserCoinCountVolumeList);
+                                }
+                            }
+                        }
+                        List<BalanceUserCoinVolume>  childUserVolumeAllList=new  ArrayList<BalanceUserCoinVolume> ();
+
+                        for(PlatUser platUser:userList) {
+                            BigDecimal childTeamSumRecord = BigDecimal.ZERO;
+                            List<BalanceUserCoinVolume> countlist = balanceUserCoinVolumeMap.get(platUser.getId());
+                            BigDecimal childCoinBalance = BigDecimal.ZERO;
+                            if (CollectionUtils.isNotEmpty(countlist)) {
+                                for (BalanceUserCoinVolume countVolume : countlist) {
+                                    BigDecimal lastPrice = BigDecimal.ZERO;
+                                    BigDecimal coinCount = countVolume.getCoinBalance();
+                                    TradePairVO tradePair = tradePairMap.get(countVolume.getCoinSymbol());
+                                    if (tradePair != null && tradePair.getLatestPrice() != null) {
+                                        coinCount = lastPrice.multiply(countVolume.getCoinBalance());
+                                    }
+                                    childCoinBalance = childCoinBalance.add(coinCount);
+                                }
+                            }
+                            if(childCoinBalance.compareTo(new BigDecimal(200))>=0){
+                                validList.add("1");
+                                oneInvite++;
+                            }
+
+                            childTeamSumRecord= childTeamSumRecord.add(childCoinBalance);
+                            BalanceUserCoinVolume balanceUserCoinVolume =new BalanceUserCoinVolume();
+                            balanceUserCoinVolume.setUserId(platUser.getId());
+                            balanceUserCoinVolume.setCoinBalance(childCoinBalance);
+                            childUserVolumeAllList.add(balanceUserCoinVolume);
+                            List<PlatUser> platChildList= platUserDao.findInvitesById(platUser.getId());
+                            List<BigDecimal> childSumRecordList=new ArrayList<BigDecimal>();
+                            if(CollectionUtils.isNotEmpty(platChildList)){
+                                treeCommunityUserList(platChildList, tradePairMap,childSumRecordList, validList);
+                            }
+                            if(CollectionUtils.isNotEmpty(childSumRecordList)){
+                               for(BigDecimal childSum:childSumRecordList){
+                                   childTeamSumRecord= childTeamSumRecord.add(childSum);
+                               }
+                            }
+
+                            teamSumRecord=teamSumRecord.add(childTeamSumRecord);
+                            childTeamSumRecordList.add(childTeamSumRecord);
+                        }
+                        BigDecimal childMax=BigDecimal.ZERO;
+                        if(CollectionUtils.isNotEmpty(childTeamSumRecordList)){
+                             childMax= Collections.max(childTeamSumRecordList);
+                        }
+                        teamCommunitySumRecord=teamCommunitySumRecord.add(teamSumRecord.subtract(childMax));
+                        String teamLevel="V0";
+                        if(teamSumRecord != null){
+                            if(oneInvite>=10 && teamCommunitySumRecord !=null && teamCommunitySumRecord.compareTo(new BigDecimal(10000000))>=0 ){
+                                teamLevel="V5";
+                            }else if(oneInvite>=10 && teamCommunitySumRecord !=null && teamCommunitySumRecord.compareTo(new BigDecimal(5000000))>=0 && teamCommunitySumRecord.compareTo(new BigDecimal(10000000))<0 ){
+                                teamLevel="V4";
+                            }else if(oneInvite>=10 && teamCommunitySumRecord !=null && teamCommunitySumRecord.compareTo(new BigDecimal(1000000))>=0 && teamCommunitySumRecord.compareTo(new BigDecimal(5000000))<0){
+                                teamLevel="V3";
+                            }else if(oneInvite>=10 && teamCommunitySumRecord !=null && teamCommunitySumRecord.compareTo(new BigDecimal(300000))>=0 && teamCommunitySumRecord.compareTo(new BigDecimal(1000000))<0){
+                                teamLevel="V2";
+                            }else if(oneInvite>=5  && teamSumRecord.compareTo(new BigDecimal(100000))>=0){
+                                teamLevel="V1";
+                            }
+                        }
+                        coinVolumeVO.setOneInvite(oneInvite);
+                        coinVolumeVO.setTeamAmount(teamSumRecord);
+                        coinVolumeVO.setTeamCommunityAmount(teamCommunitySumRecord);
+                        coinVolumeVO.setTeamLevel(teamLevel);
+                        coinVolumeVO.setValidNum(validList.size());
+
                         String userName=null;
                         if(user.getMobile() != null ){
                             userName=user.getMobile().substring(0,3)+"******"+user.getMobile().substring(user.getMobile().length()-2);
@@ -610,6 +766,8 @@ public class BalanceUserCoinVolumeController {
 
                         }
                         coinVolumeVO.setUserName(userName);
+                        coinVolumeVO.setCoinSymbol("USDT");
+                        coinVolumeVO.setCoinPlatSymbol("MG");
                         listVo.add(coinVolumeVO);
 
                     });
@@ -703,6 +861,17 @@ public class BalanceUserCoinVolumeController {
                 .map(s -> s.getAuthentication().getPrincipal())
                 .cast(RedisSessionUser.class)
                 .map(e -> {
+                    if(StringUtils.isBlank(e.getExPassword())){
+                        return GlobalMessageResponseVo.newErrorInstance("请先设置交易密码");
+                    }
+                    if(StringUtils.isBlank(balanceChangeCoinVolumeVO.getExPassword())){
+                        return GlobalMessageResponseVo.newErrorInstance("请输入交易密码");
+                    }
+                    String exDecryPassword = RsaUtils.decryptByPrivateKey(balanceChangeCoinVolumeVO.getExPassword(), RsaUtils.DEFAULT_PRIVATE_KEY);
+                    boolean result = passwordEncoder.matches(exDecryPassword, e.getExPassword());
+                    if (!result) {
+                        return GlobalMessageResponseVo.newErrorInstance("请输入正确的交易密码");
+                    }
                     BalanceChangeUserCoinVolume  balanceUserCoinVolume=new BalanceChangeUserCoinVolume();
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
                     balanceUserCoinVolume.setTakeOutDate(LocalDateTime.now());
@@ -825,49 +994,48 @@ public class BalanceUserCoinVolumeController {
     @GetMapping("/balance/volume/jackpotIncome")
     public Mono<GlobalMessageResponseVo> findBySumJackpotIncome() {
 
-        Mono<SecurityContext> context
-                = ReactiveSecurityContextHolder.getContext();
+        BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
+       List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
+               if(CollectionUtils.isNotEmpty(jackpotList)){
+                   jackpotDetail=jackpotList.get(0);
+               }
+               if(jackpotDetail.getAllCoinIncome() == null){
+                   jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
+               }else{
+                   jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().setScale(2, BigDecimal.ROUND_HALF_UP));
+               }
 
-        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
-                .map(s -> s.getAuthentication().getPrincipal())
-                .cast(RedisSessionUser.class)
-                .map(e -> {
-                   List<BalancePlatJackpotVolumeDetail>  jackpotList=balancePlatJackpotVolumeService.findAll("MG");
-                           if(CollectionUtils.isNotEmpty(jackpotList)){
-                               return GlobalMessageResponseVo.newSuccessInstance(jackpotList.get(0));
-                           }
-                    BalancePlatJackpotVolumeDetail jackpotDetail=new BalancePlatJackpotVolumeDetail();
-                    jackpotDetail.setAllCoinIncome(BigDecimal.ZERO);
-                    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime time = LocalDateTime.now();
-                    LocalDateTime ldt = LocalDateTime.parse("2019-08-01 20:00:00",df);
-                    Duration duration = Duration.between(ldt,time);
-                    long days = duration.toDays(); //相差的天数
-                    long hours = duration.toHours();//相差的小时数
-                    long minutes = duration.toMinutes();//相差的分钟数
-                    long millis = duration.toMillis();//相差毫秒数
-                    if(millis<0){
-                        duration = Duration.between(time,ldt);
-                        millis = duration.toMillis();//相差毫秒数
-                    }else{
-                        long modDays=days%10;
-                        long chaMillis=millis-days*24*60*60*1000;
-                        millis=(10-modDays)*24*60*60*1000-chaMillis;
-                    }
-                    int day = Math.round(millis / 1000 / 60 / 60 / 24);
-                    // 时
-                    int hour = Math.round(millis / 1000 / 60 / 60 % 24);
-                    // 分
-                    int minute = Math.round(millis / 1000 / 60 % 60);
-                    // 秒
-                    int second = Math.round(millis / 1000 % 60);
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime time = LocalDateTime.now();
+        LocalDateTime ldt = LocalDateTime.parse(balancePlatDayRateConfig.getRewardDateStr(),df);
+        Duration duration = Duration.between(ldt,time);
+        long days = duration.toDays(); //相差的天数
+        long hours = duration.toHours();//相差的小时数
+        long minutes = duration.toMinutes();//相差的分钟数
+        long millis = duration.toMillis();//相差毫秒数
+        if(millis<0){
+            duration = Duration.between(time,ldt);
+            millis = duration.toMillis();//相差毫秒数
+        }else{
+            long modDays=days%10;
+            long chaMillis=millis-days*24*60*60*1000;
+//            long modHours=hours%6;
+//            long chaMillis=millis-hours*60*60*1000;
+            millis=(10-modDays)*24*60*60*1000-chaMillis;
+        }
+        int day = Math.round(millis / 1000 / 60 / 60 / 24);
+        // 时
+        int hour = Math.round(millis / 1000 / 60 / 60 % 24);
+        // 分
+        int minute = Math.round(millis / 1000 / 60 % 60);
+        // 秒
+        int second = Math.round(millis / 1000 % 60);
 
-                    System.out.println(String.format("%s天%s时%s分%s秒", day, hour, minute, second));
+        System.out.println(String.format("%s天%s时%s分%s秒", day, hour, minute, second));
 
-                    jackpotDetail.setRewardTime(millis);
-                    jackpotDetail.setCoinSymbol("MG");
-                    return GlobalMessageResponseVo.newSuccessInstance(jackpotDetail);
-                });
+        jackpotDetail.setRewardTime(millis);
+        jackpotDetail.setCoinSymbol("MG");
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(jackpotDetail));
     }
 
     /**
@@ -965,6 +1133,7 @@ public class BalanceUserCoinVolumeController {
                     List<BalanceUserCoinVolume>  childUserVolumeAllList=new  ArrayList<BalanceUserCoinVolume> ();
 
                             for(String key:balanceUserCoinVolumeMap.keySet()) {
+                                List<BigDecimal> childSumRecordList=new ArrayList<BigDecimal>();
                                 BigDecimal childTeamSumRecord = BigDecimal.ZERO;
                                 List<BalanceUserCoinVolume> countlist = balanceUserCoinVolumeMap.get(key);
                                 BigDecimal childCoinBalance = BigDecimal.ZERO;
@@ -989,15 +1158,23 @@ public class BalanceUserCoinVolumeController {
                                 balanceUserCoinVolume.setUserId(key);
                                 balanceUserCoinVolume.setCoinBalance(childCoinBalance);
                                 childUserVolumeAllList.add(balanceUserCoinVolume);
-                                List<BalanceUserCoinVolume> platChildList=  balanceUserCoinVolumeService.findInvitesByUserId(key);
+                                List<PlatUser> platChildList=  platUserDao.findInvitesById(key);
                                 if(CollectionUtils.isNotEmpty(platChildList)){
-                                    treeCommunityUserList(platChildList, tradePairMap,childTeamSumRecord, validList);
+                                    treeCommunityUserList(platChildList, tradePairMap,childSumRecordList, validList);
+                                }
+                                if(CollectionUtils.isNotEmpty(childSumRecordList)){
+                                    for(BigDecimal childSum:childSumRecordList){
+                                        childTeamSumRecord= childTeamSumRecord.add(childSum);
+                                    }
                                 }
                                 teamSumRecord=teamSumRecord.add(childTeamSumRecord);
                                 childTeamSumRecordList.add(childTeamSumRecord);
                             }
+                       BigDecimal childMax=BigDecimal.ZERO;
+                      if(CollectionUtils.isNotEmpty(childTeamSumRecordList)){
+                           childMax= Collections.max(childTeamSumRecordList);
+                      }
 
-                      BigDecimal childMax= Collections.max(childTeamSumRecordList);
                       teamCommunitySumRecord=teamCommunitySumRecord.add(teamSumRecord.subtract(childMax));
                       String teamLevel="V0";
                     if(teamSumRecord != null){
@@ -1018,6 +1195,12 @@ public class BalanceUserCoinVolumeController {
                       listVo.setTeamCommunityAmount(teamCommunitySumRecord);
                       listVo.setTeamLevel(teamLevel);
                       listVo.setValidNum(validList.size());
+                         if(listVo.getCoinSymbol() == null){
+                             listVo.setCoinSymbol("USDT");
+                         }
+                        if(listVo.getCoinPlatSymbol() == null){
+                            listVo.setCoinPlatSymbol("MG");
+                        }
                         if (listVo.getCoinBalance() != null) {
                             listVo.setCoinBalance(listVo.getCoinBalance().setScale(2, BigDecimal.ROUND_HALF_UP));
                         } else {
@@ -1102,11 +1285,17 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance("交易密码验证成功");
                 });
     }
-    public  void treeCommunityUserList(List<BalanceUserCoinVolume> userList,Map<String,TradePairVO>  tradePairMap,BigDecimal childTeamSumRecord, List validList) {
-
+    public  void treeCommunityUserList(List<PlatUser> userList,Map<String,TradePairVO>  tradePairMap,List childSumRecordList, List validList) {
+          List<BalanceUserCoinVolume>  userVolumeList=new ArrayList<BalanceUserCoinVolume>();
+         for(PlatUser platUser:userList){
+             List<BalanceUserCoinVolume>  userVolumeTmpList=balanceUserCoinVolumeService.findAll(platUser.getId());
+             if(CollectionUtils.isNotEmpty(userVolumeTmpList)){
+                 userVolumeList.addAll(userVolumeTmpList);
+             }
+         }
         Map<String,List<BalanceUserCoinVolume>> balanceUserCoinVolumeMap=new HashMap<String,List<BalanceUserCoinVolume>>();
-        if (CollectionUtils.isNotEmpty(userList)) {
-            for(BalanceUserCoinVolume balanceUserCoinVolume: userList){
+        if (CollectionUtils.isNotEmpty(userVolumeList)) {
+            for(BalanceUserCoinVolume balanceUserCoinVolume: userVolumeList){
                 List<BalanceUserCoinVolume> balanceUserCoinCountVolumeList=balanceUserCoinVolumeMap.get(balanceUserCoinVolume.getUserId());
                 if(CollectionUtils.isNotEmpty(balanceUserCoinCountVolumeList)){
                     balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
@@ -1117,10 +1306,9 @@ public class BalanceUserCoinVolumeController {
                 }
             }
         }
+        for(PlatUser platUser:userList) {
 
-        for(String key:balanceUserCoinVolumeMap.keySet()) {
-
-            List<BalanceUserCoinVolume> countlist = balanceUserCoinVolumeMap.get(key);
+            List<BalanceUserCoinVolume> countlist = balanceUserCoinVolumeMap.get(platUser.getId());
             BigDecimal childCoinBalance = BigDecimal.ZERO;
             if (CollectionUtils.isNotEmpty(countlist)) {
                 for (BalanceUserCoinVolume countVolume : countlist) {
@@ -1138,16 +1326,41 @@ public class BalanceUserCoinVolumeController {
             }
 
 
-            childTeamSumRecord.add(childCoinBalance);
-            List<BalanceUserCoinVolume> platChildList=  balanceUserCoinVolumeService.findInvitesByUserId(key);
+            childSumRecordList.add(childCoinBalance);
+            List<PlatUser> platChildList=  platUserDao.findInvitesById(platUser.getId());
             if(CollectionUtils.isNotEmpty(platChildList)){
-                treeCommunityUserList(platChildList, tradePairMap,childTeamSumRecord,validList);
+                treeCommunityUserList(platChildList, tradePairMap,childSumRecordList,validList);
             }
-//            childTeamSumRecordList.add(childTeamSumRecord);
         }
 
-
     }
+
+    /**
+     *
+     * @return
+     */
+    @GetMapping("/balance/volume/coinList")
+    public Mono<GlobalMessageResponseVo> findCoinList() {
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    List<Coin> listVo=new ArrayList<Coin>();
+                    String[] coinArr=balancePlatDayRateConfig.getCoinSmybol().split(",");
+                    for(String coinName: coinArr) {
+                        Coin coinVo = coinDao.findByName(coinName);
+                        if (coinVo != null) {
+                            listVo.add(coinVo);
+                        }
+                    }
+
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
+
     /**
      * 主动发起计算收益 for test
      * @return
@@ -1158,12 +1371,22 @@ public class BalanceUserCoinVolumeController {
         //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
         //静态收益和平级奖的利率支持配置
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
-        dayRateMap.put("oneDayRate",new BigDecimal(0.003));
-        dayRateMap.put("secondDayRate",new BigDecimal(0.005));
-        dayRateMap.put("threeDayRate",new BigDecimal(0.008));
-        dayRateMap.put("equalReward",new BigDecimal(0.1));
+        dayRateMap.put("oneDayRate",balancePlatDayRateConfig.getOneDayRate());
+        dayRateMap.put("secondDayRate",balancePlatDayRateConfig.getSecondDayRate());
+        dayRateMap.put("threeDayRate",balancePlatDayRateConfig.getThreeDayRate());
+        dayRateMap.put("equalReward",balancePlatDayRateConfig.getEqualReward());
         //每天收益和奖励计算
-//        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap);
+        Map<String, List<TradePairVO>>  allTrade= platDataHandler.buildAllTradePair();
+        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+        if(allTrade !=null && allTrade.size()>0){
+            for(String key : allTrade.keySet()){
+                List<TradePairVO> list=allTrade.get(key);
+                for (TradePairVO vo:list){
+                    tradePairMap.put(vo.getCoinOther(),vo);
+                }
+            }
+        }
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,tradePairMap);
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
         LOGGER.info("exexute balanceIncomeDetail  end   ....");
         Mono<SecurityContext> context
@@ -1175,6 +1398,22 @@ public class BalanceUserCoinVolumeController {
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
+
+    @GetMapping("/balance/jackpot")
+    public void balanceJackpotIncomeCount() {
+        Map<String, List<TradePairVO>>  allTrade=platDataHandler.buildAllTradePair();
+        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+        if(allTrade !=null && allTrade.size()>0){
+            for(String key : allTrade.keySet()){
+                List<TradePairVO> list=allTrade.get(key);
+                for (TradePairVO vo:list){
+                    tradePairMap.put(vo.getCoinOther(),vo);
+                }
+            }
+        }
+        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
+    }
+
 
 }
 

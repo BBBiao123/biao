@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : local2
-Source Server Version : 50724
-Source Host           : 127.0.0.1:3306
+Source Server         : TEST
+Source Server Version : 50725
+Source Host           : rm-j6c6mdh161ts3o52bco.mysql.rds.aliyuncs.com:3306
 Source Database       : bbex
 
 Target Server Type    : MYSQL
-Target Server Version : 50724
+Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-05-14 23:08:03
+Date: 2019-07-18 23:14:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,7 +29,7 @@ CREATE TABLE `js_plat_user_coin_balance` (
   `yesterday_income` decimal(32,16) DEFAULT NULL COMMENT '昨日收益',
   `accumul_reward` decimal(32,16) DEFAULT NULL COMMENT '累计奖励',
   `yesterday_reward` decimal(32,16) DEFAULT NULL COMMENT '昨日奖励',
-  `create_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建日期',
+  `create_date` timestamp NULL DEFAULT NULL COMMENT '创建日期',
   `update_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日期',
   `create_by` varchar(64) DEFAULT NULL COMMENT '创建者',
   `update_by` varchar(64) DEFAULT NULL COMMENT '更新者',

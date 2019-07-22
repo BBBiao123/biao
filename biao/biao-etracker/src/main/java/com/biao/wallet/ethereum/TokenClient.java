@@ -1,6 +1,5 @@
 package com.biao.wallet.ethereum;
 
-import com.biao.business.DepositService;
 import com.biao.constant.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +19,8 @@ import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.utils.Convert;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -271,8 +268,11 @@ public class TokenClient {
                 BigInteger nonce = ethGetTransactionCount.getTransactionCount();
                 //BigInteger gasPrice = Convert.toWei(BigDecimal.valueOf(6), Convert.Unit.GWEI).toBigInteger();
                 EthGasPrice ethGasPrice = (EthGasPrice) web3j.ethGasPrice().send();
-                Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, ethGasPrice.getGasPrice().multiply(BigInteger.valueOf(2)),
-                        Constant.GAS_LIMIT, contractAddress, data);
+                BigInteger gasPrice = Convert.toWei(BigDecimal.valueOf(5), Convert.Unit.GWEI).toBigInteger();
+//                Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, ethGasPrice.getGasPrice().multiply(BigInteger.valueOf(2)),
+//                        Constant.GAS_LIMIT, contractAddress, data);
+                Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, gasPrice,
+                        BigInteger.valueOf(60000), contractAddress, data);
                 EthSendTransaction ethSendTransaction = web3j.ethSendTransaction(transaction).sendAsync().get();
                 txHash = ethSendTransaction.getTransactionHash();
             } else {

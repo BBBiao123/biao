@@ -33,9 +33,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -929,11 +931,36 @@ public class ScheduledTasks {
     /**
      * 挖矿开奖设置，每10天执行一次开奖
      */
-    @Scheduled(cron = "0 0 20 1/10 * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
 //    @Scheduled(cron = "0 4 16 * * ?")
     public void balanceJackpotIncomeCount() {
         logger.info("exexute balanceJackpotIncomeCount  start ....");
-        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount();
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime ldt = LocalDateTime.parse(balanceDayRateConfig.getRewardDateStr(),df);
+        Duration duration = Duration.between(ldt,now);
+        long days = duration.toDays(); //相差的天数
+        long hours = duration.toHours();//相差的小时数
+        long minutes = duration.toMinutes();//相差的分钟数
+        long millis = duration.toMillis();//相差毫秒数
+        if(millis<0){
+          return;
+        }
+        long chaHours=hours-days*24;
+        long chaMin=minutes-days*24*60;
+        if(days%10==0 && chaHours <1){
+            Map<String, List<TradePairVO>>  allTrade= buildAllTradePair();
+            Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+            if(allTrade !=null && allTrade.size()>0){
+                for(String key : allTrade.keySet()){
+                    List<TradePairVO> list=allTrade.get(key);
+                    for (TradePairVO vo:list){
+                        tradePairMap.put(vo.getCoinOther(),vo);
+                    }
+                }
+            }
+            balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
+        }
         logger.info("exexute balanceJackpotIncomeCount  end   ....");
     }
 }

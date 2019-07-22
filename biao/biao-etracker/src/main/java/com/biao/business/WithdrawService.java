@@ -1,7 +1,6 @@
 package com.biao.business;
 
 import com.biao.constant.Constants;
-import com.biao.entity.EthTokenWithdraw;
 import com.biao.entity.UserCoinVolume;
 import com.biao.entity.WithdrawLog;
 import com.biao.enums.WithdrawStatusEnum;
@@ -125,7 +124,7 @@ public class WithdrawService {
             amount = Convert.toWei(withdraw.getRealVolume(), Convert.Unit.WEI).toBigInteger();
         } else if (decimals == 2) {
             bdAmount =new BigDecimal(addrAmount).divide(new BigDecimal(100));
-            amount = withdraw.getRealVolume().divide(new BigDecimal(100)).toBigInteger();
+            amount = withdraw.getRealVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
             bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(withdraw.getRealVolume(), Convert.Unit.KWEI).toBigInteger();
@@ -165,9 +164,9 @@ public class WithdrawService {
             //将txId 状态 更新到提现表
             String txId = TokenClient.sendTokenTransaction(admin, web3j, fromAddress, password, withdraw.getAddress(), TOKEN_ADDRESS_MAP.get(symbol), amount);
             logger.info("eth withdraw txid{}:", txId);
-            if(StringUtils.isEmpty(txId)){
-                logger.error("user{}withdraw{}amout ", withdraw.getUserId(),withdraw.getCoinSymbol(),withdraw.getVolume());
-                //throw new PlatException(Constants.WITHDRAW_ERROR, "提现失败");
+            if (StringUtils.isEmpty(txId)) {
+                logger.error("user{}withdraw{}amout ", withdraw.getUserId(), withdraw.getCoinSymbol(), withdraw.getVolume());
+                throw new PlatException(Constants.WITHDRAW_ERROR, "提现失败");
             }
             withdrawLogDao.updateTxIdAndStatusById(txId, WithdrawStatusEnum.PAY.getCode(), withdraw.getId());
         } else {
@@ -176,45 +175,42 @@ public class WithdrawService {
     }
 
 
-
-
-
     public List<WithdrawLog> findWithdrawLogByConfirmStatus(Integer confirmStatus, String coinType) {
         return withdrawLogDao.findWithdrawLogByConfirmStatusAndCoinType(confirmStatus, coinType);//0 正常 1：成功 2 失败
     }
 
     @Transactional
     public void executeConfirmStatus(WithdrawLog withdrawLog) {
-        if ( withdrawLog.getStatus() == 3) {
-           if(StringUtils.isEmpty(withdrawLog.getTxId())) {//hash 为空
-               withdrawLog.setConfirmStatus(3);
-               withdrawLogDao.updateById(withdrawLog);
-           }else{
-               Web3j web3j = Web3j.build(new HttpService(Environment.RPC_URL));
-               EthGetTransactionReceipt receipt = null;
-               try {
-                   receipt = web3j.ethGetTransactionReceipt(withdrawLog.getTxId()).send();
+        if (withdrawLog.getStatus() == 3) {
+            if (StringUtils.isEmpty(withdrawLog.getTxId())) {//hash 为空
+                withdrawLog.setConfirmStatus(3);
+                withdrawLogDao.updateById(withdrawLog);
+            } else {
+                Web3j web3j = Web3j.build(new HttpService(Environment.RPC_URL));
+                EthGetTransactionReceipt receipt = null;
+                try {
+                    receipt = web3j.ethGetTransactionReceipt(withdrawLog.getTxId()).send();
 
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-               if (Objects.isNull(receipt.getResult())) {
-                   withdrawLog.setConfirmStatus(3);
-                   withdrawLogDao.updateById(withdrawLog);
-               } else {
-                   String result = receipt.getResult().getStatus();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (Objects.isNull(receipt.getResult())) {
+                    withdrawLog.setConfirmStatus(3);
+                    withdrawLogDao.updateById(withdrawLog);
+                } else {
+                    String result = receipt.getResult().getStatus();
 
-                   if ("0x1".equals(result)) {
+                    if ("0x1".equals(result)) {
 
-                       withdrawLog.setConfirmStatus(1);
-                       withdrawLogDao.updateById(withdrawLog);
-                       logger.info("================{}", result);
-                   } else {
-                       withdrawLog.setConfirmStatus(2);
-                       withdrawLogDao.updateById(withdrawLog);
-                   }
-               }
-           }
+                        withdrawLog.setConfirmStatus(1);
+                        withdrawLogDao.updateById(withdrawLog);
+                        logger.info("================{}", result);
+                    } else {
+                        withdrawLog.setConfirmStatus(2);
+                        withdrawLogDao.updateById(withdrawLog);
+                    }
+                }
+            }
         }
         return;
     }
@@ -224,6 +220,8 @@ public class WithdrawService {
     public void resendERCToken(WithdrawLog withdrawLog) {
         String symbol = withdrawLog.getCoinSymbol();
         if (symbol.equals("ETH")) return;
+        //代码已经汇出的也不需要重发
+        if (!org.springframework.util.StringUtils.isEmpty(withdrawLog.getTxId())) return;
         String fromAddress = Environment.fromAddress;
         String password = Environment.password;
         Web3j web3j = Web3j.build(new HttpService(Environment.RPC_URL));
@@ -235,6 +233,8 @@ public class WithdrawService {
         BigInteger amount = BigInteger.ZERO;
         if (decimals == 0) {
             amount = Convert.toWei(withdrawLog.getRealVolume(), Convert.Unit.WEI).toBigInteger();
+        } else if (decimals == 2) {
+            amount = withdrawLog.getRealVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
             amount = Convert.toWei(withdrawLog.getRealVolume(), Convert.Unit.KWEI).toBigInteger();
         } else if (decimals == 5) {
@@ -253,8 +253,12 @@ public class WithdrawService {
         //将txId 状态 更新到提现表
         String txId = TokenClient.sendTokenTransaction(admin, web3j, fromAddress, password, withdrawLog.getAddress(), TOKEN_ADDRESS_MAP.get(withdrawLog.getCoinSymbol()), amount);
         logger.info("{} withdraw txid{}:", symbol, txId);
-        withdrawLog.setTxId(txId);
-        withdrawLog.setConfirmStatus(0);
+        if (org.springframework.util.StringUtils.isEmpty(txId)) {
+            withdrawLog.setConfirmStatus(2);
+        } else {
+            withdrawLog.setTxId(txId);
+            withdrawLog.setConfirmStatus(1);
+        }
         withdrawLogDao.updateById(withdrawLog);
         return;
     }
