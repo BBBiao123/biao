@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bbex-btracker</artifactId>
+    <artifactId>biao-btracker</artifactId>
 
     <properties>
         <lombok.version>1.16.18</lombok.version>

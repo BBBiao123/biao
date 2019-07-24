@@ -8,6 +8,8 @@ import com.biao.mapper.CoinAddressDao;
 import com.biao.mapper.DepositAddressDao;
 import com.biao.service.CoinAddressService;
 import com.biao.util.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,7 @@ import java.time.LocalDateTime;
 
 @Service
 public class CoinAddressServiceImpl implements CoinAddressService {
-
+    private static Logger logger = LoggerFactory.getLogger(CoinAddressServiceImpl.class);
     @Autowired
     private CoinAddressDao coinAddressDao;
     @Autowired
@@ -26,8 +28,10 @@ public class CoinAddressServiceImpl implements CoinAddressService {
     @Override
     @Transactional
     public CoinAddress findByCoinId(String coinId, String userId) {
+        logger.info("查询币种地址,coinid : " + coinId);
         CoinAddress coinAddress = coinAddressDao.findByCoinId(coinId);
         if (null == coinAddress) return null;
+        logger.info("查询到的币种地址信息userid: " + coinAddress.getUserId() + " coinid:  " + coinAddress.getCoinId() + "   address:  " + coinAddress.getAddress());
         coinAddress.setUserId(userId);
         coinAddress.setStatus("1");
         Timestamp updateDate = Timestamp.valueOf(coinAddress.getUpdateDate());
