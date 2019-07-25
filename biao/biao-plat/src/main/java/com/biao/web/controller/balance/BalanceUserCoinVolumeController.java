@@ -6,6 +6,7 @@ import com.biao.entity.*;
 import com.biao.entity.balance.*;
 import com.biao.handler.PlatDataHandler;
 import com.biao.mapper.CoinDao;
+import com.biao.mapper.OfflineTransferLogDao;
 import com.biao.mapper.PlatUserDao;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.pojo.RequestQuery;
@@ -15,6 +16,7 @@ import com.biao.reactive.data.mongo.service.TradeDetailService;
 import com.biao.service.*;
 import com.biao.service.balance.*;
 import com.biao.util.RsaUtils;
+import com.biao.util.SnowFlake;
 import com.biao.vo.PlatUserVO;
 import com.biao.vo.TradePairVO;
 import com.biao.vo.balance.*;
@@ -103,10 +105,13 @@ public class BalanceUserCoinVolumeController {
 
     private final PlatDataHandler platDataHandler;
 
+    private final OfflineTransferLogDao offlineTransferLogDao;
+
 
     @Autowired
-    public BalanceUserCoinVolumeController(final PlatDataHandler platDataHandler) {
+    public BalanceUserCoinVolumeController(final PlatDataHandler platDataHandler,final OfflineTransferLogDao offlineTransferLogDao) {
         this.platDataHandler = platDataHandler;
+        this.offlineTransferLogDao = offlineTransferLogDao;
 
     }
 
@@ -344,8 +349,8 @@ public class BalanceUserCoinVolumeController {
                     BigDecimal userCoinIncome=userVolume.getVolume();
                     BigDecimal userCoinIncome2=BigDecimal.ZERO;
                     BigDecimal userCoinIncome3=balanceCoinVolumeVO.getCoinNum();
-                    userCoinIncome=  userCoinIncome.setScale(2, BigDecimal.ROUND_HALF_UP);
-                    userCoinIncome3=  userCoinIncome3.setScale(2, BigDecimal.ROUND_HALF_UP);
+                    userCoinIncome=  userCoinIncome.setScale(8, BigDecimal.ROUND_HALF_UP);
+                    userCoinIncome3=  userCoinIncome3.setScale(8, BigDecimal.ROUND_HALF_UP);
                     if(userCoinIncome3.compareTo(userCoinIncome)==0 ){
                         userCoinIncome2=userVolume.getVolume();
                     }else if(userCoinIncome3.compareTo(userCoinIncome)<0){
@@ -354,6 +359,19 @@ public class BalanceUserCoinVolumeController {
                         return GlobalMessageResponseVo.newErrorInstance("资产不足...");
                     }
                     userCoinVolumeExService.updateOutcome(null,userCoinIncome2,e.getId(),balanceUserCoinVolume.getCoinSymbol(),false);
+                    Coin coinVo = coinDao.findByName(balanceUserCoinVolume.getCoinSymbol());
+                    OfflineTransferLog offlineTransferLog = new OfflineTransferLog();
+                    String id = SnowFlake.createSnowFlake().nextIdString();
+                    offlineTransferLog.setId(id);
+                    offlineTransferLog.setCreateDate(LocalDateTime.now());
+                    offlineTransferLog.setUpdateDate(LocalDateTime.now());
+                    offlineTransferLog.setUserId(e.getId());
+                    offlineTransferLog.setCoinSymbol(balanceUserCoinVolume.getCoinSymbol());
+                    offlineTransferLog.setVolume(userCoinIncome2);
+                    offlineTransferLog.setType(20);//常规账户到挖矿部落
+                    offlineTransferLog.setCoinId(coinVo.getId());
+                    offlineTransferLog.setSourceVolume(BigDecimal.ZERO);
+                    offlineTransferLogDao.insert(offlineTransferLog);
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
@@ -901,6 +919,19 @@ public class BalanceUserCoinVolumeController {
                     if (longTime<30){
                         coinNum=coinNum.subtract(coinNum.multiply(new BigDecimal(0.05)));
                     }
+                    Coin coinVo = coinDao.findByName(balanceUserCoinVolume.getCoinSymbol());
+                    OfflineTransferLog offlineTransferLog = new OfflineTransferLog();
+                    String id = SnowFlake.createSnowFlake().nextIdString();
+                    offlineTransferLog.setId(id);
+                    offlineTransferLog.setCreateDate(LocalDateTime.now());
+                    offlineTransferLog.setUpdateDate(LocalDateTime.now());
+                    offlineTransferLog.setUserId(e.getId());
+                    offlineTransferLog.setCoinSymbol(balanceUserCoinVolume.getCoinSymbol());
+                    offlineTransferLog.setVolume(coinNum);
+                    offlineTransferLog.setType(21);//挖矿部落到常规账户
+                    offlineTransferLog.setCoinId(coinVo.getId());
+                    offlineTransferLog.setSourceVolume(BigDecimal.ZERO);
+                    offlineTransferLogDao.insert(offlineTransferLog);
                     userCoinVolumeExService.updateIncome(null,coinNum,balanceChangeCoinVolumeVO.getUserId(),balanceChangeCoinVolumeVO.getCoinSymbol(),false);
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });

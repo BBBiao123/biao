@@ -138,5 +138,7 @@ public class PlatUserService extends CrudService<PlatUserDao, PlatUser> {
         conf.setGiveVolume(conf.getGiveVolume()+conf.getRegisterVolume());
         registerConfService.save(conf);
     }
-
+    public List<PlatUser> findAllList(PlatUser platUser) {
+        return dao.findAllList(platUser);
+    }
 }

@@ -12,4 +12,6 @@ public class WithdrawValidateVO {
     private String id;
     private Integer googleCode;
     private String emailCode;
+    private Integer exValidType;
+    private String code;
 }

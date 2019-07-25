@@ -10,6 +10,8 @@ import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.service.*;
 import com.biao.vo.DepositAddressVO;
 import com.biao.vo.DepositListVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -25,6 +27,9 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/biao")
 public class DepositController {
+
+
+    private static Logger logger = LoggerFactory.getLogger(DepositController.class);
 
     @Autowired
     private CoinService coinService;
@@ -66,13 +71,13 @@ public class DepositController {
                         } else {
                             return GlobalMessageResponseVo.newSuccessInstance((Object) depositAddress.getAddress());
                         }
-                    } else if(coin.getCoinType().toString().equals(CoinTypeEnum.EOS.getCode())){
+                    } else if (coin.getCoinType().toString().equals(CoinTypeEnum.EOS.getCode())) {
 
                         PlatUser platUser = platUserService.findById(userId);
-                        DepositAddressVO depositAddressVO = new DepositAddressVO("dazieos55555",platUser.getInviteCode());
+                        DepositAddressVO depositAddressVO = new DepositAddressVO("dazieos55555", platUser.getInviteCode());
                         return GlobalMessageResponseVo.newSuccessInstance(depositAddressVO);
 
-                    }else {
+                    } else {
                         //通过coinId 确定coinType  通过coinType 确定是基于什么做的代币
                         DepositAddress depositAddress = depositAddressService.findByUserIdAndCoinId(userId, coin.getParentId());
                         if (null == depositAddress) {
@@ -111,36 +116,40 @@ public class DepositController {
                     }
                     //DepositAddress depositAddress = null;
                     if (coin.getCoinType().toString().equals(CoinTypeEnum.NO.getCode())) {
+                        logger.info("主币获取地址，币种信息： " + coin.getName());
                         DepositAddress depositAddress = depositAddressService.findByUserIdAndCoinId(userId, id);
                         if (null == depositAddress) {
                             //获取一个新地址
+                            logger.info("生成新地址");
                             CoinAddress coinAddress = coinAddressService.findByCoinId(id, userId);
                             if (null == coinAddress) {
                                 return GlobalMessageResponseVo.newErrorInstance("获取地址失败");
                             }
-                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(coinAddress.getAddress(),""));
+                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(coinAddress.getAddress(), ""));
 
                         } else {
-                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(depositAddress.getAddress(),""));
+                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(depositAddress.getAddress(), ""));
                         }
-                    } else if(coin.getCoinType().toString().equals(CoinTypeEnum.EOS.getCode())){
+                    } else if (coin.getCoinType().toString().equals(CoinTypeEnum.EOS.getCode())) {
 
-                           PlatUser platUser = platUserService.findById(userId);
-                            DepositAddressVO depositAddressVO = new DepositAddressVO("dazieos55555",platUser.getInviteCode());
-                            return GlobalMessageResponseVo.newSuccessInstance(depositAddressVO);
+                        PlatUser platUser = platUserService.findById(userId);
+                        DepositAddressVO depositAddressVO = new DepositAddressVO("dazieos55555", platUser.getInviteCode());
+                        return GlobalMessageResponseVo.newSuccessInstance(depositAddressVO);
 
-                    }else {
+                    } else {
                         //通过coinId 确定coinType  通过coinType 确定是基于什么做的代币
+                        logger.info("代币获取地址，币种信息： " + coin.getName());
                         DepositAddress depositAddress = depositAddressService.findByUserIdAndCoinId(userId, coin.getParentId());
                         if (null == depositAddress) {
                             //获取一个新地址
+                            logger.info("生成新地址");
                             CoinAddress coinAddress = coinAddressService.findByCoinId(coin.getParentId(), userId);
                             if (null == coinAddress) {
                                 return GlobalMessageResponseVo.newErrorInstance("获取失败");
                             }
-                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(coinAddress.getAddress(),""));
+                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(coinAddress.getAddress(), ""));
                         } else {
-                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(depositAddress.getAddress(),""));
+                            return GlobalMessageResponseVo.newSuccessInstance(new DepositAddressVO(depositAddress.getAddress(), ""));
                         }
                     }
                 });

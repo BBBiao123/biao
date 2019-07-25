@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.plat.web;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.*;
@@ -15,6 +17,7 @@ import com.thinkgem.jeesite.modules.plat.entity.*;
 import com.thinkgem.jeesite.modules.plat.enums.MessageTemplateCode;
 import com.thinkgem.jeesite.modules.plat.enums.PlatUserOplogTypeEnum;
 import com.thinkgem.jeesite.modules.plat.service.*;
+import com.thinkgem.jeesite.modules.sys.entity.Office;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -791,5 +792,42 @@ public class PlatUserController extends BaseController {
         registerConfService.save(conf);
     }*/
 
+    @RequiresPermissions("user")
+    @ResponseBody
+    @RequestMapping(value = "treeData")
+    public List<Map<String, Object>> treeData(@RequestParam(required=false) String extId, @RequestParam(required=false) String type,
+                                              @RequestParam(required=false) Long grade, @RequestParam(required=false) Boolean isAll, HttpServletResponse response) {
+        List<Map<String, Object>> mapList = Lists.newArrayList();
+        List<PlatUser> list = platUserService.findAllList(null);
+        for (int i=0; i<list.size(); i++){
+            PlatUser e = list.get(i);
 
+                Map<String, Object> map = Maps.newHashMap();
+                map.put("id", e.getId());
+                map.put("pId", e.getReferId());
+                map.put("pIds", e.getReferId());
+                if(e.getMobile() == null){
+                    map.put("name", e.getMail());
+                }else{
+                    map.put("name", e.getMobile());
+                }
+
+                if (type != null && "3".equals(type)){
+                    map.put("isParent", true);
+                }
+                mapList.add(map);
+        }
+        return mapList;
+    }
+    @RequestMapping(value = {"index"})
+    public String index(PlatUser platUser, Model model) {
+//        model.addAttribute("list", officeService.findAll());
+        return "modules/sys/platUserIndex";
+    }
+
+    @RequestMapping(value = {"deailsList"})
+    public String deailsList(PlatUser platUser, Model model) {
+//        model.addAttribute("list", officeService.findAll());
+        return "modules/sys/platUserList";
+    }
 }

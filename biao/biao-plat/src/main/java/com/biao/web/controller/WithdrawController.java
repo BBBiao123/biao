@@ -5,11 +5,17 @@ import com.biao.constant.Constants;
 import com.biao.entity.Coin;
 import com.biao.entity.WithdrawLog;
 import com.biao.enums.CoinTypeEnum;
+import com.biao.enums.MessageTemplateCode;
+import com.biao.enums.VerificationCodeType;
 import com.biao.enums.WithdrawStatusEnum;
 import com.biao.google.GoogleAuthenticator;
 import com.biao.pojo.GlobalMessageResponseVo;
+import com.biao.reactive.data.mongo.enums.SecurityLogEnums;
 import com.biao.service.CoinService;
+import com.biao.service.MessageSendService;
+import com.biao.service.SmsMessageService;
 import com.biao.service.WithdrawLogService;
+import com.biao.vo.PlatUserVO;
 import com.biao.vo.WithdrawListVO;
 import com.biao.vo.WithdrawVO;
 import com.biao.vo.WithdrawValidateVO;
@@ -17,6 +23,7 @@ import com.biao.web.valid.ValidateFiled;
 import com.biao.web.valid.ValidateGroup;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +42,10 @@ public class WithdrawController {
     private WithdrawLogService withdrawLogService;
     @Autowired
     private CoinService coinService;
+    @Autowired
+    private MessageSendService messageSendService;
+    @Autowired
+    private SmsMessageService smsMessageService;
 
 
     /**
@@ -205,5 +216,46 @@ public class WithdrawController {
 //                });
 //    }
 
+    /**
+     * 提现校验短信或邮箱
+     * @param withdrawValidateVO
+     * @return
+     */
+    @PostMapping("/user/validWithdraw")
+    public Mono<GlobalMessageResponseVo> ValidWithdraw(WithdrawValidateVO withdrawValidateVO) {
+        return ReactiveSecurityContextHolder.getContext()
+                .filter(c -> c.getAuthentication() != null)
+                .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    String userId=user.getId();
+                    String decryCode = withdrawValidateVO.getCode();
+                    Integer  exValidType=withdrawValidateVO.getExValidType();
+                    if (exValidType == 0) {
+                        //短信验证
+                        boolean result = smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_EX_TRADE_TEMPLATE.getCode(), decryCode);
+                        if (!result) {
+                            com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                                    com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                            buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_TYPE, 1, "请输入正确的短信验证码",
+                                                    user.getId(), user.getMobile(), user.getMail()));
+                            return Mono.just(GlobalMessageResponseVo.newInstance(Constants.TRADE_C2C_NEED_VALID_ERROR, "请输入正确的短信验证码"));
+                        }
+
+                    }
+                    if (exValidType == 1) {
+                        //邮箱验证
+                        try {
+                            messageSendService.mailValid(MessageTemplateCode.EMAIL_EX_TRADE_TEMPLATE.getCode(), VerificationCodeType.EX_TRADE_MAIL, user.getMail(), decryCode);
+                        } catch (Exception e) {
+                            com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                                    com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                            buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_TYPE, 1, "请输入正确的邮箱验证码",
+                                                    user.getId(), user.getMobile(), user.getMail()));
+                            return Mono.just(GlobalMessageResponseVo.newInstance(Constants.TRADE_C2C_NEED_VALID_ERROR, "请输入正确的邮箱验证码"));
+                        }
+                    }
+                    withdrawLogService.updateStatusById(userId, WithdrawStatusEnum.INIT.getCode(), withdrawValidateVO.getId());
+                    return Mono.just(GlobalMessageResponseVo.newSuccessInstance("提现成功"));
+                });
+    }
 
 }
