@@ -21,10 +21,13 @@
 		a.create_date AS "createDate",
 		a.update_date AS "updateDate",
 		a.create_by AS "createBy.id",
-		a.update_by AS "updateBy.id"
+		a.update_by AS "updateBy.id",
+		b.mobile AS "mobile",
+		b.mail AS "mail"
 	</sql>
 	
 	<sql id="userWithdrawLogJoins">
+		left join   js_plat_user  b on a.user_id = b.id
 	</sql>
     
 	<select id="get" resultType="UserWithdrawLog">
@@ -55,6 +58,12 @@
 			</if>
 			<if test="address != null and address != ''">
 				AND a.address = #{address}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND b.mobile = #{mobile}
+			</if>
+			<if test="mail != null and mail != ''">
+				AND b.mail = #{mail}
 			</if>
 		</where>
 		<choose>

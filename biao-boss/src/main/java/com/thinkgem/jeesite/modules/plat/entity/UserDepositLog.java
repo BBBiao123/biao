@@ -33,6 +33,9 @@ public class UserDepositLog extends DataEntity<UserDepositLog> {
 	
 	private String withdrawVolume ;
 	private String depositVolume ;
+
+    private String mobile ;//手机
+    private String mail ;//邮箱
 	
 	public UserDepositLog() {
 		super();
@@ -134,7 +137,7 @@ public class UserDepositLog extends DataEntity<UserDepositLog> {
 		return depositVolume;
 	}
 
-	public void setDepositVolume(String depositVolume) {
+    public void setDepositVolume(String depositVolume) {
 		this.depositVolume = depositVolume;
 	}
 
@@ -145,5 +148,20 @@ public class UserDepositLog extends DataEntity<UserDepositLog> {
 	public void setRaiseStatus(Integer raiseStatus) {
 		this.raiseStatus = raiseStatus;
 	}
-	
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
 }

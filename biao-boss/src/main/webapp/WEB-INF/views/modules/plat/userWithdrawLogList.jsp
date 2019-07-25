@@ -87,6 +87,12 @@
 			<li><label>用户id：</label>
 				<form:input path="userId" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
+			<li><label>用户手机：</label>
+				<form:input path="mobile" htmlEscape="false" class="input-medium"/>
+			</li>
+			<li><label>用户邮箱：</label>
+				<form:input path="mail" htmlEscape="false"  class="input-medium"/>
+			</li>
 			<li><label>币种符号：</label>
 				<form:input path="coinSymbol" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
