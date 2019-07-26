@@ -5,6 +5,7 @@
     <title>前台用户管理</title>
     <meta name="decorator" content="default"/>
     <script type="text/javascript">
+        var userVolumePath = "iframe:${ctx}/plat/platUser/userVolumeList?id=";
         var changeMobilePath = "iframe:${ctx}/plat/platUser/mobileForm?id=";
         var tagMobilePath = "iframe:${ctx}/plat/platUser/tagForm?id=";
         var lockDatePath = "iframe:${ctx}/plat/platUser/lockDateForm/25?id=";
@@ -126,6 +127,11 @@
             $("#searchForm").submit();
             return false;
         }
+
+        function showUserVolumePath(id) {
+            var url = userVolumePath + id;
+            $.jBox.open(url, "用户资产信息", 800, 400, { buttons: { '关闭': 0}});
+        };
 
         function lockDate(id,value) {
 
@@ -329,6 +335,9 @@
         <li><label>用户id：</label>
             <form:input path="id" htmlEscape="false" maxlength="45" class="input-medium"/>
         </li>
+        <li><label>推荐人id：</label>
+            <form:input path="referId" htmlEscape="false" maxlength="45" class="input-medium"/>
+        </li>
         <li><label>用户名：</label>
             <form:input path="username" htmlEscape="false" maxlength="45" class="input-medium"/>
         </li>
@@ -367,6 +376,7 @@
     <thead>
     <tr>
         <th>用户id</th>
+        <th>推荐人id</th>
         <th>真实姓名</th>
         <th>是否锁定</th>
         <shiro:hasPermission name="plat:platUser:keyinfo">
@@ -407,7 +417,7 @@
             <th>关键信息</th>
         </shiro:hasPermission>
         <shiro:hasPermission name="plat:platUser:operate">
-            <th>操作</th>
+            <th >操作</th>
         </shiro:hasPermission>
         <shiro:hasPermission name="plat:jsPlatUserOplog:view">
             <th>操作日志</th>
@@ -420,9 +430,12 @@
     <c:forEach items="${page.list}" var="pu">
         <tr>
             <td>
-                <a href="#">
+                <a href="#" onclick="showUserVolumePath('${pu.id}')">
                         ${pu.id}
                 </a>
+            </td>
+            <td>
+                    ${pu.referId}
             </td>
             <td>
                     ${pu.realName}
@@ -570,7 +583,7 @@
             </shiro:hasPermission>
 
             <shiro:hasPermission name="plat:platUser:operate">
-                <td>
+                <td >
                     <c:if test="${not empty pu.mobile && not empty pu.mail}">
                         <a href="${ctx}/plat/platUser/update/cleanMail?id=${pu.id}"
                            onclick="return confirmx('确认要清空用户邮箱吗？', this.href)">清空邮箱&nbsp;<font color="black">|</font></a>

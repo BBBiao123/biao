@@ -694,6 +694,18 @@ public class PlatUserController extends BaseController {
         return null;
     }
 
+    @RequiresPermissions("plat:platUser:view")
+    @RequestMapping(value = "userVolumeList")
+    public String userVolumeList(PlatUser platUser, Model model) {
+        model.addAttribute("platUser", platUser);
+        model.addAttribute("imageUrl", imageUrl);
+        UserCoinVolume userCoinVolume=new UserCoinVolume();
+        userCoinVolume.setUserId(platUser.getId());
+        List<UserCoinVolume> userCoinVolumeList = userCoinVolumeService.findList(userCoinVolume);
+        model.addAttribute("userCoinVolumeList", userCoinVolumeList);
+        return "modules/plat/platUserCoinVolumeList";
+    }
+
     private void createOplog(PlatUser platUser, String type, String content, String reason){
         this.createOplogWithMessage(platUser, type, content, reason, "0", null, null);
     }
