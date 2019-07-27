@@ -92,11 +92,11 @@ public class PlatUserServiceImpl implements PlatUserService {
             }
         }
 //        String invoteCodeInc = String.valueOf(valOpsStr.increment(RedisConstants.USER_INVOTE_KEY, 1L));
-        String invoteCodeInc =getRandomInvoteCode(8);
+        String invoteCodeInc =NumberUtils.getRandomNumber(8);
         if (StringUtils.isNotBlank(platUserDao.findIdByInviteCode(invoteCodeInc))) {
             throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码冲突,请重新注册");
         }
-        if (StringUtils.isNotBlank(platUser.getInviteCode())) {
+        if (StringUtils.isNotBlank(platUser.getInviteCode()) && !"null".equals(platUser.getInviteCode())) {
             Optional<String> optional = Optional.ofNullable(platUserDao.findIdByInviteCode(platUser.getInviteCode()));
             optional.ifPresent(userId -> {
                 platUser.setReferId(userId);
