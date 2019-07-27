@@ -82,7 +82,7 @@ public class PlatUserService extends CrudService<PlatUserDao, PlatUser> {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void giveCoin(PlatUser platUser){
+    public boolean giveCoin(PlatUser platUser){
         Mk2PopularizeRegisterConf conf = null;
         //第一步
         //查询注册送币规则
@@ -90,10 +90,14 @@ public class PlatUserService extends CrudService<PlatUserDao, PlatUser> {
         if (!CollectionUtils.isEmpty(confList)) {
             conf = confList.get(0);
         }else{
-            return;
+            return false;
         }
         Coin coin = coinService.findByName(conf.getCoinSymbol());
-        conf.setCoinId(coin.getId());
+        if(coin!=null){
+            conf.setCoinId(coin.getId());
+        }else{
+            return false;
+        }
         //第二步  给实名认证通过用户送币
         UserCoinVolume coinVolume=userCoinVolumeService.getByUserIdAndCoinId(platUser.getId(),coin.getId());
         BigDecimal vol = new BigDecimal(conf.getRegisterVolume().toString());
@@ -137,6 +141,7 @@ public class PlatUserService extends CrudService<PlatUserDao, PlatUser> {
         //更新规则表，已送出币数量
         conf.setGiveVolume(conf.getGiveVolume()+conf.getRegisterVolume());
         registerConfService.save(conf);
+        return true;
     }
     public List<PlatUser> findAllList(PlatUser platUser) {
         return dao.findAllList(platUser);

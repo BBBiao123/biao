@@ -214,11 +214,15 @@ public class PlatUserController extends BaseController {
         dbPlatUser.setCardStatus(platUser.getCardStatus());
         dbPlatUser.setCardStatusReason(platUser.getCardStatusReason());
         String content = "审核不通过";
+        String outMessage="保存前台用户成功";
         if ("11".equals(platUser.getCardStatus())) {// 审核通过记录审核时间，用于分销统计用
             dbPlatUser.setAuditDate(TimeUtils.curTimeLocal());
             dbPlatUser.setCardLevel(2);
             content = "审核通过";
-            platUserService.giveCoin(dbPlatUser);
+            boolean isSuccess=platUserService.giveCoin(dbPlatUser);
+            if(isSuccess){
+                outMessage="实名认证审核通过，并赠送活动币成功！";
+            }
         }
         if("19".equals(platUser.getCardStatus()) && dbPlatUser.getCardLevel()!=null && dbPlatUser.getCardLevel() == 2) {
         	//重置身份审核
@@ -230,7 +234,7 @@ public class PlatUserController extends BaseController {
         platUserService.save(dbPlatUser);
 
         this.createOplog(dbPlatUser, PlatUserOplogTypeEnum.AUDIT.getCode(), content, platUser.getCardStatusReason());
-        addMessage(redirectAttributes, "保存前台用户成功");
+        addMessage(redirectAttributes, outMessage);
         redirectAttributes.addFlashAttribute("platUser", request.getSession().getAttribute("platUserSearch"));
         return "redirect:" + Global.getAdminPath() + "/plat/platUser/?repage";
     }
