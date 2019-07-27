@@ -98,5 +98,7 @@ public interface PlatUserDao {
     
     @Select("SELECT " + PlatUserSqlBuild.columns + " FROM js_plat_user WHERE card_status = #{cardStatus} and card_level = #{cardLevel} and (card_status_check_time< #{cardStatusCheckTime} or card_status_check_time is null) and country_code = #{contryCode}")
     List<PlatUser> findByNeedCardStatusChech(@Param("contryCode")String contryCode,@Param("cardLevel")Integer cardLevel,@Param("cardStatus")Integer cardStatus,@Param("cardStatusCheckTime")Integer cardStatusCheckTime);
-    
+
+    @Select("select " + PlatUserSqlBuild.columns + "  from js_plat_user where invite_code = #{inviteCode} limit 1")
+    PlatUser findByInviteCode(String inviteCode);
 }

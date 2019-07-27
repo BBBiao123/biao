@@ -65,4 +65,6 @@ public interface PlatUserService {
     Long findByImages(String imageName);
     
     void userCardStatuScanCheck(CardStatuScanCheckDTO cardStatuScanCheckDTO);
+
+    PlatUser findByInviteCode(String inviteCode);
 }

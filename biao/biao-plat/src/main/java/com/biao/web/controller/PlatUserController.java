@@ -128,10 +128,10 @@ public class PlatUserController {
         String validCode = platUserVO.getCode();
         PlatUser platUser = new PlatUser();
         platUser.setIsAward("0");  //默认未奖励送币
-        //如果没有邀请码，不让注册
-        if(StringUtils.isEmpty(platUserVO.getInviteCode())){
-            return Mono.just(GlobalMessageResponseVo.newErrorInstance("邀请码为空！"));
-        }
+//        //如果没有邀请码，不让注册
+//        if(StringUtils.isEmpty(platUserVO.getInviteCode())){
+//            return Mono.just(GlobalMessageResponseVo.newErrorInstance("邀请码为空！"));
+//        }
         if (registerType == 1) {
             //手机注册,验证验证码
             platUser.setUsername(platUserVO.getMobile());
@@ -1247,6 +1247,41 @@ public class PlatUserController {
                     String userId = e.getId();
                     mkDistributeLogListVO.setUserId(userId);
                     return GlobalMessageResponseVo.newSuccessInstance(mkDistributeLogService.findPage(mkDistributeLogListVO));
+                });
+    }
+
+    /**
+     * 保存用户邀请码
+     * @param platUserVO
+     * @return
+     */
+    @PostMapping("/user/referInviteCode/save")
+    public Mono<GlobalMessageResponseVo> referInviteCodeSave(PlatUserVO platUserVO) {
+
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(user -> {
+                    String referInviteCode=platUserVO.getReferInviteCode();
+                    if(StringUtils.isBlank(referInviteCode)){
+                        return GlobalMessageResponseVo.newErrorInstance("邀请码不能为空");
+                    }
+                    PlatUser supPlatUser=platUserService.findByInviteCode(referInviteCode);
+                    if(supPlatUser==null){
+                        return GlobalMessageResponseVo.newErrorInstance("邀请码不正确");
+                    }
+                    PlatUser platUser=new PlatUser();
+                    platUser.setId(user.getId());
+                    platUser.setReferId(supPlatUser.getId());
+                    platUser.setReferInviteCode(referInviteCode);
+                    platUserService.updateById(platUser);
+                    user.setReferId(supPlatUser.getId());
+                    user.setReferInviteCode(referInviteCode);
+                    stringRedisTemplate.opsForHash().put(SercurityConstant.SESSION_TOKEN_REDIS_NAMESAPCE + user.getToken(), SercurityConstant.SESSION_TOKEN_REDIS_USER, JsonUtils.toJson(user));
+                    return GlobalMessageResponseVo.newSuccessInstance("邀请码保存成功");
                 });
     }
 

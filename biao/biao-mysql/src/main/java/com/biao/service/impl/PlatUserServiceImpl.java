@@ -3,13 +3,7 @@ package com.biao.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -97,7 +91,8 @@ public class PlatUserServiceImpl implements PlatUserService {
                 valOpsStr.set(RedisConstants.USER_INVOTE_KEY, maxInvote);
             }
         }
-        String invoteCodeInc = String.valueOf(valOpsStr.increment(RedisConstants.USER_INVOTE_KEY, 1L));
+//        String invoteCodeInc = String.valueOf(valOpsStr.increment(RedisConstants.USER_INVOTE_KEY, 1L));
+        String invoteCodeInc =getRandomInvoteCode(8);
         if (StringUtils.isNotBlank(platUserDao.findIdByInviteCode(invoteCodeInc))) {
             throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码冲突,请重新注册");
         }
@@ -108,13 +103,14 @@ public class PlatUserServiceImpl implements PlatUserService {
                 platUser.setReferInviteCode(platUser.getInviteCode());
             });
             optional.orElseThrow(() -> new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码不正确！"));
-        } else {
-            throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码补不能为空！");
         }
+//        else {
+//            throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码不能为空！");
+//        }
         // ==邀请码校验
-        if (isValidInvoteCode) {
-            checkInviteCode(platUser.getInviteCode());
-        }
+//        if (isValidInvoteCode) {
+//            checkInviteCode(platUser.getInviteCode());
+//        }
 
         platUser.setInviteCode(invoteCodeInc);
         String id = SnowFlake.createSnowFlake().nextIdString();
@@ -487,4 +483,33 @@ public class PlatUserServiceImpl implements PlatUserService {
             });
         }
     }
+
+    public String getRandomInvoteCode(int length)
+    {
+        String val = "";
+
+        Random random = new Random();
+        for(int i = 0; i < length; i++)
+        {
+            String charOrNum = random.nextInt(2) % 2 == 0 ? "char" : "num"; // 输出字母还是数字
+
+            if("char".equalsIgnoreCase(charOrNum)) // 字符串
+            {
+                int choice = random.nextInt(2) % 2 == 0 ? 65 : 97; //取得大写字母还是小写字母
+                val += (char) (choice + random.nextInt(26));
+            }
+            else if("num".equalsIgnoreCase(charOrNum)) // 数字
+            {
+                val += String.valueOf(random.nextInt(10));
+            }
+        }
+
+        return val;
+    }
+
+    @Override
+    public PlatUser findByInviteCode(String inviteCode){
+        return platUserDao.findByInviteCode(inviteCode);
+    }
+
 }
