@@ -108,9 +108,10 @@ public class PlatUserServiceImpl implements PlatUserService {
                 platUser.setReferInviteCode(platUser.getInviteCode());
             });
             optional.orElseThrow(() -> new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码不正确！"));
-        } else {
-            throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码补不能为空！");
         }
+//        else {
+//            throw new PlatException(Constants.INVOTE_CODE_SYNC_ERROR, "邀请码不能为空！");
+//        }
         // ==邀请码校验
         if (isValidInvoteCode) {
             checkInviteCode(platUser.getInviteCode());
