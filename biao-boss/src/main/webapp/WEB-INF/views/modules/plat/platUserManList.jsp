@@ -335,7 +335,7 @@
         <li><label>用户id：</label>
             <form:input path="id" htmlEscape="false" maxlength="45" class="input-medium"/>
         </li>
-        <li><label>推荐人id：</label>
+        <li><label>推荐人用户id：</label>
             <form:input path="referId" htmlEscape="false" maxlength="45" class="input-medium"/>
         </li>
         <li><label>用户名：</label>
