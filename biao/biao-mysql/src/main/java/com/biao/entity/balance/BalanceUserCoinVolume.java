@@ -104,6 +104,9 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("differential_reward")
     private BigDecimal differentialReward;
 
+    @SqlField("deposit_value")
+    private BigDecimal depositValue;
+
     public String getUserId() {
         return userId;
     }
@@ -326,5 +329,13 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setOneInvite(int oneInvite) {
         this.oneInvite = oneInvite;
+    }
+
+    public BigDecimal getDepositValue() {
+        return depositValue;
+    }
+
+    public void setDepositValue(BigDecimal depositValue) {
+        this.depositValue = depositValue;
     }
 }

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-07-18 23:15:15
+Date: 2019-07-28 21:31:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,10 +29,11 @@ CREATE TABLE `js_plat_user_coin_balancechange` (
   `create_by` varchar(64) DEFAULT NULL,
   `update_by` varchar(64) DEFAULT NULL,
   `flag` smallint(6) DEFAULT NULL COMMENT '转入转出标识',
-  `coin_num` decimal(32,16) DEFAULT NULL COMMENT '数量',
+  `coin_num` decimal(32,16) DEFAULT '0.0000000000000000' COMMENT '数量',
   `mobile` varchar(11) DEFAULT NULL COMMENT '电话',
   `mail` varchar(64) DEFAULT NULL COMMENT '邮箱',
-  `accumul_income` decimal(32,16) DEFAULT NULL COMMENT '累计收益',
+  `accumul_income` decimal(32,16) DEFAULT '0.0000000000000000' COMMENT '累计收益',
   `take_out_date` timestamp NULL DEFAULT NULL COMMENT '取出时间',
+  `balance_id` varchar(64) DEFAULT NULL COMMENT '转入资产id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='刷单宝转入转出明细';
