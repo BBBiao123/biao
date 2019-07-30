@@ -676,7 +676,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 balanceUserCoinVolumeDetail.setStaticsIncome(staticsIncomeTotal);
                 balanceUserCoinVolumeDetail.setDynamicsIncome(dynamicsIncomeTotal);
                 balanceUserCoinVolumeDetail.setTeamRecord(teamSumRecord);
-                balanceUserCoinVolumeDetail.setCommunityStaticsIncome(communityStaticsIncome);
+                balanceUserCoinVolumeDetail.setCommunityStaticsIncome(BigDecimal.ZERO);
                 balanceUserCoinVolumeDetail.setNodeNumber(oneInvite);
 
                 //社区有效用户数
