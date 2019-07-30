@@ -1,5 +1,6 @@
 package com.biao.service.balance;
 
+import com.biao.entity.balance.BalancePlatCoinPriceVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolumeDetail;
 import com.biao.vo.TradePairVO;
@@ -32,11 +33,14 @@ public interface BalanceUserCoinVolumeDetailService {
     List<BalanceUserCoinVolumeDetail> findAll(String userId);
 
    void  balanceIncomeDetail();
-    void  balanceIncomeDetailNew(Map<String , BigDecimal> map,Map<String,TradePairVO>  tradePairMap);
+    void  balanceIncomeDetailNew(Map<String , BigDecimal> map,BigDecimal  platPrice);
 
    void  balanceIncomeCount();
 
     void  balanceJackpotIncomeCount(Map<String,TradePairVO>  tradePairMap);
 
+   String insertPlatPrice(BalancePlatCoinPriceVolume balancePlatCoinPriceVolume);
+
+   BigDecimal  findPriceByUpdateDate();
 
 }

@@ -1346,8 +1346,20 @@ public class BalanceUserCoinVolumeController {
                 }
             }
         }
-        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,tradePairMap);
+        BigDecimal platPrice=BigDecimal.ZERO;
+        TradePairVO tradePair=tradePairMap.get("MG");
+        if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
+            platPrice=platPrice.add(tradePair.getLatestPrice());
+        }
+        if(platPrice.compareTo(BigDecimal.ZERO)<=0){
+            platPrice=platPrice.add(balanceUserCoinVolumeDetailService.findPriceByUpdateDate());
+        }
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,platPrice);
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
+        BalancePlatCoinPriceVolume balancePlat=new BalancePlatCoinPriceVolume();
+        balancePlat.setPrice(platPrice);
+        balancePlat.setCoinPlatSymbol("MG");
+        balanceUserCoinVolumeDetailService.insertPlatPrice(balancePlat);
     }
 
     @GetMapping("/balance/jackpot")
