@@ -4,6 +4,7 @@ import com.biao.coin.CoinMainService;
 import com.biao.handler.KlineDataHandler;
 import com.biao.handler.PlatDataHandler;
 import com.biao.pojo.GlobalMessageResponseVo;
+import com.biao.vo.TradePairVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * 首页,币币界面获取交易对数据.
@@ -131,4 +136,13 @@ public class PlatTradeController {
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(platDataHandler.merge(coinMain, coinOther, type, length)));
     }
 
+    @GetMapping("/index/allTrades")
+    public Mono<Map<String,Object>> allTrades() {
+
+        Map<String,Object> tradeMap=new HashMap<>();
+        Date date=new Date();
+        tradeMap.put("date", date.getTime());
+        tradeMap.put("ticker", platDataHandler.buildAllTrades());
+        return Mono.just(tradeMap);
+    }
 }

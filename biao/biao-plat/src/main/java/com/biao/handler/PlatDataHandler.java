@@ -42,14 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -489,5 +482,85 @@ public class PlatDataHandler {
         return redisCacheManager.acquireAllMainCnb();
     }
 
+    private List<PlatOrderVO> buildPlatOrderVO(final String redisKey) {
+        final Set<String> sets = redisTemplate.opsForZSet().range(redisKey, 0, -1);
+        if (CollectionUtils.isEmpty(sets)) {
+            return Collections.synchronizedList(new LinkedList<>());
+        }
 
+        final List<TradeDto> tradeDtoList = redisTemplate.opsForHash()
+                .multiGet(TradeConstant.TRADE_PREPOSITION_KEY, sets);
+        if (CollectionUtils.isNotEmpty(tradeDtoList)) {
+            return tradeDtoList.stream()
+                    .filter(Objects::nonNull)
+                    .map(PlatOrderVO::transform)
+                    .collect(Collectors.toCollection(() -> Collections.synchronizedList(new LinkedList<>())));
+        }
+        return Collections.synchronizedList(new LinkedList<>());
+    }
+
+
+
+    /**
+     * 交易界面交易对信息.
+     *
+     * @return Map map
+     */
+    public List<Map<String,Object>>  buildAllTrades() {
+        List<RedisExPairVO> allExpair = redisCacheManager.acquireAllExpair();
+
+        final List<RedisExPairVO> sortList = allExpair.stream()
+                .sorted(Comparator.comparing(RedisExPairVO::getSort))
+                .sorted(Comparator.comparing(RedisExPairVO::getType))
+                .collect(Collectors.toList());
+
+        List<Map<String,Object>> tradeList=new ArrayList<>();
+            List<TradePairVO> vos = Lists.newArrayList();
+            for (RedisExPairVO exPair : sortList) {
+                final KlineVO klineVO = (KlineVO) redisTemplate.opsForHash().get(buildKey(exPair.getPairOne(), exPair.getPairOther()),
+                        DateUtils.formaterLocalDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0))));
+
+                Map<String,Object> map2=new HashMap<>();
+                map2.put("symbol",exPair.getPairOther().toLowerCase()+"_"+exPair.getPairOne().toLowerCase());
+                String buyRedisKey = tradeKey(TradeEnum.BUY, exPair.getPairOne(), exPair.getPairOther());
+
+                 List<PlatOrderVO> buyList = buildPlatOrderVO(buyRedisKey);
+                buyList= buyList.stream().sorted(Comparator.comparing(PlatOrderVO::getPrice).reversed()).collect(Collectors.toList());
+                map2.put("buy", BigDecimal.ZERO);
+                if(CollectionUtils.isNotEmpty(buyList)){
+
+                    map2.put("buy", buyList.get(0).getPrice());
+                }
+
+
+                map2.put("sell",BigDecimal.ZERO);
+                String sellRedisKey = tradeKey(TradeEnum.SELL, exPair.getPairOne(), exPair.getPairOther());
+                 List<PlatOrderVO> sellList = buildPlatOrderVO(sellRedisKey);
+                sellList= sellList.stream().sorted(Comparator.comparing(PlatOrderVO::getPrice)).collect(Collectors.toList());
+                if(CollectionUtils.isNotEmpty(sellList)){
+
+                    map2.put("sell", sellList.get(0).getPrice());
+                }
+                if (Objects.nonNull(klineVO)) {
+                    map2.put("high",new BigDecimal(klineVO.getH()));
+                    map2.put("vol",new BigDecimal(klineVO.getV()));
+                    map2.put("low",new BigDecimal(klineVO.getL()));
+                    map2.put("last",new BigDecimal(klineVO.getC()));
+                    BigDecimal rise = new BigDecimal(0);
+                    if ((new BigDecimal(klineVO.getO())).compareTo(new BigDecimal(0)) != 0) {
+                        rise = (new BigDecimal(klineVO.getC())).subtract(new BigDecimal(klineVO.getO()))
+                                .divide(new BigDecimal(klineVO.getO()), 8, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    }
+                    map2.put("change",rise);
+                } else {
+                    map2.put("high",new BigDecimal(0.00));
+                    map2.put("vol",new BigDecimal(0.00));
+                    map2.put("low",new BigDecimal(0.00));
+                    map2.put("last",new BigDecimal(0.00));
+                    map2.put("change",new BigDecimal(0.00));
+                }
+                tradeList.add(map2);
+            }
+        return tradeList;
+    }
 }
