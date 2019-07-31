@@ -37,6 +37,23 @@ public class TradeService {
             return response.getMap().getString(Constants.LOGIN_TOKEN);
         } else {
             logger.error("登录失败！", response.getMsg());
+            //登陆不上重试五分钟
+            Integer initSecond = 0;
+            for (int i = 0; i < 5; i++) {
+                try {
+                    Thread.sleep(initSecond + 60000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Response result = oh.requestForm(params, RobotPamart.get().headers(), url);
+                if (result.sccuess()) {
+                    logger.info("登录成功！", response.getMsg());
+                    return response.getMap().getString(Constants.LOGIN_TOKEN);
+                } else {
+                    logger.error("登录失败" + i + 1 + " 次 ！", response.getMsg());
+                    continue;
+                }
+            }
             throw new RuntimeException("登录失败！");
         }
     }
@@ -52,6 +69,15 @@ public class TradeService {
         Response response = oh.requestForm(params, RobotPamart.get().headers(), url);
         if (!response.sccuess()) {
             logger.error("没有获取到正确的订单号！{}", response.getMsg());
+            if (response.getMsg().equals("用户被踢出")) {
+                //执行重新登陆
+                RobotCtx ctx = new ConfigLoader().loader(RobotCtx.class);
+                RobotPamart.get().refreshedToken(() -> this.login(ctx.getLoginUser(), ctx.getLoginPass()));
+                Response responseAgain = oh.requestForm(params, RobotPamart.get().headers(), url);
+                if (responseAgain.sccuess()) {
+                    return response.getMap().getString(Constants.TRADE_ORDER_NO);
+                }
+            }
             throw new RuntimeException("没有获取到正确的订单号。" + response.getMsg());
         }
         return response.getMap().getString(Constants.TRADE_ORDER_NO);
