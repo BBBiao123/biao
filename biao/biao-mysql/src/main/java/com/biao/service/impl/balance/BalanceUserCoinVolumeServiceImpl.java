@@ -59,4 +59,10 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
     public List<BalanceUserCoinVolume> findByAllRank() {
         return balanceUserCoinVolumeDao.findByAllRank();
     }
+
+    @Override
+    public long deleteByBalanceId(String changeId){
+        return balanceUserCoinVolumeDao.deleteByBalanceId(changeId);
+    }
+
 }

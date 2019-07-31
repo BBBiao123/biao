@@ -100,27 +100,26 @@ public class PlatUserService extends CrudService<PlatUserDao, PlatUser> {
         }
         //第二步  给实名认证通过用户送币
         UserCoinVolume coinVolume=userCoinVolumeService.getByUserIdAndCoinId(platUser.getId(),coin.getId());
-        BigDecimal vol = new BigDecimal(conf.getRegisterVolume().toString());
         if(coinVolume==null){
             UserCoinVolume coinVolumeNew=new UserCoinVolume();
-            coinVolumeNew.setVolume(vol);
+            coinVolumeNew.setVolume(new BigDecimal("0"));
             coinVolumeNew.setCoinSymbol(coin.getName());
             coinVolumeNew.setUserId(platUser.getId());
             coinVolumeNew.setCoinId(coin.getId());
             coinVolumeNew.setLockVolume(new BigDecimal("0"));
             coinVolumeNew.setOutLockVolume(new BigDecimal("0"));
             userCoinVolumeService.save(coinVolumeNew);
-            //插入交易记录表
-//            userCoinVolumeService.insertBill(coinVolumeNew);
             //插入交易记录历史 日志
-            userCoinVolumeService.insertBillHistory(coinVolumeNew);
+ //           userCoinVolumeService.insertBillHistory(coinVolumeNew);
+            //插入交易记录表，系统会根据交易表数据自动给用户资产表中转账
+            userCoinVolumeService.insertBill(platUser,conf);
         }else{
-            coinVolume.setVolume(coinVolume.getVolume().add(vol));
-            userCoinVolumeService.save(coinVolume);
-            //插入交易记录表
-//            userCoinVolumeService.insertBill(coinVolume);
+          /*  coinVolume.setVolume(coinVolume.getVolume().add(vol));
+            userCoinVolumeService.save(coinVolume);*/
             //插入交易记录历史 日志
-            userCoinVolumeService.insertBillHistory(coinVolume);
+       //     userCoinVolumeService.insertBillHistory(coinVolume);
+            //插入交易记录表，系统会根据交易表数据自动给用户资产表中转账
+            userCoinVolumeService.insertBill(platUser,conf);
 
         }
         //第三步

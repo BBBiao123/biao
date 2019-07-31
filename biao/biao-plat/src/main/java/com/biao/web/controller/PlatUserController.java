@@ -971,7 +971,7 @@ public class PlatUserController {
 
     @ValidateGroup(fileds = {
             @ValidateFiled(index = 0, filedName = "exPassword", notNull = true, errMsg = "请输入格式正确的交易密码"),
-            @ValidateFiled(index = 0, filedName = "password", notNull = true, errMsg = "请输入格式正确的登录密码"),
+//            @ValidateFiled(index = 0, filedName = "password", notNull = true, errMsg = "请输入格式正确的登录密码"),
             @ValidateFiled(index = 0, filedName = "code", notNull = true, errMsg = "请输入格式正确的短信验证码"),
     })
     @PostMapping("/user/updateExPassword")

@@ -139,32 +139,27 @@ public class UserCoinVolumeService extends CrudService<UserCoinVolumeDao, UserCo
 
 
 	@Transactional(readOnly = false)
-	public void insertBill(UserCoinVolume userCoinVolume) {
+	public void insertBill(PlatUser platUser,Mk2PopularizeRegisterConf conf) {
 		//增加用户资产
-		BigDecimal bigDecimal = userCoinVolume.getVolume();
+		BigDecimal bigDecimal = new BigDecimal(conf.getRegisterVolume().toString());
 		JsPlatUserCoinVolumeBill jsPlatUserCoinVolumeBill = new JsPlatUserCoinVolumeBill();
-		jsPlatUserCoinVolumeBill.setCoinSymbol(userCoinVolume.getCoinSymbol());
+		jsPlatUserCoinVolumeBill.setCoinSymbol(conf.getCoinSymbol());
 		jsPlatUserCoinVolumeBill.setCreateDate(new Date());
+		jsPlatUserCoinVolumeBill.setMark("实名认证送币");
 		if(bigDecimal.compareTo(new BigDecimal("0"))>0) {
 			jsPlatUserCoinVolumeBill.setOpSign(UserCoinVolumeEventEnum.ADD_VOLUME.getEvent());
 		}else {
 			jsPlatUserCoinVolumeBill.setOpSign(UserCoinVolumeEventEnum.SUB_VOLUME.getEvent());
 		}
 		jsPlatUserCoinVolumeBill.setOpVolume(bigDecimal.abs());
-		jsPlatUserCoinVolumeBill.setPriority("5");
-		if(StringUtils.isNotBlank(userCoinVolume.getAirdropId())) {
-			jsPlatUserCoinVolumeBill.setRefKey(userCoinVolume.getAirdropId());
-			jsPlatUserCoinVolumeBill.setSource("boss airdrop");
-			jsPlatUserCoinVolumeBill.setMark("空头");
-		}else {
-			jsPlatUserCoinVolumeBill.setRefKey(IdGen.uuid());
-			jsPlatUserCoinVolumeBill.setSource("boss userCoinVolume");
-			jsPlatUserCoinVolumeBill.setMark("修改用户资产");
-		}
+		jsPlatUserCoinVolumeBill.setPriority("100");
+		jsPlatUserCoinVolumeBill.setRefKey(IdGen.uuid());
+		jsPlatUserCoinVolumeBill.setSource("boss userCoinVolume");
+		jsPlatUserCoinVolumeBill.setForceLock(1);
 		jsPlatUserCoinVolumeBill.setStatus(UserCoinVolumeBillStatusEnum.UNPROCESSED.getStatus());
-		jsPlatUserCoinVolumeBill.setHash(hashSelect.select(HashSelect.createKey(userCoinVolume.getUserId(), userCoinVolume.getCoinSymbol())));
+		jsPlatUserCoinVolumeBill.setHash(hashSelect.select(HashSelect.createKey(platUser.getId(), conf.getCoinSymbol())));
 		User user = new User();
-		user.setId(userCoinVolume.getUserId());
+		user.setId(platUser.getId());
 		jsPlatUserCoinVolumeBill.setUser(user);
 		jsPlatUserCoinVolumeBill.setUpdateDate(new Date());
 		jsPlatUserCoinVolumeBillService.save(jsPlatUserCoinVolumeBill);
@@ -185,15 +180,9 @@ public class UserCoinVolumeService extends CrudService<UserCoinVolumeDao, UserCo
 		}
 		jsPlatUserCoinVolumeBillHistory.setOpVolume(bigDecimal.abs());
 		jsPlatUserCoinVolumeBillHistory.setPriority("5");
-		if(StringUtils.isNotBlank(userCoinVolume.getAirdropId())) {
-			jsPlatUserCoinVolumeBillHistory.setRefKey(userCoinVolume.getAirdropId());
-			jsPlatUserCoinVolumeBillHistory.setSource("boss airdrop");
-			jsPlatUserCoinVolumeBillHistory.setMark("空头");
-		}else {
-			jsPlatUserCoinVolumeBillHistory.setRefKey(IdGen.uuid());
-			jsPlatUserCoinVolumeBillHistory.setSource("boss userCoinVolume");
-			jsPlatUserCoinVolumeBillHistory.setMark("实名认证通过送币");
-		}
+		jsPlatUserCoinVolumeBillHistory.setRefKey(IdGen.uuid());
+		jsPlatUserCoinVolumeBillHistory.setSource("boss jsPlatUserCoinVolumeHistory");
+		jsPlatUserCoinVolumeBillHistory.setMark("实名认证通过送币");
 		jsPlatUserCoinVolumeBillHistory.setStatus(UserCoinVolumeBillStatusEnum.SUCCESS.getStatus());
 		jsPlatUserCoinVolumeBillHistory.setHash(hashSelect.select(HashSelect.createKey(userCoinVolume.getUserId(), userCoinVolume.getCoinSymbol())));
 		jsPlatUserCoinVolumeBillHistory.setUserId(userCoinVolume.getUserId());

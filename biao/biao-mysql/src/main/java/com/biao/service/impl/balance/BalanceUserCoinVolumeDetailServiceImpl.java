@@ -63,6 +63,10 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     @Autowired(required = false)
     private BalancePlatJackpotVolumeDetailDao balancePlatJackpotVolumeDetailDao;
 
+
+    @Autowired(required = false)
+    private BalancePlatCoinPriceVolumeDao balancePlatCoinPriceVolumeDao;
+
     @Override
     public String save(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail) {
         String id = SnowFlake.createSnowFlake().nextIdString();
@@ -71,6 +75,21 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
         balanceUserCoinVolumeDetailDao.insert(balanceUserCoinVolumeDetail);
         return id;
     }
+
+    @Override
+    public String insertPlatPrice(BalancePlatCoinPriceVolume balancePlatCoinPriceVolume) {
+        String id = SnowFlake.createSnowFlake().nextIdString();
+        balancePlatCoinPriceVolume.setCreateDate(LocalDateTime.now());
+        balancePlatCoinPriceVolume.setId(id);
+        balancePlatCoinPriceVolumeDao.insert(balancePlatCoinPriceVolume);
+        return id;
+    }
+
+    @Override
+    public BigDecimal  findPriceByUpdateDate(){
+       return balancePlatCoinPriceVolumeDao.findPriceByUpdateDate();
+    }
+
     @Override
     public void updateById(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail) {
         balanceUserCoinVolumeDetailDao.updateById(balanceUserCoinVolumeDetail);
@@ -367,21 +386,21 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      * 重新梳理收益规账新方法
      */
     @Override
-    public void balanceIncomeDetailNew(Map<String ,BigDecimal> map,Map<String,TradePairVO>  tradePairMap){
+    public void balanceIncomeDetailNew(Map<String ,BigDecimal> map,BigDecimal platPrice){
         //静态收益、动态收益1和3 计算
-        staticsIncomeAndPartDynamics(map,tradePairMap);
+        staticsIncomeAndPartDynamics(map,platPrice);
 
         //团队业绩、团队小区业绩、社区总收益 计算
         communityRecordAndLevel();
 
         //社区管理奖 计算
-        calcManagementAward(map,tradePairMap);
+        calcManagementAward(map,platPrice);
 
         //动态收益2、平级奖 计算
         calcIncomeAndEqualAward(map);
     }
 
-    public  void treeCommunityUserList(List<PlatUser> userList,Map<String,TradePairVO>  tradePairMap,List<BigDecimal> childSumRecordList, List validList,List<BigDecimal> childCommunityList,Map<String,BigDecimal> map,BigDecimal platPrice) {
+    public  void treeCommunityUserList(List<PlatUser> userList,List<BigDecimal> childSumRecordList, List validList,List<BigDecimal> childCommunityList,Map<String,BigDecimal> map,BigDecimal platPrice) {
 
 
         for (PlatUser user : userList) {
@@ -408,15 +427,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             } else{
                 childRateSec=map.get("oneDayRate");
             }
-//            if(platPrice.compareTo(BigDecimal.ZERO)>0){
-//                childCommunityList.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
-//            }
-
-                childCommunityList.add(childCoinBalance.multiply(childRateSec));
+            if(platPrice.compareTo(BigDecimal.ZERO)>0){
+                childCommunityList.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
+            }
 
             List<PlatUser> platList= platUserDao.findInvitesById(user.getId());
             if (CollectionUtils.isNotEmpty(platList)) {
-                treeCommunityUserList(platList, tradePairMap, childSumRecordList, validList,childCommunityList,map,platPrice);
+                treeCommunityUserList(platList,  childSumRecordList, validList,childCommunityList,map,platPrice);
             }
         }
     }
@@ -444,21 +461,19 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     /**
      * 静态收益计算和动态收益1和3计算
      */
-    public void staticsIncomeAndPartDynamics(Map<String ,BigDecimal> map,Map<String,TradePairVO>  tradePairMap){
+    public void staticsIncomeAndPartDynamics(Map<String ,BigDecimal> map,BigDecimal platPrice){
         List<PlatUser> platUserList=balanceUserCoinCountVolumeDao.findPlatUserAll();
         List<BalanceUserCoinVolume>  balanceUserCoinVolumeList2= balanceUserCoinVolumeDao.findCoinAll();
-        Map<String,List<BalanceUserCoinCountVolume>> balanceUserCoinVolumeMap=new HashMap<String,List<BalanceUserCoinCountVolume>>();
+        Map<String,List<BalanceUserCoinVolume>> balanceUserCoinVolumeMap=new HashMap<String,List<BalanceUserCoinVolume>>();
         if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList2)) {
             for(BalanceUserCoinVolume balanceUserCoinVolume: balanceUserCoinVolumeList2){
-                BalanceUserCoinCountVolume balanceUserCoinCountVolume=new BalanceUserCoinCountVolume();
-                BeanUtils.copyProperties(balanceUserCoinVolume, balanceUserCoinCountVolume);
-                List<BalanceUserCoinCountVolume> balanceUserCoinCountVolumeList=balanceUserCoinVolumeMap.get(balanceUserCoinCountVolume.getUserId());
+                List<BalanceUserCoinVolume> balanceUserCoinCountVolumeList=balanceUserCoinVolumeMap.get(balanceUserCoinVolume.getUserId());
                 if(CollectionUtils.isNotEmpty(balanceUserCoinCountVolumeList)){
-                    balanceUserCoinCountVolumeList.add(balanceUserCoinCountVolume);
+                    balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
                 }else{
-                    balanceUserCoinCountVolumeList=new ArrayList<BalanceUserCoinCountVolume>();
-                    balanceUserCoinCountVolumeList.add(balanceUserCoinCountVolume);
-                    balanceUserCoinVolumeMap.put(balanceUserCoinCountVolume.getUserId(),balanceUserCoinCountVolumeList);
+                    balanceUserCoinCountVolumeList=new ArrayList<BalanceUserCoinVolume>();
+                    balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
+                    balanceUserCoinVolumeMap.put(balanceUserCoinVolume.getUserId(),balanceUserCoinCountVolumeList);
                 }
             }
 
@@ -469,24 +484,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
             if (CollectionUtils.isNotEmpty(balanceCountList)) {
                 balanceCountVolume=balanceCountList.get(0);
             }
-            List<BalanceUserCoinCountVolume>  countlist=balanceUserCoinVolumeMap.get(platUser.getId());
+            List<BalanceUserCoinVolume>  countlist=balanceUserCoinVolumeMap.get(platUser.getId());
             BigDecimal coinBalance=BigDecimal.ZERO;
             if (CollectionUtils.isNotEmpty(countlist)) {
-                for(BalanceUserCoinCountVolume countVolume: countlist){
+                for(BalanceUserCoinVolume countVolume: countlist){
                     BigDecimal lastPrice=BigDecimal.ZERO;
                     BigDecimal coinCount=BigDecimal.ZERO;
-
-                    TradePairVO tradePair=tradePairMap.get(countVolume.getCoinSymbol());
-
-                    if(tradePair!=null && tradePair.getLatestPrice() != null){
-                        lastPrice=tradePair.getLatestPrice();
-                    }
-                    if(countVolume.getCoinBalance() != null){
-                        coinCount=lastPrice.multiply(countVolume.getCoinBalance());
-                    }
-                    if("USDT".equals(countVolume.getCoinSymbol()) && countVolume.getCoinBalance() != null){
-                        coinCount=countVolume.getCoinBalance();
-                    }
+                    coinCount=coinCount.add(countVolume.getDepositValue());
                     coinBalance=coinBalance.add(coinCount);
                 }
             }
@@ -506,7 +510,6 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 balanceUserCoinCountVolumeDao.insert(balanceCountVolume);
             }
         }
-
         List<BalanceUserCoinCountVolume>  balanceUserCoinVolumeList= balanceUserCoinCountVolumeDao.findCoinAll();
         if (CollectionUtils.isNotEmpty(balanceUserCoinVolumeList)) {
             balanceUserCoinVolumeList.forEach(e->{
@@ -521,7 +524,6 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 //社区静态总收益
                 BigDecimal   communityStaticsIncome=new BigDecimal(0);
 
-                BigDecimal platPrice=BigDecimal.ZERO;
 
                 //社区静态总收益
                 BigDecimal   oneLevelIncome=new BigDecimal(0);
@@ -535,10 +537,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 BigDecimal balance3=new BigDecimal(200);
                 //社区有效用户数
                 int vaildNum=0;
-                TradePairVO tradePair=tradePairMap.get("MG");
-                if(tradePair != null && tradePair.getLatestPrice() != null){
-                    platPrice=tradePair.getLatestPrice();
-                }
+
                 //一级邀请人数
                 int oneInvite=0;
                 List<String> validList=new ArrayList<String>();
@@ -577,16 +576,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         communityStaticsIncome = communityStaticsIncome.add(childCoinBalance.divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(childRateSec));
                     }
 
-//                    dynamicsIncomeTotal = dynamicsIncomeTotal.add(childCoinBalance.multiply(childRateSec).multiply(new BigDecimal(0.5)));
-//                    communityStaticsIncome = communityStaticsIncome.add(childCoinBalance.multiply(childRateSec));
-
                     childTeamSumRecord= childTeamSumRecord.add(childCoinBalance);
 
                     List<PlatUser> childAllPlatUserList = platUserDao.findInvitesById(platUser.getId());
                     List<BigDecimal> childSumRecordList=new ArrayList<BigDecimal>();
                     List<BigDecimal> childCommunityList=new ArrayList<BigDecimal>();
                     if(CollectionUtils.isNotEmpty(childAllPlatUserList)){
-                        treeCommunityUserList(childAllPlatUserList, tradePairMap,childSumRecordList, validList,childCommunityList,map,platPrice);
+                        treeCommunityUserList(childAllPlatUserList, childSumRecordList, validList,childCommunityList,map,platPrice);
                     }
                     if(CollectionUtils.isNotEmpty(childSumRecordList)){
                         for(BigDecimal childSum:childSumRecordList){
@@ -645,10 +641,11 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                     for(BalanceChangeUserCoinVolume balanceChangeVolume : balanceChangeList ){
                         BigDecimal changeIncome=new BigDecimal(0);
                         if(platPrice.compareTo(BigDecimal.ZERO)>0) {
-                            TradePairVO tradeChangePair=tradePairMap.get(balanceChangeVolume.getCoinSymbol());
-                           BigDecimal coinNum= balanceChangeVolume.getCoinNum();
-                            if(tradeChangePair != null && tradeChangePair.getLatestPrice() != null){
-                                coinNum=coinNum.multiply(tradePair.getLatestPrice());
+
+                            BalanceUserCoinVolume balanceUserCoinVolume = balanceUserCoinVolumeDao.findById(balanceChangeVolume.getBalanceId());
+                            BigDecimal coinNum= BigDecimal.ZERO;
+                            if(balanceUserCoinVolume != null && balanceUserCoinVolume.getDepositValue() != null){
+                                coinNum = coinNum.add(balanceUserCoinVolume.getDepositValue());
                             }
                             BigDecimal  changeCoinBalance=e.getCoinBalance();
                             if(changeCoinBalance.compareTo(balance)>0){
@@ -679,7 +676,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 balanceUserCoinVolumeDetail.setStaticsIncome(staticsIncomeTotal);
                 balanceUserCoinVolumeDetail.setDynamicsIncome(dynamicsIncomeTotal);
                 balanceUserCoinVolumeDetail.setTeamRecord(teamSumRecord);
-                balanceUserCoinVolumeDetail.setCommunityStaticsIncome(communityStaticsIncome);
+                balanceUserCoinVolumeDetail.setCommunityStaticsIncome(BigDecimal.ZERO);
                 balanceUserCoinVolumeDetail.setNodeNumber(oneInvite);
 
                 //社区有效用户数
@@ -747,16 +744,11 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     /**
      * 计算社区管理奖
      */
-    public void  calcManagementAward(Map<String ,BigDecimal> map,Map<String,TradePairVO>  tradePairMap) {
+    public void  calcManagementAward(Map<String ,BigDecimal> map,BigDecimal  platPrice) {
         List<BalanceUserCoinVolumeDetail> balanceVolumeDetailList = balanceUserCoinVolumeDetailDao.findAll();
         //全网络静态收益加权平均分红
         Map<String, BigDecimal> goalStaticsIncomeMap = new HashMap<String, BigDecimal>();
         List<Coin> coinList = coinDao.findAll();
-        TradePairVO tradePair = tradePairMap.get("MG");
-        BigDecimal platPrice = BigDecimal.ZERO;
-        if (tradePair != null && tradePair.getLatestPrice() != null) {
-            platPrice = tradePair.getLatestPrice();
-        }
 
         List<BalanceUserCoinVolumeDetail> detailGoalist = balanceUserCoinVolumeDetailDao.findAll();
         BigDecimal coinStIncome = new BigDecimal(0);
@@ -1011,58 +1003,17 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
   @Override
   public void  balanceJackpotIncomeCount(Map<String,TradePairVO>  tradePairMap){
       List<BalanceUserCoinVolume> listVolume = balanceUserCoinVolumeDao.findByAllRank();
-      Map<String,List<BalanceUserCoinVolume>> balanceUserCoinVolumeMap=new HashMap<String,List<BalanceUserCoinVolume>>();
-      if (CollectionUtils.isNotEmpty(listVolume)) {
-          for(BalanceUserCoinVolume balanceUserCoinVolume: listVolume){
-              List<BalanceUserCoinVolume> balanceUserCoinCountVolumeList=balanceUserCoinVolumeMap.get(balanceUserCoinVolume.getUserId());
-              if(CollectionUtils.isNotEmpty(balanceUserCoinCountVolumeList)){
-                  balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
-              }else{
-                  balanceUserCoinCountVolumeList=new ArrayList<BalanceUserCoinVolume>();
-                  balanceUserCoinCountVolumeList.add(balanceUserCoinVolume);
-                  balanceUserCoinVolumeMap.put(balanceUserCoinVolume.getUserId(),balanceUserCoinCountVolumeList);
-              }
-          }
-      }
-      List<BalanceUserCoinVolume> rankList=new ArrayList<BalanceUserCoinVolume>();
-      for(String key:balanceUserCoinVolumeMap.keySet()) {
-          BigDecimal childTeamSumRecord = BigDecimal.ZERO;
-          List<BalanceUserCoinVolume> countlist = balanceUserCoinVolumeMap.get(key);
-          BigDecimal childCoinBalance = BigDecimal.ZERO;
-          if (CollectionUtils.isNotEmpty(countlist)) {
-              BalanceUserCoinVolume countVolume=new BalanceUserCoinVolume();
-              BalanceUserCoinVolume countVolume2=countlist.get(0);
-              countVolume.setId(countVolume2.getUserId());
-              countVolume.setUserId(countVolume2.getUserId());
-              countVolume.setMobile(countVolume2.getMobile());
-              countVolume.setMail(countVolume2.getMail());
-              for (BalanceUserCoinVolume countVolume3 : countlist) {
-                  BigDecimal lastPrice = BigDecimal.ZERO;
-                  BigDecimal coinCount = countVolume3.getCoinBalance();
-                  TradePairVO tradePair = tradePairMap.get(countVolume3.getCoinSymbol());
-                  if (tradePair != null && tradePair.getLatestPrice() != null) {
-                      coinCount = lastPrice.multiply(countVolume3.getCoinBalance());
-                  }
-                  childCoinBalance = childCoinBalance.add(coinCount);
-              }
-              countVolume.setCoinBalance(childCoinBalance);
-              rankList.add(countVolume);
-          }
-      }
-      rankList.sort((o1, o2) -> o2.getCoinBalance().compareTo(o1.getCoinBalance()));
+
       List<BalancePlatJackpotVolumeDetail> jackpotVolumeList=balancePlatJackpotVolumeDetailDao.findByUserIdAndCoin("MG")  ;
       if(CollectionUtils.isNotEmpty(jackpotVolumeList)){
           BalancePlatJackpotVolumeDetail jackpotVolume=jackpotVolumeList.get(0);
           BigDecimal allIncome=jackpotVolume.getAllCoinIncome();
           BigDecimal subIncome=BigDecimal.ZERO;
           if(allIncome != null && allIncome.compareTo(BigDecimal.ZERO)>0){
-              if(CollectionUtils.isNotEmpty(rankList)){
-                 int len=rankList.size();
-                  if(len>10){
-                      len=10;
-                  }
+              if(CollectionUtils.isNotEmpty(listVolume)){
+                 int len=listVolume.size();
                   for(int i=0;i<len;i++){
-                      BalanceUserCoinVolume countVolume=rankList.get(i);
+                      BalanceUserCoinVolume countVolume=listVolume.get(i);
                       BigDecimal avgIncome=BigDecimal.ZERO;
                       if(i==0){
                           avgIncome=allIncome.multiply(new BigDecimal(0.1));
@@ -1082,7 +1033,6 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                       }
                       userCoinVolumeExService.updateIncome(null,avgIncome,countVolume.getUserId(),jackpotVolume.getCoinSymbol(),false);
                   }
-
               }
           }
           jackpotVolume.setAllCoinIncome(allIncome.subtract(subIncome));
@@ -1090,8 +1040,6 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
           jackpotVolume.setRewardDate(localTime.plusDays(10));
           balancePlatJackpotVolumeDetailDao.updateById(jackpotVolume);
       }
-
-
 
   }
 

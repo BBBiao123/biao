@@ -57,6 +57,8 @@ public class PlatUserVO implements Serializable {
     private Integer exValidType;
     private String smsType;
 
+    private String referInviteCode;
+
     public Integer getRegisterType() {
         return registerType;
     }
@@ -249,4 +251,11 @@ public class PlatUserVO implements Serializable {
 		this.nickName = nickName;
 	}
 
+    public String getReferInviteCode() {
+        return referInviteCode;
+    }
+
+    public void setReferInviteCode(String referInviteCode) {
+        this.referInviteCode = referInviteCode;
+    }
 }

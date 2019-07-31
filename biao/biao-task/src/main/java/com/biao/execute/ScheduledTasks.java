@@ -3,6 +3,7 @@ package com.biao.execute;
 import com.biao.coin.CoinMainService;
 import com.biao.config.AliYunCardCheckConfig;
 import com.biao.config.BalanceDayRateConfig;
+import com.biao.entity.balance.BalancePlatCoinPriceVolume;
 import com.biao.enums.CardStatusEnum;
 import com.biao.enums.KlineTimeEnum;
 import com.biao.enums.TradePairEnum;
@@ -834,8 +835,20 @@ public class ScheduledTasks {
                 }
             }
         }
-        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,tradePairMap);
+        BigDecimal platPrice=BigDecimal.ZERO;
+        TradePairVO tradePair=tradePairMap.get("MG");
+        if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
+            platPrice=platPrice.add(tradePair.getLatestPrice());
+        }
+        if(platPrice.compareTo(BigDecimal.ZERO)<=0){
+            platPrice=platPrice.add(balanceUserCoinVolumeDetailService.findPriceByUpdateDate());
+        }
+        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,platPrice);
         balanceUserCoinVolumeDetailService.balanceIncomeCount();
+        BalancePlatCoinPriceVolume balancePlat=new BalancePlatCoinPriceVolume();
+        balancePlat.setPrice(platPrice);
+        balancePlat.setCoinPlatSymbol("MG");
+        balanceUserCoinVolumeDetailService.insertPlatPrice(balancePlat);
         logger.info("exexute balanceIncomeDetail  end   ....");
     }
 
@@ -855,6 +868,7 @@ public class ScheduledTasks {
                 }
             }
         }
+
         logger.info("exexute balanceIncomeCount  end   ....");
     }
     /**

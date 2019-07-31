@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-07-18 23:15:38
+Date: 2019-07-28 21:31:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,7 +25,7 @@ CREATE TABLE `js_plat_user_income_incomedetail` (
   `coin_plat_symbol` varchar(45) DEFAULT NULL COMMENT '平台币种',
   `coin_symbol` varchar(45) DEFAULT NULL COMMENT '币种',
   `income_date` timestamp NULL DEFAULT NULL COMMENT '收益日期',
-  `detail_reward` decimal(32,16) DEFAULT NULL COMMENT '奖励',
+  `detail_reward` decimal(32,16) DEFAULT '0.0000000000000000' COMMENT '奖励',
   `create_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建日期',
   `update_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改日期',
   `create_by` varchar(64) DEFAULT NULL COMMENT '创建者',

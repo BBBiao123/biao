@@ -58,9 +58,9 @@ public class WithdrawLogServiceImpl implements WithdrawLogService {
             throw new PlatException(Constants.COIN_OUT_ERROR, "禁止提现");
         }
 
-        if (StringUtils.isEmpty(user.getGoogleAuth())) {
-            throw new PlatException(Constants.NOT_GOOGLE_ERROR, "请先设置GoogleAuth!");
-        }
+//        if (StringUtils.isEmpty(user.getGoogleAuth())) {
+//            throw new PlatException(Constants.NOT_GOOGLE_ERROR, "请先设置GoogleAuth!");
+//        }
         if (!UserCardStatusEnum.authRealName(user.getCardStatus(),user.getCountryCode())) {
             throw new PlatException(Constants.IDENTIRY_ERROR, "请进行身份认证!");
         }

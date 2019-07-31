@@ -45,6 +45,9 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     protected LocalDateTime takeOutDate;
 
+    @SqlField("balance_id")
+    private String balanceId;
+
     public String getUserId() {
         return userId;
     }
@@ -115,5 +118,13 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
 
     public void setCoinPlatSymbol(String coinPlatSymbol) {
         this.coinPlatSymbol = coinPlatSymbol;
+    }
+
+    public String getBalanceId() {
+        return balanceId;
+    }
+
+    public void setBalanceId(String balanceId) {
+        this.balanceId = balanceId;
     }
 }

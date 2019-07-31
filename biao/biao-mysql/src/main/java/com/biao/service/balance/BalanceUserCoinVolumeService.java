@@ -35,4 +35,5 @@ public interface BalanceUserCoinVolumeService {
     List<BalanceUserCoinVolume> findInvitesByUserId(String userId);
 
     List<BalanceUserCoinVolume> findByAllRank();
+    long deleteByBalanceId(String changeId);
 }
