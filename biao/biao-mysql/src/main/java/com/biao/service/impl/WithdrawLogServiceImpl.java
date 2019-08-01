@@ -61,9 +61,9 @@ public class WithdrawLogServiceImpl implements WithdrawLogService {
 //        if (StringUtils.isEmpty(user.getGoogleAuth())) {
 //            throw new PlatException(Constants.NOT_GOOGLE_ERROR, "请先设置GoogleAuth!");
 //        }
-        if (!UserCardStatusEnum.authRealName(user.getCardStatus(),user.getCountryCode())) {
-            throw new PlatException(Constants.IDENTIRY_ERROR, "请进行身份认证!");
-        }
+//        if (!UserCardStatusEnum.authRealName(user.getCardStatus(),user.getCountryCode())) {
+//            throw new PlatException(Constants.IDENTIRY_ERROR, "请进行身份认证!");
+//        }
         //判断最小提现金额
         //判断用户该种币种资产
         UserCoinVolume userCoinVolume = userCoinVolumeDao.findByUserIdAndCoinId(userId, withdrawLog.getCoinId());
