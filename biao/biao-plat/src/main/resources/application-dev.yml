@@ -70,8 +70,8 @@ coin:
   main:
     list:
       - USDT
-      - BTC
-      - ETH
+#      - BTC
+#      - ETH
 
 biao:
   mail[0]:
