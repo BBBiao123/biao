@@ -47,4 +47,8 @@ logging:
 
     path: "./logs"
     config: classpath:logback.xml
-    
+
+app:
+  download:
+    ios: /data/deploy/appdownload/ios.ipa
+    android: /data/deploy/appdownload/android.apk

@@ -1,6 +1,7 @@
 package com.biao.fileserver.controller;
 
 import com.biao.fileserver.config.AliYunOOSClientConfig;
+import com.biao.fileserver.config.AppDownload;
 import com.biao.fileserver.domain.Card;
 import com.biao.fileserver.domain.File;
 import com.biao.fileserver.service.CardService;
@@ -19,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
@@ -41,6 +40,9 @@ public class FileController {
     private String serverPort;
     @Autowired
     private AliYunOOSClientConfig clientConfig;
+
+    @Autowired
+    private AppDownload appDownload;
 
     @RequestMapping(value = "/")
     public String index(Model model) {
@@ -87,6 +89,7 @@ public class FileController {
         }
 
     }
+
 
     /**
      * 上传
@@ -266,7 +269,7 @@ public class FileController {
     /**
      * 在线显示图片
      *
-     * @param id id
+     * @param
      * @return
      */
     @SuppressWarnings("unlikely-arg-type")
@@ -289,4 +292,57 @@ public class FileController {
         }
     }
 
+
+    /**
+     * 获取app 下载
+     *
+     * @param type
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    @GetMapping("/app/{type}")
+    @ResponseBody
+    public ResponseEntity<Object> iosDownLoad(@PathVariable String type) throws UnsupportedEncodingException {
+        java.io.File file;
+        if (type.equalsIgnoreCase("ios")) {
+            file = new java.io.File(appDownload.getIos());
+        } else if (type.equalsIgnoreCase("android")) {
+            file = new java.io.File(appDownload.getAndroid());
+        } else {
+            file = null;
+        }
+
+        String fileName = type.equalsIgnoreCase("IOS")?"IOS":"android";
+        if (file.exists()) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; fileName=" + new String(fileName.getBytes("utf-8"), "ISO-8859-1"))
+                    .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                    .header(HttpHeaders.CONTENT_LENGTH, file.length() + "").header("Connection", "close")
+                    .body(getFileToByte(file));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File was not fount");
+        }
+
+    }
+
+
+    public static byte[] getFileToByte(java.io.File file) {
+        byte[] by = new byte[(int) file.length()];
+        try {
+            InputStream is = new FileInputStream(file);
+            ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+            byte[] bb = new byte[2048];
+            int ch;
+            ch = is.read(bb);
+            while (ch != -1) {
+                bytestream.write(bb, 0, ch);
+                ch = is.read(bb);
+            }
+            by = bytestream.toByteArray();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return by;
+    }
 }
