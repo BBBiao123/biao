@@ -139,10 +139,7 @@ public class PlatUserController {
             platUser.setMobile(platUserVO.getMobile());
             platUser.setMobileAuditDate(LocalDateTime.now());
             //验证手机验证码
-            //todo TEST  为了方便测试，输入验证码 123456 则为通过。
-            if (!validCode.equals("123456")) {
                 smsMessageService.validSmsCode(platUserVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), validCode);
-            }
         } else {
             //邮箱注册,验证验证码
             messageSendService.mailValid(MessageTemplateCode.REGISTER_TEMPLATE.getCode(), VerificationCodeType.REGISTER_CODE, platUserVO.getMail(), validCode);

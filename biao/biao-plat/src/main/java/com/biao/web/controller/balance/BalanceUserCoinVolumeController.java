@@ -1327,55 +1327,55 @@ public class BalanceUserCoinVolumeController {
      *
      * @return
      */
-    @GetMapping("/balance/count")
-    public void count() {
-        //静态收益和平级奖的利率支持配置
-        Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
-        dayRateMap.put("oneDayRate",balancePlatDayRateConfig.getOneDayRate());
-        dayRateMap.put("secondDayRate",balancePlatDayRateConfig.getSecondDayRate());
-        dayRateMap.put("threeDayRate",balancePlatDayRateConfig.getThreeDayRate());
-        dayRateMap.put("equalReward",balancePlatDayRateConfig.getEqualReward());
-        //每天收益和奖励计算
-        Map<String, List<TradePairVO>>  allTrade=platDataHandler.buildAllTradePair();
-        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
-        if(allTrade !=null && allTrade.size()>0){
-            for(String key : allTrade.keySet()){
-                List<TradePairVO> list=allTrade.get(key);
-                for (TradePairVO vo:list){
-                    tradePairMap.put(vo.getCoinOther(),vo);
-                }
-            }
-        }
-        BigDecimal platPrice=BigDecimal.ZERO;
-        TradePairVO tradePair=tradePairMap.get("MG");
-        if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
-            platPrice=platPrice.add(tradePair.getLatestPrice());
-        }
-        if(platPrice.compareTo(BigDecimal.ZERO)<=0){
-            platPrice=platPrice.add(balanceUserCoinVolumeDetailService.findPriceByUpdateDate());
-        }
-        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,platPrice);
-        balanceUserCoinVolumeDetailService.balanceIncomeCount();
-        BalancePlatCoinPriceVolume balancePlat=new BalancePlatCoinPriceVolume();
-        balancePlat.setPrice(platPrice);
-        balancePlat.setCoinPlatSymbol("MG");
-        balanceUserCoinVolumeDetailService.insertPlatPrice(balancePlat);
-    }
+//    @GetMapping("/balance/count")
+//    public void count() {
+//        //静态收益和平级奖的利率支持配置
+//        Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
+//        dayRateMap.put("oneDayRate",balancePlatDayRateConfig.getOneDayRate());
+//        dayRateMap.put("secondDayRate",balancePlatDayRateConfig.getSecondDayRate());
+//        dayRateMap.put("threeDayRate",balancePlatDayRateConfig.getThreeDayRate());
+//        dayRateMap.put("equalReward",balancePlatDayRateConfig.getEqualReward());
+//        //每天收益和奖励计算
+//        Map<String, List<TradePairVO>>  allTrade=platDataHandler.buildAllTradePair();
+//        Map<String,TradePairVO>  tradePairMap=new HashMap<String,TradePairVO>();
+//        if(allTrade !=null && allTrade.size()>0){
+//            for(String key : allTrade.keySet()){
+//                List<TradePairVO> list=allTrade.get(key);
+//                for (TradePairVO vo:list){
+//                    tradePairMap.put(vo.getCoinOther(),vo);
+//                }
+//            }
+//        }
+//        BigDecimal platPrice=BigDecimal.ZERO;
+//        TradePairVO tradePair=tradePairMap.get("MG");
+//        if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
+//            platPrice=platPrice.add(tradePair.getLatestPrice());
+//        }
+//        if(platPrice.compareTo(BigDecimal.ZERO)<=0){
+//            platPrice=platPrice.add(balanceUserCoinVolumeDetailService.findPriceByUpdateDate());
+//        }
+//        balanceUserCoinVolumeDetailService.balanceIncomeDetailNew(dayRateMap,platPrice);
+//        balanceUserCoinVolumeDetailService.balanceIncomeCount();
+//        BalancePlatCoinPriceVolume balancePlat=new BalancePlatCoinPriceVolume();
+//        balancePlat.setPrice(platPrice);
+//        balancePlat.setCoinPlatSymbol("MG");
+//        balanceUserCoinVolumeDetailService.insertPlatPrice(balancePlat);
+//    }
 
-    @GetMapping("/balance/jackpot")
-    public void balanceJackpotIncomeCount() {
-        Map<String, List<TradePairVO>> allTrade = platDataHandler.buildAllTradePair();
-        Map<String, TradePairVO> tradePairMap = new HashMap<String, TradePairVO>();
-        if (allTrade != null && allTrade.size() > 0) {
-            for (String key : allTrade.keySet()) {
-                List<TradePairVO> list = allTrade.get(key);
-                for (TradePairVO vo : list) {
-                    tradePairMap.put(vo.getCoinOther(), vo);
-                }
-            }
-        }
-        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
-    }
+//    @GetMapping("/balance/jackpot")
+//    public void balanceJackpotIncomeCount() {
+//        Map<String, List<TradePairVO>> allTrade = platDataHandler.buildAllTradePair();
+//        Map<String, TradePairVO> tradePairMap = new HashMap<String, TradePairVO>();
+//        if (allTrade != null && allTrade.size() > 0) {
+//            for (String key : allTrade.keySet()) {
+//                List<TradePairVO> list = allTrade.get(key);
+//                for (TradePairVO vo : list) {
+//                    tradePairMap.put(vo.getCoinOther(), vo);
+//                }
+//            }
+//        }
+//        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
+//    }
 
 
 }
