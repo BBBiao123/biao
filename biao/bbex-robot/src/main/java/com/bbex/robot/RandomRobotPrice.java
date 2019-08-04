@@ -14,6 +14,6 @@ public class RandomRobotPrice implements RobotPriceFactory {
         double min = range.getLeft().doubleValue();
         double max = range.getRight().doubleValue();
         double volume = RandomUtils.nextDouble(min, max);
-        return new BigDecimal(volume).setScale(3, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(volume).setScale(4, BigDecimal.ROUND_HALF_UP);
     }
 }
