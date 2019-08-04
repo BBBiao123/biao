@@ -12,7 +12,7 @@ public class RobotCtx {
     /**
      * 交易的时间；
      */
-    private Integer tradeTime = 5;
+    private Integer tradeTime = 30;
 
     /**
      * volume工厂的处理；

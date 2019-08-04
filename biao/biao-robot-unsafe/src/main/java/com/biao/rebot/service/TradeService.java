@@ -1,12 +1,11 @@
 package com.biao.rebot.service;
 
+import com.bbex.robot.RobotPamart;
 import com.biao.enums.TradeEnum;
 import com.biao.rebot.common.Constants;
 import com.biao.rebot.common.OkHttpHelper;
 import com.biao.rebot.common.Response;
-import com.biao.rebot.config.Login;
-import com.biao.rebot.config.RobotParam;
-import com.biao.rebot.config.RobotWeight;
+import com.biao.rebot.config.*;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,14 +43,41 @@ public class TradeService {
         params.put(Constants.LOGIN_USERNAME, user);
         params.put(Constants.LOGIN_PASSWORD, pass);
         Response response = oh.requestForm(params, Maps.newHashMap(), url);
+
         if (response.success()) {
-            logger.info("登录成功！{}", response.getMsg());
-            return response.getMap().getString(Constants.LOGIN_TOKEN);
+            logger.info("登录成功！", response.getMsg());
+            return response.getMap().getString(com.bbex.robot.Constants.LOGIN_TOKEN);
         } else {
-            logger.error("登录失败！{}", response.getMsg());
-            return "";
+            logger.error("登录失败！", response.getMsg());
+            //登陆不上重试十分钟
+            Integer initSecond = 0;
+            for (int i = 0; i < 5; i++) {
+                try {
+                    Thread.sleep(initSecond + 120000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Response result = oh.requestForm(params, RobotPamart.get().headers(), url);
+                if (result.success()) {
+                    logger.info("登录成功！", response.getMsg());
+                    return response.getMap().getString(com.bbex.robot.Constants.LOGIN_TOKEN);
+                } else {
+                    logger.error("登录失败" + i + 1 + " 次 ！", response.getMsg());
+                    continue;
+                }
+            }
+            throw new RuntimeException("登录失败！");
         }
+
+//        if (response.success()) {
+//            logger.info("登录成功！{}", response.getMsg());
+//            return response.getMap().getString(Constants.LOGIN_TOKEN);
+//        } else {
+//            logger.error("登录失败！{}", response.getMsg());
+//            return "";
+//        }
     }
+
 
     /**
      * 登录处理一下；
@@ -87,7 +113,21 @@ public class TradeService {
         Map<String, String> params = Maps.newHashMap();
         Response response = oh.requestForm(params, RobotParam.get().headers(symbolf, login(symbolf)), url);
         if (!response.success()) {
-            logger.error("没有获取到正确的订单号！{}", response.getMsg());
+            logger.error("--------没有获取到正确的订单号！{}", response.getMsg());
+            if (response.getMsg().equals("用户被踢出")) {
+                //执行重新登陆
+                try {
+                    Thread.sleep(180000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                RobotCtx ctx = new ConfigLoader().loader(RobotCtx.class);
+                RobotParam.get().refreshedToken(() -> this.login(RobotParam.get().getUsers()));
+                Response responseAgain = oh.requestForm(params, RobotParam.get().headers(symbolf, login(symbolf)), url);
+                if (responseAgain.success()) {
+                    return response.getMap().getString(Constants.TRADE_ORDER_NO);
+                }
+            }
             throw new RuntimeException("没有获取到正确的订单号。" + response.getMsg());
         }
         return response.getMap().getString(Constants.TRADE_ORDER_NO);
