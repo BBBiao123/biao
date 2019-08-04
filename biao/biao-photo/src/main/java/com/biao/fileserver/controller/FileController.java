@@ -312,7 +312,7 @@ public class FileController {
             file = null;
         }
 
-        String fileName = type.equalsIgnoreCase("IOS")?"IOS":"android";
+        String fileName = type.equalsIgnoreCase("IOS")?"ios.ipa":"android.apk";
         if (file.exists()) {
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
