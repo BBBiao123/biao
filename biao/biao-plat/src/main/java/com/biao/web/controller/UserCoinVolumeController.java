@@ -8,10 +8,7 @@ import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.pojo.ResponsePage;
 import com.biao.query.UserTradeQuery;
 import com.biao.reactive.data.mongo.service.TradeDetailService;
-import com.biao.service.CoinService;
-import com.biao.service.Mk2MiningService;
-import com.biao.service.OrderService;
-import com.biao.service.UserCoinVolumeExService;
+import com.biao.service.*;
 import com.biao.vo.CoinVolumeVO;
 import com.biao.vo.UserTradeVO;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +49,9 @@ public class UserCoinVolumeController {
     @Autowired
     private Mk2MiningService mk2MiningService;
 
+    @Autowired
+    private WithdrawLogService withdrawLogService;
+
     /**
      * 用户资产列表
      *
@@ -72,6 +73,24 @@ public class UserCoinVolumeController {
                     list.forEach(coin -> {
                         CoinVolumeVO coinVolumeVO = new CoinVolumeVO();
                         BeanUtils.copyProperties(coin, coinVolumeVO);
+                        Integer cardLevel=e.getCardLevel();
+                        BigDecimal withdrawDayMaxVolume=coin.getWithdrawDayMaxVolume();
+                        if(cardLevel == 0){
+                            withdrawDayMaxVolume=coin.getWithdrawDayOneMaxVolume();
+                        }
+                        if(cardLevel ==1 || cardLevel==2){
+                            withdrawDayMaxVolume=coin.getWithdrawDayTwoMaxVolume();
+                        }
+                        if(withdrawDayMaxVolume == null){
+                            withdrawDayMaxVolume=BigDecimal.ZERO;
+                        }
+                        BigDecimal volumeDay = withdrawLogService.countDayVolumeByUserIdAndCoinIdAndStatus(e.getId(), coin.getId());
+                        if(volumeDay != null){
+                            coinVolumeVO.setWithdrawDayAlreadyVolume(volumeDay);
+                        }else {
+                            coinVolumeVO.setWithdrawDayAlreadyVolume(BigDecimal.ZERO);
+                        }
+                        coinVolumeVO.setWithdrawDayMaxVolume(withdrawDayMaxVolume);
                         listVo.add(coinVolumeVO);
 
                         // UES是否显示超级账本地址

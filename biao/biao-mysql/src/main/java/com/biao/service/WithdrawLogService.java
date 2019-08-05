@@ -4,6 +4,8 @@ import com.biao.entity.WithdrawLog;
 import com.biao.pojo.ResponsePage;
 import com.biao.vo.WithdrawListVO;
 
+import java.math.BigDecimal;
+
 public interface WithdrawLogService {
 
     String save(WithdrawLog withdrawLog);
@@ -17,4 +19,6 @@ public interface WithdrawLogService {
     ResponsePage<WithdrawLog> findPage(WithdrawListVO withdrawListVO);
 
     void updateStatusById(String userId, String code, String id);
+
+    BigDecimal countDayVolumeByUserIdAndCoinIdAndStatus(String userId, String coinId);
 }

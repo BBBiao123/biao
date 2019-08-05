@@ -58,4 +58,9 @@ public class CoinVolumeVO implements Serializable {
     private String coinType;
 
     private String showSuperBook = "0"; // 是否显示超级账本地址, 默认不显示
+
+    /**
+     * 一天已提额度
+     */
+    private BigDecimal withdrawDayAlreadyVolume;
 }

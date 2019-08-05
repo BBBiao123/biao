@@ -83,9 +83,21 @@ public class WithdrawLogServiceImpl implements WithdrawLogService {
             throw new PlatException(Constants.WITHDRAW_MAX_ERROR, "超过一次提现最大额度");
         }
         //当天提现总额 排除取消的 和审核未通过的
-        long volumeDay = withdrawLogDao.countDayVolumeByUserIdAndCoinIdAndStatus(userId, coinId);
-        BigDecimal dayVolume = BigDecimal.valueOf(volumeDay).add(withdrawLog.getVolume());
-        if (dayVolume.compareTo(coin.getWithdrawDayMaxVolume()) == 1) {
+        BigDecimal volumeDay = withdrawLogDao.countDayVolumeByUserIdAndCoinIdAndStatus(userId, coinId);
+        BigDecimal dayVolume =withdrawLog.getVolume();
+        if(volumeDay != null){
+            dayVolume=dayVolume.add(volumeDay);
+        }
+
+        Integer cardLevel=user.getCardLevel();
+        BigDecimal withdrawDayMaxVolume=coin.getWithdrawDayMaxVolume();
+        if(cardLevel == 0){
+            withdrawDayMaxVolume=coin.getWithdrawDayOneMaxVolume();
+        }
+        if(cardLevel ==1 || cardLevel==2){
+            withdrawDayMaxVolume=coin.getWithdrawDayTwoMaxVolume();
+        }
+        if (dayVolume.compareTo(withdrawDayMaxVolume) == 1) {
             throw new PlatException(Constants.WITHDRAW_DAY_MAX_ERROR, "超过当天提现最大额度");
         }
         BigDecimal fee = BigDecimal.ZERO;
@@ -212,6 +224,12 @@ public class WithdrawLogServiceImpl implements WithdrawLogService {
 
 
 
+    }
+
+
+    @Override
+    public BigDecimal countDayVolumeByUserIdAndCoinIdAndStatus(String userId,String coinId){
+       return  withdrawLogDao.countDayVolumeByUserIdAndCoinIdAndStatus(userId,coinId);
     }
 
 

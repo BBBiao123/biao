@@ -4,6 +4,7 @@ import com.biao.entity.WithdrawLog;
 import com.biao.sql.build.WithdrawLogSqlBuild;
 import org.apache.ibatis.annotations.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -28,8 +29,8 @@ public interface WithdrawLogDao {
     @Select("select " + WithdrawLogSqlBuild.columns + " from js_plat_user_withdraw_log where user_id = #{userId} and status != 8 order by create_date desc")
     List<WithdrawLog> findWithdrawListByUserId(String userId);
 
-    @Select("select count(volume) from js_plat_user_withdraw_log where user_id = #{userId} and coin_id = #{coinId} and status in (0,1,3) ")
-    long countDayVolumeByUserIdAndCoinIdAndStatus(@Param("userId") String userId, @Param("coinId") String coinId);
+    @Select("select sum(volume) from js_plat_user_withdraw_log where user_id = #{userId} and coin_id = #{coinId} and status in (0,1,3) ")
+    BigDecimal countDayVolumeByUserIdAndCoinIdAndStatus(@Param("userId") String userId, @Param("coinId") String coinId);
 
     @Select("select count(*) from js_plat_user_withdraw_log where user_id = #{userId} and address = #{address} and status = 3")
     long countAddressByStatusAndUserId(@Param("userId") String userId, @Param("address") String address);

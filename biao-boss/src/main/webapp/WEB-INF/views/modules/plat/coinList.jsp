@@ -42,6 +42,8 @@
 				<th>一次提现最低数量</th>
 				<th>一次提现最大数量</th>
 				<th>一天最大提现额度</th>
+				<th>V1一天最大提现额度</th>
+				<th>V2一天最大提现额度</th>
 				<th>提现手续费类型</th>
 				<th>提现手续费</th>
 				<th>基于何种代币</th>
@@ -69,6 +71,12 @@
 				</td>
 				<td>
 					${coin.withdrawDayMaxVolume}
+				</td>
+				<td>
+					${coin.withdrawDayOneMaxVolume}
+				</td>
+				<td>
+					${coin.withdrawDayTwoMaxVolume}
 				</td>
 				<td>
 					${fns:getDictLabel(coin.withdrawFeeType, 'withdrawFeeType', '')}

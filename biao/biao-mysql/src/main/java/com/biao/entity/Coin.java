@@ -78,6 +78,18 @@ public class Coin {
      */
     @SqlField(value = "withdraw_day_max_volume")
     private BigDecimal withdrawDayMaxVolume;
+
+    /**
+     * V1一天最大提现额度
+     */
+    @SqlField(value = "withdraw_day_one_max_volume")
+    private BigDecimal withdrawDayOneMaxVolume;
+
+    /**
+     * V2一天最大提现额度
+     */
+    @SqlField(value = "withdraw_day_two_max_volume")
+    private BigDecimal withdrawDayTwoMaxVolume;
     /**
      * 提现手续费
      */
@@ -264,5 +276,21 @@ public class Coin {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public BigDecimal getWithdrawDayOneMaxVolume() {
+        return withdrawDayOneMaxVolume;
+    }
+
+    public void setWithdrawDayOneMaxVolume(BigDecimal withdrawDayOneMaxVolume) {
+        this.withdrawDayOneMaxVolume = withdrawDayOneMaxVolume;
+    }
+
+    public BigDecimal getWithdrawDayTwoMaxVolume() {
+        return withdrawDayTwoMaxVolume;
+    }
+
+    public void setWithdrawDayTwoMaxVolume(BigDecimal withdrawDayTwoMaxVolume) {
+        this.withdrawDayTwoMaxVolume = withdrawDayTwoMaxVolume;
     }
 }
