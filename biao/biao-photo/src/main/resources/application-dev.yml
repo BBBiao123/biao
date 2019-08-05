@@ -32,8 +32,8 @@ aliyun:
    ossclient: 
       accessKeyId: LTAIeVlMi4NlO4qA
       accessKeySecret: sM7tcsCdiOyLMvXGa9t6fIKvtTeDyu
-      bucketName: biao-app
-      endpoint: oss-cn-shenzhen-internal.aliyuncs.com
+      bucketName: biao-images
+      endpoint: oss-cn-shenzhen.aliyuncs.com
 #日志级别
 logging:
     level:
