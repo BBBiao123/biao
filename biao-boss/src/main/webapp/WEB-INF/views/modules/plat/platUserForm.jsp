@@ -95,27 +95,27 @@
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" disabled="true" class="input-xxlarge "/>
 			</div>
 		</div>
-		<%--<div class="control-group">--%>
-			<%--<label class="control-label">身份证 正面图案id：</label>--%>
-			<%--<div class="controls">--%>
-			    <%--<img src="${imageUrl}/${platUser.cardUpId}" height="200" width="300">--%>
-				<%--&lt;%&ndash; <form:input path="cardUpId" htmlEscape="false" maxlength="45" class="input-xlarge "/> &ndash;%&gt;--%>
-			<%--</div>--%>
-		<%--</div>--%>
-		<%--<div class="control-group">--%>
-			<%--<label class="control-label">身份证反面id：</label>--%>
-			<%--<div class="controls">--%>
-			     <%--<img src="${imageUrl}/${platUser.cardDownId}" height="200" width="300">--%>
-				<%--&lt;%&ndash; <form:input path="cardDownId" htmlEscape="false" maxlength="45" class="input-xlarge "/> &ndash;%&gt;--%>
-			<%--</div>--%>
-		<%--</div>--%>
-		<%--<div class="control-group">--%>
-			<%--<label class="control-label">手持身份id：</label>--%>
-			<%--<div class="controls">--%>
-			    <%--<img src="${imageUrl}/${platUser.cardFaceId}" height="200" width="300">--%>
-				<%--&lt;%&ndash; <form:input path="cardFaceId" htmlEscape="false" maxlength="45" class="input-xlarge "/> &ndash;%&gt;--%>
-			<%--</div>--%>
-		<%--</div>--%>
+		<div class="control-group">
+			<label class="control-label">身份证 正面图案id：</label>
+			<div class="controls">
+			    <img src="${imageUrl}/${platUser.cardUpId}" height="200" width="300">
+				<%-- <form:input path="cardUpId" htmlEscape="false" maxlength="45" class="input-xlarge "/> --%>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">身份证反面id：</label>
+			<div class="controls">
+			     <img src="${imageUrl}/${platUser.cardDownId}" height="200" width="300">
+				<%-- <form:input path="cardDownId" htmlEscape="false" maxlength="45" class="input-xlarge "/> --%>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">手持身份id：</label>
+			<div class="controls">
+			    <img src="${imageUrl}/${platUser.cardFaceId}" height="200" width="300">
+				<%-- <form:input path="cardFaceId" htmlEscape="false" maxlength="45" class="input-xlarge "/> --%>
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label">审核状态 ：</label>
 			<div class="controls">

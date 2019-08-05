@@ -28,6 +28,8 @@ public class Coin extends DataEntity<Coin> {
 	private BigDecimal withdrawMinVolume;		// 一次提现最低数量
 	private BigDecimal withdrawMaxVolume;		// 一次提现最大数量
 	private BigDecimal withdrawDayMaxVolume;		// 一天最大提现额度
+	private BigDecimal withdrawDayOneMaxVolume;		// 一天最大提现额度
+	private BigDecimal withdrawDayTwoMaxVolume;		// 一天最大提现额度
 	private BigDecimal withdrawFee;		// 提现手续费
 	private String withdrawFeeType;		// 提现手续费
 	private String coinType;		// 1:基于以太  2:基于量子 3：基于小蚂 4：基于EOS
@@ -211,5 +213,21 @@ public class Coin extends DataEntity<Coin> {
 
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+	}
+
+	public BigDecimal getWithdrawDayOneMaxVolume() {
+		return withdrawDayOneMaxVolume;
+	}
+
+	public void setWithdrawDayOneMaxVolume(BigDecimal withdrawDayOneMaxVolume) {
+		this.withdrawDayOneMaxVolume = withdrawDayOneMaxVolume;
+	}
+
+	public BigDecimal getWithdrawDayTwoMaxVolume() {
+		return withdrawDayTwoMaxVolume;
+	}
+
+	public void setWithdrawDayTwoMaxVolume(BigDecimal withdrawDayTwoMaxVolume) {
+		this.withdrawDayTwoMaxVolume = withdrawDayTwoMaxVolume;
 	}
 }

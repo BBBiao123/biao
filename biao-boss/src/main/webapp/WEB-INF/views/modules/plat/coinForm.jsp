@@ -120,6 +120,18 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">V1一天最大提现额度：</label>
+			<div class="controls">
+				<form:input path="withdrawDayOneMaxVolume" htmlEscape="false" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">V2一天最大提现额度：</label>
+			<div class="controls">
+				<form:input path="withdrawDayTwoMaxVolume" htmlEscape="false" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">提现手续费类型：</label>
 			<div class="controls">
 				<form:select path="withdrawFeeType" class="input-xlarge ">
