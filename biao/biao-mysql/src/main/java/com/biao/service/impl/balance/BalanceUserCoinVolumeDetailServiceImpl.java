@@ -783,7 +783,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                         communityStaticIncome=communityStaticIncome.add(countDetail);
                     }
                 }
-                if (volumeDetail.getTeamLevel() > 0 ) {
+                if (volumeDetail.getTeamLevel() != 0 ) {
                     int teamLevel = volumeDetail.getTeamLevel();
                     if (teamLevel == 5) {
                         communityMagageReward = communityMagageReward.multiply(new BigDecimal(0.60));
