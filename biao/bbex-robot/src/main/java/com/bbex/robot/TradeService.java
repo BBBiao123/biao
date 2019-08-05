@@ -37,11 +37,11 @@ public class TradeService {
             return response.getMap().getString(Constants.LOGIN_TOKEN);
         } else {
             logger.error("登录失败！", response.getMsg());
-            //登陆不上重试五分钟
+            //登陆不上重试十分钟
             Integer initSecond = 0;
             for (int i = 0; i < 5; i++) {
                 try {
-                    Thread.sleep(initSecond + 60000);
+                    Thread.sleep(initSecond + 120000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

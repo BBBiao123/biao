@@ -50,5 +50,5 @@ logging:
 
 app:
   download:
-    ios: /data/deploy/appdownload/ios.ipa
-    android: /data/deploy/appdownload/android.apk
+    ios: /home/deploy/appdownload/ios.ipa
+    android: /home/deploy/appdownload/android.apk
