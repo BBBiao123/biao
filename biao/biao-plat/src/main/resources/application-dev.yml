@@ -110,7 +110,7 @@ aliyun:
 
 user:
   config:
-    lockLength: 24
+    lockLength: 0
   coin-volume-bill:
     #     执行的节点数量
     needs: 1
