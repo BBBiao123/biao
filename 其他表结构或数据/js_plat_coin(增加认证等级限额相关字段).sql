@@ -1,0 +1,2 @@
+﻿alter table js_plat_coin add withdraw_day_one_max_volume decimal(20,2) DEFAULT '0.00' COMMENT 'V1认证一天最大限额';
+alter table js_plat_coin add withdraw_day_two_max_volume decimal(20,2) DEFAULT '0.00' COMMENT 'V2认证一天最大限额';
