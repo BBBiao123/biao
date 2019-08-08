@@ -74,9 +74,8 @@ public class Filter {
                     if (Objects.isNull(transaction.getTo())) return;
                     //充值
                     try {
-                        if (transaction.getFrom().equals(Environment.fromAddress)) {
-                            if (volume.compareTo(BigDecimal.valueOf(0.005)) <= 0) return;
-                        }
+                        if (transaction.getFrom().equals(Environment.fromAddress)) return;
+                        if (volume.compareTo(BigDecimal.valueOf(0.005)) <= 0) return;
                         depositService.executeDepositETH(transaction);
                     } catch (Exception e) {
                         logger.error("ETH充值保存失败:" + "hash:" + transaction.getHash() + "from:" + transaction.getFrom() + "to:" + transaction.getTo() + "volume:" + volume);
