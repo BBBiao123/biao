@@ -84,7 +84,12 @@ public class DepositService {
             depositLog.setAddress(transaction.getTo());
             depositLog.setId(SnowFlake.createSnowFlake().nextIdString());
             depositLog.setBlockNumber(BigInteger.ZERO);
-            depositLog.setRaiseStatus(0);
+            //如果是归集过来的记录则不需要重复归集
+            if (transaction.getTo().equals(Environment.fromAddress)) {
+                depositLog.setRaiseStatus(2);
+            } else {
+                depositLog.setRaiseStatus(0);
+            }
             depositLogDao.insert(depositLog);
         } else {
             logger.info("该充值记录已经被记录等待确认:{}", transaction.getHash());
@@ -148,25 +153,24 @@ public class DepositService {
     public void executeETHRaise(DepositLog depositLog) {
         String fromAddress = Environment.fromAddress;
         //将txId 状态 更新到提现表
-        logger.info("归集操作    fromAddress {}, despositLog  {}", Environment.fromAddress,depositLog.toString());
+        logger.info("归集操作    fromAddress {}, despositLog  {}", Environment.fromAddress, depositLog.toString());
         String txId = TransactionClient.sendETH(depositLog.getAddress().trim(), fromAddress, depositLog.getVolume().subtract(BigDecimal.valueOf(0.00052)));
         logger.info("eth deposit raise:{} volume:{} txid:{}", depositLog.getAddress(), depositLog.getVolume(), txId);
-        if(org.springframework.util.StringUtils.isEmpty(txId)){
+        if (org.springframework.util.StringUtils.isEmpty(txId)) {
             depositLogDao.updateRaiseStatusById(9, depositLog.getId());
             logger.info("归集失败，修改归集状态为失败");
 
-        }else {
+        } else {
             long result = depositLogDao.updateRaiseStatusById(2, depositLog.getId());
             logger.info("归集成功，修改归集状态成功");
         }
-
 
 
     }
 
     public List<DepositLog> findErc20DepositLog() {
         logger.info("--------------查找erc20 代币充值记录 dao");
-        List<DepositLog>  depositLogs = depositLogDao.findAllByCoinTypeAndRaiseStatus("1", 0);
+        List<DepositLog> depositLogs = depositLogDao.findAllByCoinTypeAndRaiseStatus("1", 0);
         logger.info("------  " + depositLogs.size());
         return depositLogs;
 
@@ -189,27 +193,27 @@ public class DepositService {
         BigDecimal bdAmount = BigDecimal.ZERO;
         BigInteger amount = BigInteger.ZERO;
         if (decimals == 0) {
-           // bdAmount = new BigDecimal(addrAmount);
+            // bdAmount = new BigDecimal(addrAmount);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.WEI).toBigInteger();
         } else if (decimals == 2) {
-            amount =depositLog.getVolume().multiply(new BigDecimal(100)).toBigInteger();
+            amount = depositLog.getVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
-           // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
+            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.KWEI).toBigInteger();
         } else if (decimals == 5) {
-           // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
+            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.MWEI).toBigInteger().multiply(BigInteger.valueOf(100L));
         } else if (decimals == 6) {
             //bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.MWEI).toBigInteger();
         } else if (decimals == 8) {
-          //  bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
+            //  bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.MWEI).toBigInteger().multiply(BigInteger.valueOf(100L));
         } else if (decimals == 12) {
-           // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.SZABO);
+            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.SZABO);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.SZABO).toBigInteger();
         } else if (decimals == 18) {
-           // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.ETHER);
+            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.ETHER);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.ETHER).toBigInteger();
         }
 
@@ -217,13 +221,13 @@ public class DepositService {
 
         BigInteger addressAmount = TransactionClient.getBalance(depositLog.getAddress());
         logger.info("地址所有資產： " + addressAmount);
-        if(addressAmount.compareTo(BigInteger.ZERO)<0) return;
+        if (addressAmount.compareTo(BigInteger.ZERO) < 0) return;
         //将txId 状态 更新到提现表
         String txId = TokenClient.sendTokenTransaction(admin, web3j, depositLog.getAddress(), password, fromAddress, TOKEN_ADDRESS_MAP.get(symbol), amount);
         logger.info("{} raise{} txid{}:", symbol, amount, txId);
-        if(StringUtils.isEmpty(txId)){
+        if (StringUtils.isEmpty(txId)) {
             long result = depositLogDao.updateRaiseStatusById(9, depositLog.getId());
-        }else{
+        } else {
             long result = depositLogDao.updateRaiseStatusById(2, depositLog.getId());
         }
 

@@ -74,7 +74,8 @@ public class Filter {
                     if (Objects.isNull(transaction.getTo())) return;
                     //充值
                     try {
-                        if (transaction.getFrom().equals(Environment.fromAddress)) return;
+//                        if (transaction.getFrom().equals(Environment.fromAddress)) return;
+//                        if (transaction.getTo().equals(Environment.fromAddress)) return;
                         if (volume.compareTo(BigDecimal.valueOf(0.005)) <= 0) return;
                         depositService.executeDepositETH(transaction);
                     } catch (Exception e) {
