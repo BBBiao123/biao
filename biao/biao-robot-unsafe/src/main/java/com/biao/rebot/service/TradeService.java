@@ -1,6 +1,5 @@
 package com.biao.rebot.service;
 
-import com.bbex.robot.RobotPamart;
 import com.biao.enums.TradeEnum;
 import com.biao.rebot.common.Constants;
 import com.biao.rebot.common.OkHttpHelper;
@@ -46,7 +45,7 @@ public class TradeService {
 
         if (response.success()) {
             logger.info("登录成功！", response.getMsg());
-            return response.getMap().getString(com.bbex.robot.Constants.LOGIN_TOKEN);
+            return response.getMap().getString(Constants.LOGIN_TOKEN);
         } else {
             logger.error("登录失败！", response.getMsg());
             //登陆不上重试十分钟
@@ -57,10 +56,10 @@ public class TradeService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Response result = oh.requestForm(params, RobotPamart.get().headers(), url);
+                Response result = oh.requestForm(params, Maps.newHashMap(), url);
                 if (result.success()) {
                     logger.info("登录成功！", response.getMsg());
-                    return response.getMap().getString(com.bbex.robot.Constants.LOGIN_TOKEN);
+                    return response.getMap().getString(Constants.LOGIN_TOKEN);
                 } else {
                     logger.error("登录失败" + i + 1 + " 次 ！", response.getMsg());
                     continue;
