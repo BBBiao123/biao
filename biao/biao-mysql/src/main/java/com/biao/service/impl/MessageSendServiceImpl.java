@@ -146,6 +146,9 @@ public class MessageSendServiceImpl implements MessageSendService {
             case EX_PASS_MAIL:
                 handlerRegisterMail(templateId, type, toMail, params, expireTime);
                 break;
+            case EX_TRADE_PASS:
+                handlerRegisterMail(templateId, type, toMail, params, expireTime);
+                break;
             default:
                 throw new PlatException(Constants.COMMON_ERROR_CODE, "不支持的邮件发送业务类型");
         }

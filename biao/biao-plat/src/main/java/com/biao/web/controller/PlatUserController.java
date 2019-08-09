@@ -362,7 +362,7 @@ public class PlatUserController {
     }
 
     @ValidateGroup(fileds = {
-            @ValidateFiled(index = 0, filedName = "smsType", isEnums = true, enums = "ex_password_mail,ex_mail,exchange_pass,bander_google", notNull = true, errMsg = "请输入正确的业务类型")
+            @ValidateFiled(index = 0, filedName = "smsType", isEnums = true, enums = "ex_password,ex_password_mail,ex_mail,exchange_pass,bander_google", notNull = true, errMsg = "请输入正确的业务类型")
     })
     @PostMapping("/user/mail/sendMail")
     public Mono<GlobalMessageResponseVo> sendUserMail(PlatUserVO platUserVO) {
@@ -377,6 +377,12 @@ public class PlatUserController {
                     }
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     Map<String, Object> params = new HashMap<>();
+                    if (typeEnums == VerificationCodeType.EX_TRADE_PASS) {
+                        //设置交易密码
+                        params.put(MessageSendService.PARAM_CODE, NumberUtils.getRandomNumber(6));
+                        messageSendService.mailSend(MessageTemplateCode.EMAIL_TRADE_PASSWORD_TEMPLATE.getCode(), typeEnums, user.getMail(), params);
+                        return Mono.just(GlobalMessageResponseVo.newSuccessInstance("验证码发送成功"));
+                    }
                     if (typeEnums == VerificationCodeType.EX_TRADE_MAIL) {
                         params.put(MessageSendService.PARAM_CODE, NumberUtils.getRandomNumber(6));
                         messageSendService.mailSend(MessageTemplateCode.EMAIL_EX_TRADE_TEMPLATE.getCode(), typeEnums, user.getMail(), params);
@@ -979,14 +985,30 @@ public class PlatUserController {
     }
 
     private Mono<GlobalMessageResponseVo> updateExPassword(RedisSessionUser user, PlatUserVO platUserVO) {
+        Integer  exValidType=platUserVO.getExValidType();
         if (!platUserVO.getCode().equals("123456")) {
-            if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), platUserVO.getCode())) {
-                com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
-                        com.biao.reactive.data.mongo.disruptor.DisruptorData.
-                                buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "手机验证码验证失败",
-                                        user.getId(), user.getMobile(), user.getMail()));
-                return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
+            if (exValidType == 0) {
+                if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), platUserVO.getCode())) {
+                    com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                            com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                    buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "手机验证码验证失败",
+                                            user.getId(), user.getMobile(), user.getMail()));
+                    return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
+                }
             }
+            if (exValidType == 1) {
+                //邮箱验证
+                try {
+                    messageSendService.mailValid(MessageTemplateCode.EMAIL_TRADE_PASSWORD_TEMPLATE.getCode(), VerificationCodeType.EX_TRADE_PASS, user.getMail(),  platUserVO.getCode());
+                } catch (Exception e) {
+                    com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                            com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                    buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "邮箱验证码验证失败",
+                                            user.getId(), user.getMobile(), user.getMail()));
+                    return Mono.just(GlobalMessageResponseVo.newErrorInstance("邮箱验证码验证失败"));
+                }
+            }
+
         }
 
         String oldExpassword = user.getExPassword();
