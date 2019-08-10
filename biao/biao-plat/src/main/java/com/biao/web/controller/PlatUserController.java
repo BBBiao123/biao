@@ -43,10 +43,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -369,6 +372,12 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                    HttpServletRequest request = attributes.getRequest();
+                    logger.info("getIpAddr:" + IPgetUtils.getIpAddr(request));
+                    logger.info("getRemoteAddr:" + IPgetUtils.getRemoteAddr(request));
+                    logger.info("getClientIpAddr:" + IPgetUtils.getClientIpAddr(request));
+                    logger.info("getClientIpAddress:" + IPgetUtils.getClientIpAddress(request));
                     if (StringUtils.isBlank(user.getMail())) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("请先绑定邮箱"));
                     }
