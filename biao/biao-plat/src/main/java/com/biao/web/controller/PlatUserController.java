@@ -254,11 +254,8 @@ public class PlatUserController {
     @RequestMapping("/mobile/sendCode")
     public Mono<GlobalMessageResponseVo> sendSmsCode(MessageVO messageVO) {
 
-//        logger.info("getIpAddr:" + IPgetUtils.getIpAddr(request));
-//        logger.info("getRemoteAddr:" + IPgetUtils.getRemoteAddr(request));
-//        logger.info("getClientIpAddr:" + IPgetUtils.getClientIpAddr(request));
-//        logger.info("getClientIpAddress:" + IPgetUtils.getClientIpAddress(request));
         VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(messageVO.getType());
+        logger.info(" " + typeEnums.getMessage() + " 手机号 ： " +  messageVO.getMobile());
         //阿里滑块验证
         AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
         String otcTag = messageVO.getAuthTag();
