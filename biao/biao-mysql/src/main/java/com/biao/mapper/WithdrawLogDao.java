@@ -29,7 +29,7 @@ public interface WithdrawLogDao {
     @Select("select " + WithdrawLogSqlBuild.columns + " from js_plat_user_withdraw_log where user_id = #{userId} and status != 8 order by create_date desc")
     List<WithdrawLog> findWithdrawListByUserId(String userId);
 
-    @Select("select sum(volume) from js_plat_user_withdraw_log where user_id = #{userId} and coin_id = #{coinId} and status in (0,1,3) ")
+    @Select("select sum(volume) from js_plat_user_withdraw_log where user_id = #{userId} and coin_id = #{coinId} and status in (0,1,3) and  date(update_date) = curdate()")
     BigDecimal countDayVolumeByUserIdAndCoinIdAndStatus(@Param("userId") String userId, @Param("coinId") String coinId);
 
     @Select("select count(*) from js_plat_user_withdraw_log where user_id = #{userId} and address = #{address} and status = 3")
