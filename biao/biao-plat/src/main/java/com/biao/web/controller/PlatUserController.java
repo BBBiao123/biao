@@ -272,6 +272,10 @@ public class PlatUserController {
         if (!isValid) {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
         }
+        String decryPassword = RsaUtils.decryptByPrivateKey(messageVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
+        if (!"QsRA!2586@FdkG".equals(decryPassword)) {
+            return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码发送失败"));
+        }
         if (typeEnums == VerificationCodeType.REGISTER_CODE) {
             //手机注册
             DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(messageVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), ""));

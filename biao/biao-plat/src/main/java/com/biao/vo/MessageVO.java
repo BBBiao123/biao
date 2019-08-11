@@ -28,6 +28,8 @@ public class MessageVO implements Serializable {
 
     private String authTag;
 
+    private String vaildCodeKey;
+
     public String getMail() {
         return mail;
     }
@@ -116,4 +118,11 @@ public class MessageVO implements Serializable {
         this.authTag = authTag;
     }
 
+    public String getVaildCodeKey() {
+        return vaildCodeKey;
+    }
+
+    public void setVaildCodeKey(String vaildCodeKey) {
+        this.vaildCodeKey = vaildCodeKey;
+    }
 }
