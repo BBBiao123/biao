@@ -210,7 +210,7 @@ public class PlatUserController {
         authenticateSigVO.setSessionId(messageVO.getSessionId());
         authenticateSigVO.setSig(messageVO.getSig());
         authenticateSigVO.setToken(messageVO.getVtoken());
-        boolean isValid = AliYunAuthenticateSigUtils.isValidOpen(authenticateSigVO);
+        boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
         if (!isValid) {
             throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
         }
