@@ -253,7 +253,9 @@ public class PlatUserController {
     })
     @RequestMapping("/mobile/sendCode")
     public Mono<GlobalMessageResponseVo> sendSmsCode(MessageVO messageVO) {
+
         VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(messageVO.getType());
+        logger.info(" " + typeEnums.getMessage() + " 手机号 ： " +  messageVO.getMobile());
         //阿里滑块验证
         AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
         String otcTag = messageVO.getAuthTag();
