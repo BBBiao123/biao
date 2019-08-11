@@ -59,6 +59,8 @@ public class PlatUserVO implements Serializable {
 
     private String referInviteCode;
 
+    private String vaildCodeKey;
+
     public Integer getRegisterType() {
         return registerType;
     }
@@ -257,5 +259,13 @@ public class PlatUserVO implements Serializable {
 
     public void setReferInviteCode(String referInviteCode) {
         this.referInviteCode = referInviteCode;
+    }
+
+    public String getVaildCodeKey() {
+        return vaildCodeKey;
+    }
+
+    public void setVaildCodeKey(String vaildCodeKey) {
+        this.vaildCodeKey = vaildCodeKey;
     }
 }

@@ -323,6 +323,12 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+                    String vaildStr=numStr+"QsRA!2586@FdkG";
+                    String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
+                    if (!vaildStr.equals(decryPassword)) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
+                    }
                     DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), ""));
                     //smsMessageService.sendSms(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), "");
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("发送短信成功"));
@@ -339,6 +345,12 @@ public class PlatUserController {
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
                     if (StringUtils.isBlank(user.getMobile())) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("请先绑定手机号"));
+                    }
+                    String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+                    String vaildStr=numStr+"QsRA!2586@FdkG";
+                    String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
+                    if (!vaildStr.equals(decryPassword)) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
                     }
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     if (typeEnums == VerificationCodeType.EX_TRADE_PASS) {
@@ -432,6 +444,12 @@ public class PlatUserController {
                     String mobile = platUserVO.getMobile();
                     if (StringUtils.isBlank(mobile)) {
                         mobile = user.getMobile();
+                    }
+                    String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+                    String vaildStr=numStr+"QsRA!2586@FdkG";
+                    String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
+                    if (!vaildStr.equals(decryPassword)) {
+                        return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
                     }
                     //smsMessageService.sendSms(mobile, MessageTemplateCode.MOBILE_BINDER_UPDATE.getCode(), "");
                     DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(mobile, MessageTemplateCode.MOBILE_BINDER_UPDATE.getCode(), ""));
@@ -1321,7 +1339,7 @@ public class PlatUserController {
        String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
        if(StringUtils.isBlank(numStr)){
            numStr=   NumberUtils.getRandomNumber(10);
-           stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,60*10,TimeUnit.SECONDS);
+           stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,60*2,TimeUnit.SECONDS);
        }
 
         Map<String,String> map=new HashMap<>();
