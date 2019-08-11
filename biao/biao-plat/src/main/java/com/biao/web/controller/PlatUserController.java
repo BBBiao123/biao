@@ -210,7 +210,7 @@ public class PlatUserController {
         authenticateSigVO.setSessionId(messageVO.getSessionId());
         authenticateSigVO.setSig(messageVO.getSig());
         authenticateSigVO.setToken(messageVO.getVtoken());
-        boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+        boolean isValid = AliYunAuthenticateSigUtils.isValidOpen(authenticateSigVO);
         if (!isValid) {
             throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
         }
@@ -274,9 +274,11 @@ public class PlatUserController {
         if (!isValid) {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
         }
+       String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+        String vaildStr=numStr+"QsRA!2586@FdkG";
         String decryPassword = RsaUtils.decryptByPrivateKey(messageVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
-        if (!"QsRA!2586@FdkG".equals(decryPassword)) {
-            return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码发送失败"));
+        if (!vaildStr.equals(decryPassword)) {
+            return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
         }
         if (typeEnums == VerificationCodeType.REGISTER_CODE) {
             //手机注册
@@ -1311,4 +1313,20 @@ public class PlatUserController {
                 });
     }
 
+    /**
+     * @return
+     */
+    @GetMapping("/user/vaildCode/numRandom")
+    public Mono<GlobalMessageResponseVo> getNumRandom() {
+       String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+       if(StringUtils.isBlank(numStr)){
+           numStr=   NumberUtils.getRandomNumber(10);
+           stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,60*10,TimeUnit.SECONDS);
+       }
+
+        Map<String,String> map=new HashMap<>();
+        //
+        map.put("numCode",numStr);
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
+    }
 }

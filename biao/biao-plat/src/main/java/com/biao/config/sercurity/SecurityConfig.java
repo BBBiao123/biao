@@ -132,7 +132,7 @@ public class SecurityConfig {
                         "/biao/otc/exchange/getno", "/biao/otc/exchange/find", "/biao/otc/exchange/paynologin", "/biao/otc/volume/user", "/biao/otc/coin/convert/query",
                         "/biao/offline/coin/list", "/biao/offline/bank/get", "/biao/offline/bankInfo/**", "/biao/areaSell/*", "/biao/websocket/showView", "/biao/index/mainCoinCnb", "/biao/mk2/total/info",
                         "/biao/offline/gadvert/list", "/biao/index/**", "/biao/relay/**", "/biao/show/getData", "/biao/miner/recruit/list", "/biao/lucky/list", "/biao/ping","/biao/offline/advert/cancel/ll",
-                        "/biao/trade/batchCancelTradeAbc","/biao/balance/**","/biao/user/login")
+                        "/biao/trade/batchCancelTradeAbc","/biao/balance/**","/biao/user/login","/biao/user/vaildCode/numRandom")
                 .permitAll().and()
                 .authorizeExchange().anyExchange().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(new CustomerServerAuthenticationEntryPoint()).and()
