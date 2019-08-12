@@ -587,7 +587,7 @@ public class PlatUserController {
     private Mono<GlobalMessageResponseVo> updateGoogleBinder(RedisSessionUser user, String secret, String smsCode) {
         //验证短信验证码
         Integer mobileOrMail = StringUtils.isNotBlank(user.getMobile()) ? 1 : 2;
-        if (!smsCode.equals("123456")) {
+//        if (!smsCode.equals("123456")) {
             if (mobileOrMail == 1) {
                 //手机验证
                 if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), smsCode)) {
@@ -602,7 +602,7 @@ public class PlatUserController {
                 logger.info("绑定谷歌mail:{},验证code:{}", mobileOrMail, smsCode);
                 messageSendService.mailValid(MessageTemplateCode.EMAIL_BINDER_GOOGLE_TEMPLATE.getCode(), VerificationCodeType.BINDER_GOOGLE_CODE_MAIL, user.getMail(), smsCode);
             }
-        }
+//        }
 
         PlatUser platUser = new PlatUser();
         platUser.setGoogleAuth(secret);
@@ -1013,7 +1013,7 @@ public class PlatUserController {
 
     private Mono<GlobalMessageResponseVo> updateExPassword(RedisSessionUser user, PlatUserVO platUserVO) {
         Integer  exValidType=platUserVO.getExValidType();
-        if (!platUserVO.getCode().equals("123456")) {
+//        if (!platUserVO.getCode().equals("123456")) {
             if (exValidType == 0) {
                 if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), platUserVO.getCode())) {
                     com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
@@ -1034,7 +1034,7 @@ public class PlatUserController {
                                             user.getId(), user.getMobile(), user.getMail()));
                     return Mono.just(GlobalMessageResponseVo.newErrorInstance("邮箱验证码验证失败"));
                 }
-            }
+//            }
 
         }
 
@@ -1049,6 +1049,7 @@ public class PlatUserController {
 //            throw new PlatException(Constants.GLOBAL_ERROR_CODE, "交易密码不能和登录密码一致");
 //        }
         LocalDateTime lockDate = userConfig.plusHours();
+        System.out.println("解密：exDecryPassword------"+exDecryPassword);
         String decodeExPassword = passwordEncoder.encode(exDecryPassword);
         PlatUser platUser = new PlatUser();
 //        platUser.setPassword(decryPassword);
@@ -1201,7 +1202,7 @@ public class PlatUserController {
                             return Mono.just(GlobalMessageResponseVo.newInstance(Constants.TRADE_C2C_NEED_VALID_ERROR, "请输入正确的交易密码"));
                         }
                     }
-                    if (exValidType == 3 && !decryCode.equals("123456")) {
+                    if (exValidType == 3 ) {
                         //短信验证
                         boolean result = smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_EXCHANGE_PASS_TEMPLATE.getCode(), decryCode);
                         if (!result) {
@@ -1214,7 +1215,7 @@ public class PlatUserController {
                         }
 
                     }
-                    if (exValidType == 4 && !decryCode.equals("123456")) {
+                    if (exValidType == 4 ) {
                         //邮箱验证
                         try {
                             messageSendService.mailValid(MessageTemplateCode.EMAIL_EXCHANGE_PASS_TEMPLATE.getCode(), VerificationCodeType.EX_EXCHANGE_PASS, user.getMail(), decryCode);
