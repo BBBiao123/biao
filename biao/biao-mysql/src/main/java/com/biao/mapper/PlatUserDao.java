@@ -33,7 +33,7 @@ public interface PlatUserDao {
     @Select("select 1 from js_plat_user where card_up_id = #{imageName} or card_down_id = #{imageName} or card_face_id = #{imageName} limit 1")
     Long findExistByImages(@Param("imageName") String imageName);
 
-    @Select("select " + PlatUserSqlBuild.simple_columns + " from js_plat_user where refer_id = #{userId} ORDER BY create_date DESC ")
+    @Select("select " + PlatUserSqlBuild.simple_columns + " from js_plat_user where refer_id = #{userId} and refer_id != id ORDER BY create_date DESC ")
     List<PlatUser> findInvitesById(String userId);
 
     @Select("select " + PlatUserSqlBuild.simple_columns + " FROM js_plat_user WHERE mobile IS NOT NULL AND id NOT IN (SELECT user_id FROM `js_plat_phone_geocoder`)")

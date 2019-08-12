@@ -195,6 +195,7 @@ public class PlatUserController {
     })
     @PostMapping("/mail/sendCode")
     public Mono<GlobalMessageResponseVo> sendMessageCode(MessageVO messageVO) {
+        logger.info("邮箱验证----，messageVO:{}",messageVO);
         VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(messageVO.getType());
         //阿里滑块验证
         AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
@@ -1318,6 +1319,9 @@ public class PlatUserController {
                     PlatUser supPlatUser=platUserService.findByInviteCode(referInviteCode);
                     if(supPlatUser==null){
                         return GlobalMessageResponseVo.newErrorInstance("邀请码不正确");
+                    }
+                    if(user.getId().equals(supPlatUser.getId())){
+                        return GlobalMessageResponseVo.newErrorInstance("邀请码不能是自己的");
                     }
                     PlatUser platUser=new PlatUser();
                     platUser.setId(user.getId());
