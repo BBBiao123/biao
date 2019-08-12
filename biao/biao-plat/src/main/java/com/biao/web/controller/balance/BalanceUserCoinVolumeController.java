@@ -258,6 +258,9 @@ public class BalanceUserCoinVolumeController {
                 .cast(RedisSessionUser.class)
                 .map(e -> {
                     System.out.println("用户：----"+e.getId()+"-----"+e.getMobile()+"-----"+e.getMail()+"-----"+e.getExPassword());
+                    if(balanceCoinVolumeVO.getCoinNum().compareTo(BigDecimal.ZERO)<=0){
+                        return GlobalMessageResponseVo.newErrorInstance("转入资产不能少于等于0");
+                    }
                     if (StringUtils.isBlank(e.getExPassword())) {
                         return GlobalMessageResponseVo.newErrorInstance("请先设置交易密码");
                     }
