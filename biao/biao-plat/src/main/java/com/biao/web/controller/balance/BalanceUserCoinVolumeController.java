@@ -257,7 +257,7 @@ public class BalanceUserCoinVolumeController {
                 .map(s -> s.getAuthentication().getPrincipal())
                 .cast(RedisSessionUser.class)
                 .map(e -> {
-
+                    System.out.println("用户：----"+e.getId()+"-----"+e.getMobile()+"-----"+e.getMail()+"-----"+e.getExPassword());
                     if (StringUtils.isBlank(e.getExPassword())) {
                         return GlobalMessageResponseVo.newErrorInstance("请先设置交易密码");
                     }
