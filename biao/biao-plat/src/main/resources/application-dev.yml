@@ -105,8 +105,8 @@ neo4j:
 #hua kuai
 aliyun:
   authenticatesig:
-    accessKeyId:
-    accessKeySecret:
+    accessKeyId: LTAIeVlMi4NlO4qA
+    accessKeySecret: sM7tcsCdiOyLMvXGa9t6fIKvtTeDyu
 
 user:
   config:
@@ -127,6 +127,7 @@ balance:
   equalReward: 0.1
   rewardDateStr: 2019-08-01 20:00:00
   coinSmybol: BTC,ETH,USDT,LTC
+  rewardNum: 100
 
 logging:
   level:

@@ -339,9 +339,9 @@ public class BalanceUserCoinVolumeController {
                             jackpotDetail = jackpotList.get(0);
                         }
                         if (jackpotDetail.getAllCoinIncome() != null) {
-                            jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().add(new BigDecimal(100)));
+                            jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().add(balancePlatDayRateConfig.getRewardNum()));
                         } else {
-                            jackpotDetail.setAllCoinIncome(new BigDecimal(100));
+                            jackpotDetail.setAllCoinIncome(balancePlatDayRateConfig.getRewardNum());
                         }
                         if (jackpotDetail.getRewardDate() == null) {
                             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

@@ -15,6 +15,8 @@ public class BalancePlatDayRateConfig {
 	private BigDecimal equalReward ;
 	private String rewardDateStr ;
 	private String coinSmybol;
+	private BigDecimal rewardNum;
+
 	public BigDecimal getOneDayRate() {
 		return oneDayRate;
 	}
@@ -61,5 +63,13 @@ public class BalancePlatDayRateConfig {
 
 	public void setCoinSmybol(String coinSmybol) {
 		this.coinSmybol = coinSmybol;
+	}
+
+	public BigDecimal getRewardNum() {
+		return rewardNum;
+	}
+
+	public void setRewardNum(BigDecimal rewardNum) {
+		this.rewardNum = rewardNum;
 	}
 }
