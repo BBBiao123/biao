@@ -417,7 +417,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 validList.add("1");
             }
             childSumRecordList.add(childCoinBalance);
-            BigDecimal balance=new BigDecimal(5000);
+            BigDecimal balance=new BigDecimal(10000);
             BigDecimal balance2=new BigDecimal(1000);
             BigDecimal childRateSec=new BigDecimal(0);
             if(childCoinBalance.compareTo(balance)>0){
@@ -532,7 +532,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                 //直推节点个数
                 int length=0;
                 //仓位分界线
-                BigDecimal balance=new BigDecimal(5000);
+                BigDecimal balance=new BigDecimal(10000);
                 BigDecimal balance2=new BigDecimal(1000);
                 BigDecimal balance3=new BigDecimal(200);
                 //社区有效用户数
@@ -939,13 +939,13 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
         int length=0;
         List<BalanceUserCoinVolumeDetail> userList2=new ArrayList<BalanceUserCoinVolumeDetail>();
         for (BalanceUserCoinVolumeDetail user : userList) {
-            if(user.getValidNum()>=3){
+            if(user.getNodeNumber()>=3){
                 length++;
                 userList2.add(user);
             }
         }
         for (BalanceUserCoinVolumeDetail user : userList) {
-            if(length>0 && user.getValidNum()>=3 && user.getStaticsIncome().compareTo(BigDecimal.ZERO)>0){
+            if(length>0 && user.getNodeNumber()>=3 && user.getStaticsIncome().compareTo(BigDecimal.ZERO)>0){
                 user.setDynamicsIncome(user.getDynamicsIncome().add(sumIncome.multiply(new BigDecimal(0.15)).divide(new BigDecimal(length),16,BigDecimal.ROUND_HALF_UP )));
             }
             user.setDetailIncome(user.getStaticsIncome().add(user.getDynamicsIncome()));
