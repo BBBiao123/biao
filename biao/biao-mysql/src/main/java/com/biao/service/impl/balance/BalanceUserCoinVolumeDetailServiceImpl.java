@@ -387,6 +387,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
      */
     @Override
     public void balanceIncomeDetailNew(Map<String ,BigDecimal> map,BigDecimal platPrice){
+        balanceUserCoinVolumeDetailDao.deleteByVersion();
         //静态收益、动态收益1和3 计算
         staticsIncomeAndPartDynamics(map,platPrice);
 
@@ -662,8 +663,7 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
                            balanceChangeVolume.setAccumulIncome(changeIncome);
                        }
                         balanceChangeUserCoinVolumeDao.updateById(balanceChangeVolume);
-                    }
-                }
+                    }                }
                 if(platPrice.compareTo(BigDecimal.ZERO)>0 && e.getCoinBalance().compareTo(balance3)>=0) {
                     staticsIncomeTotal=staticsIncomeTotal.add(e.getCoinBalance().divide(platPrice,16,BigDecimal.ROUND_HALF_UP ).multiply(dayRate));
                 }
