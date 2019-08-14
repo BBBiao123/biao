@@ -41,14 +41,14 @@ public interface DepositLogDao {
     @Select("select a.id as id, a.coinId as coinId, a.symbol as symbol, a.volume as volume, a.status as status, a.type as type, a.createDate as createDate, a.address as address, a.fee as fee, a.txId as txId from ( " +
             "select id as id, coin_id as coinId, coin_symbol as symbol, volume as volume, status as status, '0' as type, create_date as createDate, address as address, 0 as fee, tx_id as txId from js_plat_user_deposit_log where coin_id = #{coinId} and user_id = #{userId} " +
             " UNION ALL " +
-            "select id as id, coin_id as coinId, coin_symbol as symbol, volume as volume, status as status, '1' as type, create_date as createDate, address as address, fee as fee, tx_id from js_plat_user_withdraw_log where coin_id = #{coinId} and user_id = #{userId} " +
+            "select id as id, coin_id as coinId, coin_symbol as symbol, volume as volume, status as status, '1' as type, create_date as createDate, address as address, fee as fee, tx_id from js_plat_user_withdraw_log where  status != 8  and coin_id = #{coinId} and user_id = #{userId} " +
             " ) a order by a.createDate desc")
     List<DepdrawLogVO> findDepdrawLogListByUserIdAndCoinId(@Param("userId") String userId, @Param("coinId") String coinId);
 
     @Select("select a.id as id, a.coinId as coinId, a.symbol as symbol, a.volume as volume, a.status as status, a.type as type, a.createDate as createDate, a.address as address, a.fee as fee, a.txId as txId from ( " +
             "select id as id, coin_id as coinId, coin_symbol as symbol, volume as volume, status as status, '0' as type, create_date as createDate, address as address, 0 as fee, tx_id as txId from js_plat_user_deposit_log where user_id = #{userId}" +
             " UNION ALL " +
-            "select id as id, coin_id as coinId, coin_symbol as symbol, volume as volume, status as status, '1' as type, create_date as createDate, address as address, fee as fee, tx_id as txId from js_plat_user_withdraw_log where user_id = #{userId}" +
+            "select id as id, coin_id as coinId, coin_symbol as symbol, volume as volume, status as status, '1' as type, create_date as createDate, address as address, fee as fee, tx_id as txId from js_plat_user_withdraw_log where  status != 8  and user_id = #{userId}" +
             " ) a order by a.createDate desc")
     List<DepdrawLogVO> findDepdrawLogListByUserId(String userId);
 
