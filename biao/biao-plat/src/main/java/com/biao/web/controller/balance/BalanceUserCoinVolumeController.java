@@ -488,9 +488,9 @@ public class BalanceUserCoinVolumeController {
                         String createStr = df.format(time);
                         coinVolumeVO.setCreateStr(createStr);
                         String userName = null;
-                        if (coin.getMobile() != null) {
+                        if (org.apache.commons.lang3.StringUtils.isNotBlank(coin.getMobile())) {
                             userName = coin.getMobile().substring(0, 3) + "******" + coin.getMobile().substring(coin.getMobile().length() - 2);
-                        } else if (coin.getMail() != null) {
+                        } else if (org.apache.commons.lang3.StringUtils.isNotBlank(coin.getMail())) {
                             int index = coin.getMail().indexOf("@");
                             if (index > 4) {
                                 userName = coin.getMail().substring(0, index - 4) + "****" + coin.getMail().substring(index);
@@ -537,9 +537,9 @@ public class BalanceUserCoinVolumeController {
                             BeanUtils.copyProperties(listVolume.get(i), coinVolumeVO);
                             coinVolumeVO.setOrdNum(i + 1);
                             String userName = null;
-                            if (coinVolumeVO.getMobile() != null) {
+                            if (org.apache.commons.lang3.StringUtils.isNotBlank(coinVolumeVO.getMobile())) {
                                 userName = coinVolumeVO.getMobile().substring(0, 3) + "******" + coinVolumeVO.getMobile().substring(coinVolumeVO.getMobile().length() - 2);
-                            } else if (coinVolumeVO.getMail() != null) {
+                            } else if (org.apache.commons.lang3.StringUtils.isNotBlank(coinVolumeVO.getMail())) {
                                 int index = coinVolumeVO.getMail().indexOf("@");
                                 if (index > 4) {
                                     userName = coinVolumeVO.getMail().substring(0, index - 4) + "****" + coinVolumeVO.getMail().substring(index);
@@ -716,9 +716,9 @@ public class BalanceUserCoinVolumeController {
                         coinVolumeVO.setValidNum(validList.size());
 
                         String userName = null;
-                        if (user.getMobile() != null) {
+                        if (org.apache.commons.lang3.StringUtils.isNotBlank(user.getMobile())) {
                             userName = user.getMobile().substring(0, 3) + "******" + user.getMobile().substring(user.getMobile().length() - 2);
-                        } else if (user.getMail() != null) {
+                        } else if (org.apache.commons.lang3.StringUtils.isNotBlank(user.getMail())) {
                             int index = user.getMail().indexOf("@");
                             if (index > 4) {
                                 userName = user.getMail().substring(0, index - 4) + "****" + user.getMail().substring(index);
@@ -785,9 +785,9 @@ public class BalanceUserCoinVolumeController {
                         coinVolumeVO.setCreateStr(createStr);
                         coinVolumeVO.setCreateTime(time.toInstant(ZoneOffset.of("+8")).toEpochMilli());
                         String userName = null;
-                        if (coin.getMobile() != null) {
+                        if (org.apache.commons.lang3.StringUtils.isNotBlank(coin.getMobile())) {
                             userName = coin.getMobile().substring(0, 3) + "******" + coin.getMobile().substring(coin.getMobile().length() - 2);
-                        } else if (coin.getMail() != null) {
+                        } else if (org.apache.commons.lang3.StringUtils.isNotBlank(coin.getMail())) {
                             int index = coin.getMail().indexOf("@");
                             if (index > 4) {
                                 userName = coin.getMail().substring(0, index - 4) + "****" + coin.getMail().substring(index);
