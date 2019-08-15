@@ -324,6 +324,24 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    //阿里滑块验证
+                    AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
+                    String otcTag = platUserVO.getAuthTag();
+                    authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getAccessKeyId());
+                    authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getAccessKeySecret());
+                    if (StringUtils.isNotBlank(otcTag) && "otc" .equalsIgnoreCase(otcTag)) {
+                        authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getOtcAccessKeyId());
+                        authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getOtcAccessKeySecret());
+                    }
+                    authenticateSigVO.setAppKey(platUserVO.getAppKey());
+                    authenticateSigVO.setScene(platUserVO.getScene());
+                    authenticateSigVO.setSessionId(platUserVO.getSessionId());
+                    authenticateSigVO.setSig(platUserVO.getSig());
+                    authenticateSigVO.setToken(platUserVO.getVtoken());
+                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    if (!isValid) {
+                        throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
+                    }
                     String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
                     String vaildStr=numStr+"QsRA!2586@FdkG";
                     String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
@@ -352,6 +370,24 @@ public class PlatUserController {
                     String decryPassword = RsaUtils.decryptByPrivateKey(platUserVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
                     if (!vaildStr.equals(decryPassword)) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
+                    }
+                    //阿里滑块验证
+                    AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
+                    String otcTag = platUserVO.getAuthTag();
+                    authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getAccessKeyId());
+                    authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getAccessKeySecret());
+                    if (StringUtils.isNotBlank(otcTag) && "otc" .equalsIgnoreCase(otcTag)) {
+                        authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getOtcAccessKeyId());
+                        authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getOtcAccessKeySecret());
+                    }
+                    authenticateSigVO.setAppKey(platUserVO.getAppKey());
+                    authenticateSigVO.setScene(platUserVO.getScene());
+                    authenticateSigVO.setSessionId(platUserVO.getSessionId());
+                    authenticateSigVO.setSig(platUserVO.getSig());
+                    authenticateSigVO.setToken(platUserVO.getVtoken());
+                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    if (!isValid) {
+                        throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     if (typeEnums == VerificationCodeType.EX_TRADE_PASS) {
@@ -392,6 +428,24 @@ public class PlatUserController {
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
                     if (StringUtils.isBlank(user.getMail())) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("请先绑定邮箱"));
+                    }
+                    //阿里滑块验证
+                    AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
+                    String otcTag = platUserVO.getAuthTag();
+                    authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getAccessKeyId());
+                    authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getAccessKeySecret());
+                    if (StringUtils.isNotBlank(otcTag) && "otc" .equalsIgnoreCase(otcTag)) {
+                        authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getOtcAccessKeyId());
+                        authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getOtcAccessKeySecret());
+                    }
+                    authenticateSigVO.setAppKey(platUserVO.getAppKey());
+                    authenticateSigVO.setScene(platUserVO.getScene());
+                    authenticateSigVO.setSessionId(platUserVO.getSessionId());
+                    authenticateSigVO.setSig(platUserVO.getSig());
+                    authenticateSigVO.setToken(platUserVO.getVtoken());
+                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    if (!isValid) {
+                        throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
                     if (platUserVO.getSmsType().equals("bander_google")) {
                         platUserVO.setSmsType(VerificationCodeType.BINDER_GOOGLE_CODE_MAIL.getCode());
@@ -445,6 +499,24 @@ public class PlatUserController {
                     String mobile = platUserVO.getMobile();
                     if (StringUtils.isBlank(mobile)) {
                         mobile = user.getMobile();
+                    }
+                    //阿里滑块验证
+                    AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
+                    String otcTag = platUserVO.getAuthTag();
+                    authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getAccessKeyId());
+                    authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getAccessKeySecret());
+                    if (StringUtils.isNotBlank(otcTag) && "otc" .equalsIgnoreCase(otcTag)) {
+                        authenticateSigVO.setAccessKeyId(aliYunAuthenticateSigConfig.getOtcAccessKeyId());
+                        authenticateSigVO.setAccessKeySecret(aliYunAuthenticateSigConfig.getOtcAccessKeySecret());
+                    }
+                    authenticateSigVO.setAppKey(platUserVO.getAppKey());
+                    authenticateSigVO.setScene(platUserVO.getScene());
+                    authenticateSigVO.setSessionId(platUserVO.getSessionId());
+                    authenticateSigVO.setSig(platUserVO.getSig());
+                    authenticateSigVO.setToken(platUserVO.getVtoken());
+                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    if (!isValid) {
+                        throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
                     String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
                     String vaildStr=numStr+"QsRA!2586@FdkG";

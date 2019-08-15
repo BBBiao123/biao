@@ -61,6 +61,20 @@ public class PlatUserVO implements Serializable {
 
     private String vaildCodeKey;
 
+    private String appKey;
+
+    private String sessionId;
+
+    private String sig;
+
+    private String vtoken;
+
+    private String scene;
+
+    private String source;
+
+    private String authTag;
+
     public Integer getRegisterType() {
         return registerType;
     }
@@ -267,5 +281,61 @@ public class PlatUserVO implements Serializable {
 
     public void setVaildCodeKey(String vaildCodeKey) {
         this.vaildCodeKey = vaildCodeKey;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getSig() {
+        return sig;
+    }
+
+    public void setSig(String sig) {
+        this.sig = sig;
+    }
+
+    public String getVtoken() {
+        return vtoken;
+    }
+
+    public void setVtoken(String vtoken) {
+        this.vtoken = vtoken;
+    }
+
+    public String getScene() {
+        return scene;
+    }
+
+    public void setScene(String scene) {
+        this.scene = scene;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getAuthTag() {
+        return authTag;
+    }
+
+    public void setAuthTag(String authTag) {
+        this.authTag = authTag;
     }
 }
