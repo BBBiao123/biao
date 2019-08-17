@@ -1417,7 +1417,7 @@ public class PlatUserController {
        String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
        if(StringUtils.isBlank(numStr)){
            numStr=   NumberUtils.getRandomNumber(10);
-           stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,60*2,TimeUnit.SECONDS);
+           stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,45,TimeUnit.SECONDS);
        }
 
         Map<String,String> map=new HashMap<>();
