@@ -92,6 +92,11 @@ public class BalanceUserCoinVolumeDetailServiceImpl implements BalanceUserCoinVo
     }
 
     @Override
+    public BigDecimal  findPriceByCoinSymbolUpdateDate(String coinSymbol){
+        return balancePlatCoinPriceVolumeDao.findPriceByCoinSymbolUpdateDate(coinSymbol);
+    }
+
+    @Override
     public void updateById(BalanceUserCoinVolumeDetail balanceUserCoinVolumeDetail) {
         balanceUserCoinVolumeDetailDao.updateById(balanceUserCoinVolumeDetail);
     }

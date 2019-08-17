@@ -22,4 +22,7 @@ public interface BalancePlatCoinPriceVolumeDao {
     @Select("SELECT price FROM js_plat_ex_order T WHERE coin_symbol = 'MG' AND coin_main = 'USDT' AND coin_other = 'MG' AND (status = 1 OR status = 2) AND T.price>0 ORDER BY update_date DESC ,id DESC LIMIT 1")
     BigDecimal findPriceByUpdateDate();
 
+    @Select("SELECT price FROM js_plat_ex_order T WHERE coin_symbol = #{coinSymbol} AND coin_main = 'USDT' AND coin_other = #{coinSymbol} AND (status = 1 OR status = 2) AND T.price>0 ORDER BY update_date DESC ,id DESC LIMIT 1")
+    BigDecimal findPriceByCoinSymbolUpdateDate(String coinSymbol);
+
 }

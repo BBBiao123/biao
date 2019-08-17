@@ -42,5 +42,6 @@ public interface BalanceUserCoinVolumeDetailService {
    String insertPlatPrice(BalancePlatCoinPriceVolume balancePlatCoinPriceVolume);
 
    BigDecimal  findPriceByUpdateDate();
+    BigDecimal  findPriceByCoinSymbolUpdateDate(String coinSymbol);
 
 }

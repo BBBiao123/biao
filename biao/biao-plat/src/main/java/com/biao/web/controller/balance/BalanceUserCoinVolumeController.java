@@ -297,8 +297,19 @@ public class BalanceUserCoinVolumeController {
                     }
                     TradePairVO tradePair = tradePairMap.get(balanceCoinVolumeVO.getCoinSymbol());
                     BigDecimal depositValue=balanceCoinVolumeVO.getCoinNum();
-                    if(tradePair != null && tradePair.getLatestPrice() != null){
-                        depositValue=depositValue.multiply(tradePair.getLatestPrice());
+                    BigDecimal platPrice=BigDecimal.ZERO;
+
+                    if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
+                        platPrice=platPrice.add(tradePair.getLatestPrice());
+                    }
+                    if(platPrice.compareTo(BigDecimal.ZERO)<=0){
+                        BigDecimal coinPrice=balanceUserCoinVolumeDetailService.findPriceByCoinSymbolUpdateDate(balanceCoinVolumeVO.getCoinSymbol());
+                        if(coinPrice != null){
+                            platPrice=platPrice.add(coinPrice);
+                        }
+                    }
+                    if(!"USDT".equalsIgnoreCase(balanceCoinVolumeVO.getCoinSymbol())){
+                        depositValue=depositValue.multiply(platPrice);
                     }
                     BalanceUserCoinVolume balanceUserCoinVolume = new BalanceUserCoinVolume();
                     System.out.println("用户ID：" + balanceCoinVolumeVO.getUserId() + "-----币种：" + balanceCoinVolumeVO.getCoinSymbol());

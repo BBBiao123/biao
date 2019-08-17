@@ -196,6 +196,7 @@ public class PlatUserController {
     @PostMapping("/mail/sendCode")
     public Mono<GlobalMessageResponseVo> sendMessageCode(MessageVO messageVO) {
         logger.info("邮箱验证----，messageVO:{}",messageVO);
+        System.out.println("邮箱验证----appkey："+messageVO.getAppKey()+"---scene:"+messageVO.getScene()+"----sessionid:"+messageVO.getSessionId()+"-----sig:"+messageVO.getSig()+"----vtoken:"+messageVO.getVtoken());
         VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(messageVO.getType());
         //阿里滑块验证
         AuthenticateSigVO authenticateSigVO = new AuthenticateSigVO();
