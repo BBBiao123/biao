@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.plat.dao.UserChangeRecordDao">
+    
+	<sql id="userCoinVolumeColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_symbol AS "coinSymbol",
+		a.coin_num AS "coinNum",
+		case a.flag when 0 then '转入' else '转出' end AS "flag",
+		a.mobile AS "mobile",
+		a.mail AS "mail",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+
+	<sql id="userIncomeColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.coin_symbol AS "coinSymbol",
+		a.detail_reward AS "detailReward",
+		b.mobile AS "mobile",
+		b.mail AS "mail",
+		a.income_date AS "incomeDate",
+		a.reward_type AS "rewardType",
+		a.update_date AS "updateDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id"
+	</sql>
+
+	<sql id="userBalanceColumns">
+		t.id AS "userId",
+		t.mobile AS "mobile",
+		t.mail AS "mail",
+		t2.coin_symbol AS "coinSymbol",
+		t2.volume AS "coinVolume",
+		ifnull(t4.sumBalance,0) AS "sumBalance",
+		t2.volume + ifnull(t4.sumBalance,0) AS "sumVolume"
+	</sql>
+
+
+	
+	<select id="findList" resultType="UserChangeRecordVolume">
+		SELECT 
+			<include refid="userCoinVolumeColumns"/>
+		FROM js_plat_user_coin_balancechange a
+		<where>
+
+			<if test="mail != null and mail != ''">
+				AND a.mail LIKE concat(#{mail},'%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE concat(#{mobile},'%')
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol= #{coinSymbol}
+			</if>
+
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.user_id DESC,a.create_date desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findIncomeList" resultType="UserChangeRecordVolume">
+		SELECT 
+			<include refid="userIncomeColumns"/>
+		FROM js_plat_user_income_incomedetail a,js_plat_user b
+		<where>
+			a.user_id = b.id
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND a.coin_symbol= #{coinSymbol}
+			</if>
+
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+
+			<if test="mail != null and mail != ''">
+				AND b.mail LIKE concat(#{mail},'%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND b.mobile LIKE concat(#{mobile},'%')
+			</if>
+
+			<if test="rewardType != null and rewardType != ''">
+				AND a.reward_type=#{rewardType}
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.user_id DESC,a.income_date desc,a.reward_type asc
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findBalanceList" resultType="UserChangeRecordVolume">
+		SELECT
+		<include refid="userBalanceColumns"/>
+		FROM js_plat_user t LEFT JOIN js_plat_user_coin_volume t2 ON t.id = t2.user_id
+		LEFT JOIN (SELECT t3.user_id, t3.coin_symbol, sum(t3.coin_balance) sumBalance
+		FROM js_plat_user_coin_balance t3 GROUP BY t3.user_id,t3.coin_symbol
+		) t4 ON t.id = t4.user_id AND t2.coin_symbol = t4.coin_symbol
+
+		<where>
+
+			<if test="mail != null and mail != ''">
+				AND t.mail LIKE concat(#{mail},'%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND t.mobile LIKE concat(#{mobile},'%')
+			</if>
+			<if test="coinSymbol != null and coinSymbol != ''">
+				AND t2.coin_symbol= #{coinSymbol}
+			</if>
+
+			<if test="userId != null and userId != ''">
+				AND a.id = #{userId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+           ORDER BY t.id,t2.coin_symbol
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>
