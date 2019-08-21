@@ -758,7 +758,7 @@ public class PlatUserController {
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
                     if(1==1){
-                        throw new PlatException(10088888, "请下载最新APP进行身份验证");
+                        throw new PlatException(10088888, "请到官网下载最新APP进行身份认证");
                     }
 
                     if (user.getCardLevel() != null && user.getCardLevel() != CardStatusEnum.CARD_STATUS_ZERO.getCode()) {
