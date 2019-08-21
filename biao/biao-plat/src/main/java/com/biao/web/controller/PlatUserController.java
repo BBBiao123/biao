@@ -757,6 +757,10 @@ public class PlatUserController {
         return ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    if(1==1){
+                        throw new PlatException(10088888, "请下载最新APP进行身份验证");
+                    }
+
                     if (user.getCardLevel() != null && user.getCardLevel() != CardStatusEnum.CARD_STATUS_ZERO.getCode()) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("请进行身份认证"));
                     }
