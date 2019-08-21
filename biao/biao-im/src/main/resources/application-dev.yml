@@ -5,7 +5,7 @@ spring:
           properties:
               interceptor.classes: com.biao.kafka.interceptor.KafkaMessageIdGenerator
         bootstrap-servers:
-            - 47.52.67.6:9092
+        - 47.244.153.103:9092
         consumer:
           value-deserializer: com.biao.kafka.interceptor.CustomerJsonDeserializer
           group-id: im
