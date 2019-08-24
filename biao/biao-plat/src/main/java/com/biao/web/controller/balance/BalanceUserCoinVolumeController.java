@@ -290,7 +290,7 @@ public class BalanceUserCoinVolumeController {
                     if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
                         platPrice=platPrice.add(tradePair.getLatestPrice());
                     }
-                    if(platPrice.compareTo(BigDecimal.ZERO)<=0){
+                    if(platPrice.compareTo(BigDecimal.ZERO)<=0 && tradePair!=null){
                         BigDecimal coinPrice=balanceUserCoinVolumeDetailService.findPriceByCoinSymbolUpdateDate(balanceCoinVolumeVO.getCoinSymbol());
                         if(coinPrice != null){
                             platPrice=platPrice.add(coinPrice);

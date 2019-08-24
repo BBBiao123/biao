@@ -104,6 +104,7 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
     public void balanceVolume( BalanceUserCoinVolume balanceUserCoinVolume,BigDecimal rewardNum){
           String key="balanceVolume:"+balanceUserCoinVolume.getUserId();
           Integer vaildValue= cacheMap.get(key);
+          System.out.println("------"+vaildValue);
           if(vaildValue ==null){
               vaildValue=0;
               cacheMap.put(key,0);
@@ -175,15 +176,12 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
         offlineTransferLog.setCoinId(coinVo.getId());
         offlineTransferLog.setSourceVolume(BigDecimal.ZERO);
         offlineTransferLogDao.insert(offlineTransferLog);
-        Integer vaildValue2= cacheMap.get(key);
-        if(vaildValue != vaildValue2){
 
-            throw new PlatException(10077777, "转入失败");
-        }
        long count= userCoinVolumeExService.updateOutcome(null, coinBalance, balanceUserCoinVolume.getUserId(), balanceUserCoinVolume.getCoinSymbol(), false);
         if (count <= 0){
             throw new PlatException(10077777, "转入失败");
         }
+        Integer vaildValue2= cacheMap.get(key);
         if(vaildValue != vaildValue2){
 
             throw new PlatException(10077777, "转入失败");
@@ -226,14 +224,12 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
         offlineTransferLog.setCoinId(coinVo.getId());
         offlineTransferLog.setSourceVolume(BigDecimal.ZERO);
         offlineTransferLogDao.insert(offlineTransferLog);
-        Integer vaildValue2= cacheMap.get(key);
-        if(vaildValue != vaildValue2){
-            throw new PlatException(10066666, "转出失败");
-        }
+
        long count= userCoinVolumeExService.updateIncome(null, coinNum, balanceUserCoinVolume.getUserId(), balanceUserCoinVolume.getCoinSymbol(), false);
         if (count <= 0){
             throw new PlatException(10066666, "转出失败");
         }
+        Integer vaildValue2= cacheMap.get(key);
         if(vaildValue != vaildValue2){
             throw new PlatException(10066666, "转出失败");
         }
