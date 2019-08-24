@@ -1,5 +1,6 @@
 package com.biao.web.controller;
 
+import com.biao.config.UserConfig;
 import com.biao.config.sercurity.RedisSessionUser;
 import com.biao.constant.Constants;
 import com.biao.entity.Coin;
@@ -9,16 +10,14 @@ import com.biao.enums.MessageTemplateCode;
 import com.biao.enums.VerificationCodeType;
 import com.biao.enums.WithdrawStatusEnum;
 import com.biao.google.GoogleAuthenticator;
+import com.biao.handler.PlatDataHandler;
 import com.biao.pojo.GlobalMessageResponseVo;
 import com.biao.reactive.data.mongo.enums.SecurityLogEnums;
 import com.biao.service.CoinService;
 import com.biao.service.MessageSendService;
 import com.biao.service.SmsMessageService;
 import com.biao.service.WithdrawLogService;
-import com.biao.vo.PlatUserVO;
-import com.biao.vo.WithdrawListVO;
-import com.biao.vo.WithdrawVO;
-import com.biao.vo.WithdrawValidateVO;
+import com.biao.vo.*;
 import com.biao.web.valid.ValidateFiled;
 import com.biao.web.valid.ValidateGroup;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +28,10 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,7 +49,15 @@ public class WithdrawController {
     private MessageSendService messageSendService;
     @Autowired
     private SmsMessageService smsMessageService;
+    @Autowired
+    private UserConfig userConfig;
 
+    private final PlatDataHandler platDataHandler;
+    @Autowired
+    public WithdrawController(final PlatDataHandler platDataHandler) {
+        this.platDataHandler = platDataHandler;
+
+    }
 
     /**
      * 用户提现
@@ -253,7 +264,29 @@ public class WithdrawController {
                             return Mono.just(GlobalMessageResponseVo.newInstance(Constants.TRADE_C2C_NEED_VALID_ERROR, "请输入正确的邮箱验证码"));
                         }
                     }
-                    withdrawLogService.updateStatusById(userId, WithdrawStatusEnum.INIT.getCode(), withdrawValidateVO.getId());
+                    Map<String, List<TradePairVO>> tradePairListMap = platDataHandler.buildAllTradePair();
+                    Map<String, TradePairVO> tradePairMap = new HashMap<String, TradePairVO>();
+                    if (tradePairListMap != null && tradePairListMap.size() > 0) {
+                        for (String key : tradePairListMap.keySet()) {
+                            List<TradePairVO> list = tradePairListMap.get(key);
+                            for (TradePairVO vo : list) {
+                                tradePairMap.put(vo.getCoinOther(), vo);
+                            }
+                        }
+                    }
+                    WithdrawLog withdrawLog=withdrawLogService.findById( withdrawValidateVO.getId());
+                    BigDecimal volume=withdrawLog.getVolume();
+                    String status=WithdrawStatusEnum.INIT.getCode();
+                    BigDecimal secretFreeQuota= userConfig.getSecretFreeQuota();
+                    TradePairVO tradePair = tradePairMap.get(withdrawLog.getCoinSymbol());
+                    if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
+                        volume=volume.multiply(tradePair.getLatestPrice());
+                        if(secretFreeQuota !=null && secretFreeQuota.compareTo(volume)>0){
+                            status=WithdrawStatusEnum.AUDIT_PASS.getCode();
+                        }
+                    }
+                    withdrawLogService.updateStatusByWithdrawLog(userId,status,withdrawLog);
+//                    withdrawLogService.updateStatusById(userId, WithdrawStatusEnum.INIT.getCode(), withdrawValidateVO.getId());
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("提现成功"));
                 });
     }

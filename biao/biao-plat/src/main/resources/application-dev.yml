@@ -111,6 +111,7 @@ aliyun:
 user:
   config:
     lockLength: 0
+    secretFreeQuota: 0
   coin-volume-bill:
     #     执行的节点数量
     needs: 1

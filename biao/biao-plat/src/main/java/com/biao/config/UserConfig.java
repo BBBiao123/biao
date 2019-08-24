@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -15,6 +16,8 @@ public class UserConfig {
      * 锁定长度  时间 小时
      */
     private Integer lockLength;
+
+    private BigDecimal secretFreeQuota;
 
 
     public LocalDateTime plusHours() {

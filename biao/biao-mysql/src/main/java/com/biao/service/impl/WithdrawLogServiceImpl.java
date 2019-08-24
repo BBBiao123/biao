@@ -232,5 +232,35 @@ public class WithdrawLogServiceImpl implements WithdrawLogService {
        return  withdrawLogDao.countDayVolumeByUserIdAndCoinIdAndStatus(userId,coinId);
     }
 
+    @Override
+    @Transactional
+    public void updateStatusByWithdrawLog(String userId, String status, WithdrawLog withdrawLog ) {
+
+        UserCoinVolume userCoinVolume = userCoinVolumeDao.findByUserIdAndCoinId(userId, withdrawLog.getCoinId());
+        //更新用户可用资产
+        BigDecimal volume = userCoinVolume.getVolume().subtract(withdrawLog.getVolume());
+        if (volume.compareTo(BigDecimal.ZERO) == -1) {
+            throw new PlatException(Constants.WITHDRAW_ERROR, "可提现资产不足");
+        }
+
+        BigDecimal outLockVolume = userCoinVolume.getOutLockVolume().add(withdrawLog.getVolume());
+        long result = userCoinVolumeDao.updateOutLockVolumeByUserIdAndCoinId(userId, withdrawLog.getCoinId(), outLockVolume, userCoinVolume.getVersion());
+        if (result <= 0){
+            LOGGER.error("用户{}提现{}失败volume{}",userId,withdrawLog.getCoinSymbol(),withdrawLog.getVolume());
+            throw new PlatException(Constants.WITHDRAW_ERROR, "提现失败");
+        }
+        long count = withdrawLogDao.updateStatusById(status, withdrawLog.getId());
+        if (count <= 0) {
+            throw new PlatException(Constants.UPDATE_ERROR, "更新失败");
+        }
+
+        count = userCoinVolumeExService.updateOutcome(null,withdrawLog.getVolume(),userId,withdrawLog.getCoinSymbol(),false);
+        if (count <= 0){
+            throw new PlatException(Constants.WITHDRAW_ERROR, "提现失败");
+        }
+
+
+
+    }
 
 }
