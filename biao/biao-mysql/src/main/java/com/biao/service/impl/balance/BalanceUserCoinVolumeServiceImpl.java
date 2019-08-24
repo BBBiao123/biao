@@ -131,9 +131,9 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
                 jackpotDetail = jackpotList.get(0);
             }
             if (jackpotDetail.getAllCoinIncome() != null) {
-                jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().add(new BigDecimal(700)));
+                jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().add(rewardNum));
             } else {
-                jackpotDetail.setAllCoinIncome(new BigDecimal(700));
+                jackpotDetail.setAllCoinIncome(rewardNum);
             }
 
             if (jackpotDetail.getCoinSymbol() == null) {
