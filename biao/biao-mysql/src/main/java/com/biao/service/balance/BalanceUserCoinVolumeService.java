@@ -1,8 +1,13 @@
 package com.biao.service.balance;
 
+import com.biao.entity.PlatUser;
+import com.biao.entity.balance.BalanceChangeUserCoinVolume;
 import com.biao.entity.balance.BalanceUserCoinVolume;
+import com.biao.vo.TradePairVO;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 余币宝接口
@@ -36,4 +41,7 @@ public interface BalanceUserCoinVolumeService {
 
     List<BalanceUserCoinVolume> findByAllRank();
     long deleteByBalanceId(String changeId);
+
+    void balanceVolume(BalanceUserCoinVolume balanceUserCoinVolume, BigDecimal rewardNum);
+    void balanceOutVolume( BalanceChangeUserCoinVolume balanceUserCoinVolume, BigDecimal coinNum);
 }
