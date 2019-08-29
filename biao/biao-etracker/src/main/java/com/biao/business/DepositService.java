@@ -87,6 +87,7 @@ public class DepositService {
             //如果是归集过来的记录则不需要重复归集
             if (transaction.getTo().equals(Environment.fromAddress)) {
                 depositLog.setRaiseStatus(2);
+                depositLog.setStatus(5);//地址为归集的地址，不上账
             } else {
                 depositLog.setRaiseStatus(0);
             }
@@ -119,12 +120,21 @@ public class DepositService {
 
             if (coin.getTokenStatus().equals(TokenStatusEnum.NOT_IN_OUT.getCode()) || coin.getTokenStatus().equals(TokenStatusEnum.ONLY_OUT.getCode())) {
                 depositLog.setStatus(5);//暂时不上账
+            }
+//            else {
+//                if (symbol.equals("UES")) {
+//                    depositLog.setStatus(5);//暂时不上账
+//                } else {
+//                    depositLog.setStatus(0);
+//                }
+//            }
+
+            if (to.equals(Environment.fromAddress)) {
+                depositLog.setRaiseStatus(2);//不重复归集
+                depositLog.setStatus(5);//地址为归集的地址，不上账
             } else {
-                if (symbol.equals("UES")) {
-                    depositLog.setStatus(5);//暂时不上账
-                } else {
-                    depositLog.setStatus(0);
-                }
+                depositLog.setRaiseStatus(0);
+                depositLog.setStatus(0);
             }
             depositLog.setCoinType("1");
             depositLog.setCreateDate(LocalDateTime.now());
@@ -139,7 +149,6 @@ public class DepositService {
             depositLog.setAddress(to);
             depositLog.setId(SnowFlake.createSnowFlake().nextIdString());
             depositLog.setBlockNumber(BigInteger.ZERO);
-            depositLog.setRaiseStatus(0);
             depositLogDao.insert(depositLog);
         } else {
             logger.info("该充值记录已经被记录等待确认:{}", hash);
@@ -198,7 +207,7 @@ public class DepositService {
         } else if (decimals == 2) {
             amount = depositLog.getVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
-             bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
+            bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.KWEI).toBigInteger();
         } else if (decimals == 5) {
 //             bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
