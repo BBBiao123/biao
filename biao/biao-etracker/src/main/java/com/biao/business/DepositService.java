@@ -189,7 +189,7 @@ public class DepositService {
         int decimals = TOKEN_MAP.get(symbol).getDecimals();
         logger.info("symbol:{},contractAddress:{}", symbol, contractAddress);
         //获取钱包代币余额
-        //BigInteger addrAmount = TokenClient.getTokenBalance(web3j, depositLog.getAddress(), contractAddress);
+        BigInteger addrAmount = TokenClient.getTokenBalance(web3j, depositLog.getAddress(), contractAddress);
         BigDecimal bdAmount = BigDecimal.ZERO;
         BigInteger amount = BigInteger.ZERO;
         if (decimals == 0) {
@@ -198,10 +198,10 @@ public class DepositService {
         } else if (decimals == 2) {
             amount = depositLog.getVolume().multiply(new BigDecimal(100)).toBigInteger();
         } else if (decimals == 3) {
-            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
+             bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.KWEI);
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.KWEI).toBigInteger();
         } else if (decimals == 5) {
-            // bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
+//             bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI).divide(BigDecimal.valueOf(100L));
             amount = Convert.toWei(depositLog.getVolume(), Convert.Unit.MWEI).toBigInteger().multiply(BigInteger.valueOf(100L));
         } else if (decimals == 6) {
             //bdAmount = Convert.fromWei(new BigDecimal(addrAmount), Convert.Unit.MWEI);
