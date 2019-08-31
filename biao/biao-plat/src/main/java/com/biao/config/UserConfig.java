@@ -19,6 +19,10 @@ public class UserConfig {
 
     private BigDecimal secretFreeQuota;
 
+    private Integer lastVersion;
+
+    private Integer isForceUpdate;
+
 
     public LocalDateTime plusHours() {
         return LocalDateTime.now().plusHours(this.lockLength == null ? 24 : this.lockLength);

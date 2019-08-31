@@ -1429,4 +1429,18 @@ public class PlatUserController {
         map.put("numCode",numStr);
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
     }
+
+    /**
+     * @return
+     */
+    @GetMapping("/user/app/lastVersion")
+    public Mono<GlobalMessageResponseVo> getLastVersion() {
+
+        Map<String,Object> map=new HashMap<>();
+        //
+        map.put("lastVersion",userConfig.getLastVersion());
+        map.put("isForceUpdate",userConfig.getIsForceUpdate());
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
+    }
+
 }

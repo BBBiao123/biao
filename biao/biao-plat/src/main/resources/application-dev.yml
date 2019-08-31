@@ -112,6 +112,8 @@ user:
   config:
     lockLength: 0
     secretFreeQuota: 0
+    lastVersion: 300
+    isForceUpdate: 1
   coin-volume-bill:
     #     执行的节点数量
     needs: 1
@@ -129,6 +131,8 @@ balance:
   rewardDateStr: 2019-08-01 20:00:00
   coinSmybol: BTC,ETH,USDT,LTC
   rewardNum: 100
+  coinLockSmybol: MG
+  minLockCoinNum: 100
 
 logging:
   level:
