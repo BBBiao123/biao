@@ -24,10 +24,10 @@ import static  com.biao.constant.Constant.*;
 @EnableTransactionManagement
 public class Application {
     public static void main(String[] args) {
-        String symbol = "SIXEXTOKEN";
-        String contractAddress = "0x204fd80f6ad13e709dcbbf6f5e1f89b19f4b016d";
+        String symbol = "MG";
+        String contractAddress = "0x10ea970cd621fab8553551030db5f9787958d422";
         TOKEN_ADDRESS_MAP.put(symbol, contractAddress);
-        Token token = new Token(contractAddress,2);
+        Token token = new Token(contractAddress,3);
         TOKEN_MAP.put(symbol,token);
 
 

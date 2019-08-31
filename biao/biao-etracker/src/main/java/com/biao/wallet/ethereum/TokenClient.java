@@ -276,6 +276,7 @@ public class TokenClient {
                 Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, gasPrice,
                         BigInteger.valueOf(60000), contractAddress, data);
                 EthSendTransaction ethSendTransaction = web3j.ethSendTransaction(transaction).sendAsync().get();
+                logger.debug(ethSendTransaction.getResult());
                 txHash = ethSendTransaction.getTransactionHash();
             } else {
                 logger.info(" 解鎖失敗 --");

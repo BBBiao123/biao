@@ -39,7 +39,7 @@ public class InitService implements CommandLineRunner {
         logger.info("初始化-------------- ");
         Web3j web3j = Web3j.build(new HttpService(Environment.RPC_URL));
         filter.newTransactionFilter(web3j);
-        String symbol = "SIXEXTOKEN";
+        String symbol = "MG";
         loomContractEvent.ContractFilter(web3j,symbol,TOKEN_ADDRESS_MAP.get(symbol), TOKEN_MAP.get(symbol).getDecimals());
     }
 }
