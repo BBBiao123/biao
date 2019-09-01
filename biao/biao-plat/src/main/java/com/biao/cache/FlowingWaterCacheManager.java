@@ -133,5 +133,6 @@ public class FlowingWaterCacheManager implements CommandLineRunner {
                         exPairVO.getPairOther()), streamVOS);
             }
         }
+        LOGGER.info("刷新流水到缓存成功..............");
     }
 }
