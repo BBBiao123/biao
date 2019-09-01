@@ -116,6 +116,7 @@ public class FlowingWaterCacheManager implements CommandLineRunner {
      */
     public void refreshMap(){
         List<RedisExPairVO> allExpair = redisCacheManager.acquireAllExpair();
+        map.clear();
         for (RedisExPairVO exPairVO : allExpair) {
             final List<MatchStream> list = matchStreamService
                     .findTopByCoinMainAndCoinOther(exPairVO.getPairOne(),
@@ -128,7 +129,6 @@ public class FlowingWaterCacheManager implements CommandLineRunner {
                         streamVOS.add(vo);
                     }
                 }
-                map.clear();
                 map.put(buildKey(exPairVO.getPairOne(),
                         exPairVO.getPairOther()), streamVOS);
             }
