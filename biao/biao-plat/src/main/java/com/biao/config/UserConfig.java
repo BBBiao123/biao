@@ -19,6 +19,7 @@ public class UserConfig {
 
     private BigDecimal secretFreeQuota;
 
+    private BigDecimal exRate;
 
     public LocalDateTime plusHours() {
         return LocalDateTime.now().plusHours(this.lockLength == null ? 24 : this.lockLength);
