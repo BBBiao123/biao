@@ -107,6 +107,9 @@ public class BalanceUserCoinVolume extends BaseEntity {
     @SqlField("deposit_value")
     private BigDecimal depositValue;
 
+    @SqlField("lock_flag")
+    private Integer lockFlag;
+
     public String getUserId() {
         return userId;
     }
@@ -337,5 +340,13 @@ public class BalanceUserCoinVolume extends BaseEntity {
 
     public void setDepositValue(BigDecimal depositValue) {
         this.depositValue = depositValue;
+    }
+
+    public Integer getLockFlag() {
+        return lockFlag;
+    }
+
+    public void setLockFlag(Integer lockFlag) {
+        this.lockFlag = lockFlag;
     }
 }

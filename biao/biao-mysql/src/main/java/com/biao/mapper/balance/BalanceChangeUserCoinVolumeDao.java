@@ -31,4 +31,9 @@ public interface BalanceChangeUserCoinVolumeDao {
     @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange where user_id = #{userId}   order by create_date desc")
     List<BalanceChangeUserCoinVolume> findChangeAllByUserId(String userId);
 
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange t where  t.flag=2  and take_out_date is null and  TIMESTAMPDIFF(DAY,t.create_date,NOW())>=t.contract_time  order by create_date desc")
+    List<BalanceChangeUserCoinVolume> findChangeLockOut();
+
+    @Select("select " + BalanceChangeUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balancechange t where user_id = #{userId} and   t.flag=2  and t.take_out_date is null and  TIMESTAMPDIFF(DAY,t.create_date,NOW())<t.contract_time  order by create_date desc")
+    List<BalanceChangeUserCoinVolume> findChangeLockByUserId(String userId);
 }

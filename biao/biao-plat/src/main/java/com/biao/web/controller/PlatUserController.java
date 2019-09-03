@@ -1442,5 +1442,16 @@ public class PlatUserController {
         map.put("isForceUpdate",userConfig.getIsForceUpdate());
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
     }
+    /**
+     * @return
+     */
+    @GetMapping("/user/usdt/exchangeRate")
+    public Mono<GlobalMessageResponseVo> getExchangRate() {
 
+        Map<String,Object> map=new HashMap<>();
+        //
+        map.put("exRate",userConfig.getExRate());
+
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
+    }
 }

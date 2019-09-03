@@ -819,6 +819,8 @@ public class ScheduledTasks {
         logger.info("exexute balanceIncomeDetail  start ....");
 //        balanceUserCoinVolumeDetailService.balanceIncomeDetail();
         //静态收益和平级奖的利率支持配置
+        balanceUserCoinVolumeDetailService.balanceRelieveLock();
+
         Map<String, BigDecimal> dayRateMap=new HashMap<String, BigDecimal>();
         dayRateMap.put("oneDayRate",balanceDayRateConfig.getOneDayRate());
         dayRateMap.put("secondDayRate",balanceDayRateConfig.getSecondDayRate());
@@ -976,5 +978,16 @@ public class ScheduledTasks {
             balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
         }
         logger.info("exexute balanceJackpotIncomeCount  end   ....");
+    }
+
+
+    /**
+     * 锁仓解锁至钱包
+     */
+//    @Scheduled(cron = "0 0/10 * * * ?")
+    public void balanceRelieve() {
+        logger.info("exexute balanceRelieve  start ....");
+        balanceUserCoinVolumeDetailService.balanceRelieveLock();
+        logger.info("exexute balanceRelieve  end   ....");
     }
 }

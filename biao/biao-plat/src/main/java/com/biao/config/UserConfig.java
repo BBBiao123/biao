@@ -23,6 +23,7 @@ public class UserConfig {
 
     private Integer isForceUpdate;
 
+    private BigDecimal exRate;
 
     public LocalDateTime plusHours() {
         return LocalDateTime.now().plusHours(this.lockLength == null ? 24 : this.lockLength);

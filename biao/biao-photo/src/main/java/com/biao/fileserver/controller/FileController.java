@@ -201,6 +201,7 @@ public class FileController {
         try {
             inputStream = file.getInputStream();
             String fileName = file.getOriginalFilename();
+            System.out.println("文件名：------"+fileName);
             String contentType = "png";
             int index = Objects.requireNonNull(fileName).lastIndexOf(".");
             if (index != -1) {
@@ -211,6 +212,7 @@ public class FileController {
             Map<String, String> userMetadata = new HashMap<>();
             userMetadata.put("simpleImageName", imageName);
             AliyunOOSUtils.uploadToAliyun(clientConfig, inputStream, idcardBucketName, AliyunOOSUtils.createObjectMetadata("application/" + contentType, file.getSize(), "utf-8", userMetadata));
+            System.out.println("上传名：-----"+idcardBucketName);
             return ResponseEntity.status(HttpStatus.OK).body(idcardBucketName + "?x-oss-process=style/uesstyle");
         } catch (IOException ex) {
             ex.printStackTrace();

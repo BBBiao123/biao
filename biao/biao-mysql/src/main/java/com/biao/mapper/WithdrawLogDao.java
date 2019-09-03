@@ -54,4 +54,7 @@ public interface WithdrawLogDao {
     @Select("select " + WithdrawLogSqlBuild.columns + " from js_plat_user_withdraw_log where coin_type = #{coinType} and status=#{status} ")
     List<WithdrawLog> findListByCoinTypeAndStatus(@Param("coinType") String coinType, @Param("status") Integer status);
 
+    @Select("SELECT price FROM js_plat_ex_order T WHERE coin_symbol = #{coinSymbol} AND coin_main = 'USDT' AND coin_other = #{coinSymbol} AND (status = 1 OR status = 2) AND T.price>0 ORDER BY update_date DESC ,id DESC LIMIT 1")
+    BigDecimal findPriceByCoinSymbolUpdateDate(String coinSymbol);
+
 }

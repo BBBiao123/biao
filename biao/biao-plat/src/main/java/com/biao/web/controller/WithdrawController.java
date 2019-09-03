@@ -279,11 +279,22 @@ public class WithdrawController {
                     String status=WithdrawStatusEnum.INIT.getCode();
                     BigDecimal secretFreeQuota= userConfig.getSecretFreeQuota();
                     TradePairVO tradePair = tradePairMap.get(withdrawLog.getCoinSymbol());
+                    BigDecimal platPrice=BigDecimal.ZERO;
                     if(tradePair!=null && tradePair.getLatestPrice() != null && tradePair.getLatestPrice().compareTo(BigDecimal.ZERO)>0){
-                        volume=volume.multiply(tradePair.getLatestPrice());
-                        if(secretFreeQuota !=null && secretFreeQuota.compareTo(volume)>0){
-                            status=WithdrawStatusEnum.AUDIT_PASS.getCode();
+                        platPrice=platPrice.add(tradePair.getLatestPrice());
+
+                    }
+                    if(platPrice.compareTo(BigDecimal.ZERO)<=0 && tradePair!=null){
+                        BigDecimal coinPrice=withdrawLogService.findPriceByCoinSymbolUpdateDate(withdrawLog.getCoinSymbol());
+                        if(coinPrice != null){
+                            platPrice=platPrice.add(coinPrice);
                         }
+                    }
+                    if(tradePair!=null){
+                        volume=volume.multiply(platPrice);
+                    }
+                    if(secretFreeQuota !=null && secretFreeQuota.compareTo(volume)>=0){
+                        status=WithdrawStatusEnum.AUDIT_PASS.getCode();
                     }
                     withdrawLogService.updateStatusByWithdrawLog(userId,status,withdrawLog);
 //                    withdrawLogService.updateStatusById(userId, WithdrawStatusEnum.INIT.getCode(), withdrawValidateVO.getId());
