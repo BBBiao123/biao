@@ -122,6 +122,7 @@ public class PlatDataHandler {
      * @return List MatchStreamVO
      */
     public List<MatchStreamVO> buildMatchStream(final String coinMain, final String coinOther) {
+        flowingWaterCacheManager.refreshMap();
         return flowingWaterCacheManager.find(coinMain, coinOther);
     }
 

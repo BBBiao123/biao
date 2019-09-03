@@ -75,7 +75,7 @@ public class FlowingWaterCacheManager implements CommandLineRunner {
                 map.put(key, collect);
             } else {
                 map.put(key, matchStreamVOS);
-            }
+        }
         } else {
             LinkedList<MatchStreamVO> vos = new LinkedList<>();
             vos.add(MatchStreamVO.transform(matchStreamDto));
@@ -105,11 +105,34 @@ public class FlowingWaterCacheManager implements CommandLineRunner {
             }
         }
         LOGGER.info("初始化流水到缓存成功...服务开始启动...........");
-
     }
 
     private String buildKey(final String coinMain, final String coinOther) {
         return coinMain + "_" + coinOther;
+    }
 
+    /**
+     * 刷新缓存
+     */
+    public void refreshMap(){
+        List<RedisExPairVO> allExpair = redisCacheManager.acquireAllExpair();
+        map.clear();
+        for (RedisExPairVO exPairVO : allExpair) {
+            final List<MatchStream> list = matchStreamService
+                    .findTopByCoinMainAndCoinOther(exPairVO.getPairOne(),
+                            exPairVO.getPairOther(), TOP);
+            if (CollectionUtils.isNotEmpty(list)) {
+                final LinkedList<MatchStreamVO> streamVOS = new LinkedList<>();
+                for (MatchStream matchStream : list) {
+                    if (matchStream != null) {
+                        MatchStreamVO vo = MatchStreamVO.transfrom(matchStream);
+                        streamVOS.add(vo);
+                    }
+                }
+                map.put(buildKey(exPairVO.getPairOne(),
+                        exPairVO.getPairOther()), streamVOS);
+            }
+        }
+        LOGGER.info("刷新流水到缓存成功..............");
     }
 }
