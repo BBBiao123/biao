@@ -139,7 +139,7 @@ public class PlatUserController {
             platUser.setMobile(platUserVO.getMobile());
             platUser.setMobileAuditDate(LocalDateTime.now());
             //验证手机验证码
-                smsMessageService.validSmsCode(platUserVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), validCode);
+            smsMessageService.validSmsCode(platUserVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), validCode);
         } else {
             //邮箱注册,验证验证码
             messageSendService.mailValid(MessageTemplateCode.REGISTER_TEMPLATE.getCode(), VerificationCodeType.REGISTER_CODE, platUserVO.getMail(), validCode);
@@ -276,7 +276,7 @@ public class PlatUserController {
         if (!isValid) {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
         }
-       String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+        String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
         String vaildStr=numStr+"QsRA!2586@FdkG";
         String decryPassword = RsaUtils.decryptByPrivateKey(messageVO.getVaildCodeKey(), RsaUtils.DEFAULT_PRIVATE_KEY);
         if (!vaildStr.equals(decryPassword)) {
@@ -661,20 +661,20 @@ public class PlatUserController {
         //验证短信验证码
         Integer mobileOrMail = StringUtils.isNotBlank(user.getMobile()) ? 1 : 2;
 //        if (!smsCode.equals("123456")) {
-            if (mobileOrMail == 1) {
-                //手机验证
-                if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), smsCode)) {
-                    com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
-                            com.biao.reactive.data.mongo.disruptor.DisruptorData.
-                                    buildSecurityLog(SecurityLogEnums.SECURITY_BINDER_GOOGLE, 1, "手机验证码验证失败",
-                                            user.getId(), user.getMobile(), user.getMail()));
-                    return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
-                }
-            } else {
-                //邮件验证
-                logger.info("绑定谷歌mail:{},验证code:{}", mobileOrMail, smsCode);
-                messageSendService.mailValid(MessageTemplateCode.EMAIL_BINDER_GOOGLE_TEMPLATE.getCode(), VerificationCodeType.BINDER_GOOGLE_CODE_MAIL, user.getMail(), smsCode);
+        if (mobileOrMail == 1) {
+            //手机验证
+            if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_BINDER_GOOGLE_TEMPLATE.getCode(), smsCode)) {
+                com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                        com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                buildSecurityLog(SecurityLogEnums.SECURITY_BINDER_GOOGLE, 1, "手机验证码验证失败",
+                                        user.getId(), user.getMobile(), user.getMail()));
+                return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
             }
+        } else {
+            //邮件验证
+            logger.info("绑定谷歌mail:{},验证code:{}", mobileOrMail, smsCode);
+            messageSendService.mailValid(MessageTemplateCode.EMAIL_BINDER_GOOGLE_TEMPLATE.getCode(), VerificationCodeType.BINDER_GOOGLE_CODE_MAIL, user.getMail(), smsCode);
+        }
 //        }
 
         PlatUser platUser = new PlatUser();
@@ -1091,26 +1091,26 @@ public class PlatUserController {
     private Mono<GlobalMessageResponseVo> updateExPassword(RedisSessionUser user, PlatUserVO platUserVO) {
         Integer  exValidType=platUserVO.getExValidType();
 //        if (!platUserVO.getCode().equals("123456")) {
-            if (exValidType == 0) {
-                if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), platUserVO.getCode())) {
-                    com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
-                            com.biao.reactive.data.mongo.disruptor.DisruptorData.
-                                    buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "手机验证码验证失败",
-                                            user.getId(), user.getMobile(), user.getMail()));
-                    return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
-                }
+        if (exValidType == 0) {
+            if (!smsMessageService.validSmsCode(user.getMobile(), MessageTemplateCode.MOBILE_TRADE_PASSWORD_TEMPLATE.getCode(), platUserVO.getCode())) {
+                com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                        com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "手机验证码验证失败",
+                                        user.getId(), user.getMobile(), user.getMail()));
+                return Mono.just(GlobalMessageResponseVo.newErrorInstance("手机验证码验证失败"));
             }
-            if (exValidType == 1) {
-                //邮箱验证
-                try {
-                    messageSendService.mailValid(MessageTemplateCode.EMAIL_TRADE_PASSWORD_TEMPLATE.getCode(), VerificationCodeType.EX_TRADE_PASS, user.getMail(),  platUserVO.getCode());
-                } catch (Exception e) {
-                    com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
-                            com.biao.reactive.data.mongo.disruptor.DisruptorData.
-                                    buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "邮箱验证码验证失败",
-                                            user.getId(), user.getMobile(), user.getMail()));
-                    return Mono.just(GlobalMessageResponseVo.newErrorInstance("邮箱验证码验证失败"));
-                }
+        }
+        if (exValidType == 1) {
+            //邮箱验证
+            try {
+                messageSendService.mailValid(MessageTemplateCode.EMAIL_TRADE_PASSWORD_TEMPLATE.getCode(), VerificationCodeType.EX_TRADE_PASS, user.getMail(),  platUserVO.getCode());
+            } catch (Exception e) {
+                com.biao.reactive.data.mongo.disruptor.DisruptorData.saveSecurityLog(
+                        com.biao.reactive.data.mongo.disruptor.DisruptorData.
+                                buildSecurityLog(SecurityLogEnums.SECURITY_UPDATE_EX_PASS, 1, "邮箱验证码验证失败",
+                                        user.getId(), user.getMobile(), user.getMail()));
+                return Mono.just(GlobalMessageResponseVo.newErrorInstance("邮箱验证码验证失败"));
+            }
 //            }
 
         }
@@ -1418,11 +1418,11 @@ public class PlatUserController {
      */
     @GetMapping("/user/vaildCode/numRandom")
     public Mono<GlobalMessageResponseVo> getNumRandom() {
-       String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
-       if(StringUtils.isBlank(numStr)){
-           numStr=   NumberUtils.getRandomNumber(10);
-           stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,45,TimeUnit.SECONDS);
-       }
+        String numStr= stringRedisTemplate.opsForValue().get("vaild:code:num");
+        if(StringUtils.isBlank(numStr)){
+            numStr=   NumberUtils.getRandomNumber(10);
+            stringRedisTemplate.opsForValue().set("vaild:code:num", numStr,45,TimeUnit.SECONDS);
+        }
 
         Map<String,String> map=new HashMap<>();
         //
@@ -1430,6 +1430,18 @@ public class PlatUserController {
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
     }
 
+    /**
+     * @return
+     */
+    @GetMapping("/user/app/lastVersion")
+    public Mono<GlobalMessageResponseVo> getLastVersion() {
+
+        Map<String,Object> map=new HashMap<>();
+        //
+        map.put("lastVersion",userConfig.getLastVersion());
+        map.put("isForceUpdate",userConfig.getIsForceUpdate());
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
+    }
     /**
      * @return
      */
