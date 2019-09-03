@@ -22,5 +22,7 @@ public interface WithdrawLogService {
 
     BigDecimal countDayVolumeByUserIdAndCoinIdAndStatus(String userId, String coinId);
 
-    void updateStatusByWithdrawLog(String userId, String code,WithdrawLog withdrawLog);
+    void updateStatusByWithdrawLog(String userId, String code, WithdrawLog withdrawLog);
+
+    BigDecimal  findPriceByCoinSymbolUpdateDate(String coinSymbol);
 }

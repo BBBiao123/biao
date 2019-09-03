@@ -262,5 +262,8 @@ public class WithdrawLogServiceImpl implements WithdrawLogService {
 
 
     }
-
+    @Override
+    public BigDecimal  findPriceByCoinSymbolUpdateDate(String coinSymbol){
+        return withdrawLogDao.findPriceByCoinSymbolUpdateDate(coinSymbol);
+    }
 }
