@@ -19,6 +19,10 @@ public class UserConfig {
 
     private BigDecimal secretFreeQuota;
 
+    private Integer lastVersion;
+
+    private Integer isForceUpdate;
+
     private BigDecimal exRate;
 
     public LocalDateTime plusHours() {

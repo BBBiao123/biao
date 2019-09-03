@@ -112,6 +112,9 @@ user:
   config:
     lockLength: 0
     secretFreeQuota: 0
+    lastVersion: 300
+    isForceUpdate: 1
+    exRate: 7.2
   coin-volume-bill:
     #     执行的节点数量
     needs: 1
