@@ -1440,6 +1440,8 @@ public class PlatUserController {
         //
         map.put("lastVersion",userConfig.getLastVersion());
         map.put("isForceUpdate",userConfig.getIsForceUpdate());
+        map.put("androidUrl",userConfig.getAndroidUrl());
+        map.put("iosUrl",userConfig.getIosUrl());
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
     }
     /**

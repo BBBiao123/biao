@@ -23,6 +23,10 @@ public class UserConfig {
 
     private Integer isForceUpdate;
 
+    private String androidUrl;
+
+    private String iosUrl;
+
     private BigDecimal exRate;
 
     public LocalDateTime plusHours() {

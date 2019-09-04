@@ -114,6 +114,8 @@ user:
     secretFreeQuota: 0
     lastVersion: 300
     isForceUpdate: 1
+    androidUrl: images.coceu.com/app/android/
+    iosUrl: images.coceu.com/app/ios/
     exRate: 7.2
   coin-volume-bill:
     #     执行的节点数量
