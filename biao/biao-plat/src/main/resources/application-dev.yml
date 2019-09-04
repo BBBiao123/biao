@@ -112,8 +112,12 @@ user:
   config:
     lockLength: 0
     secretFreeQuota: 0
-    lastVersion: 300
-    isForceUpdate: 1
+    lastAndroidVersion: 300
+    lastIosVersion: 300
+    isAndroidForceUpdate: 1
+    isIosForceUpdate: 1
+    androidUrl: http://images.coceu.com/app/android/
+    iosUrl: http://images.coceu.com/app/ios/
     exRate: 7.2
   coin-volume-bill:
     #     执行的节点数量
