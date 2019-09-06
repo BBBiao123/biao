@@ -9,11 +9,15 @@ import com.biao.rebot.service.async.AsyncDepth;
 import com.biao.rebot.service.async.AsyncNotify;
 import jodd.util.RandomString;
 import org.apache.commons.lang3.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,6 +33,7 @@ import java.util.concurrent.Executors;
  */
 @SuppressWarnings("all")
 public class AsyncRobotService<D extends AsyncData> extends RobotService implements AsyncNotify<D> {
+    private final Logger logger = LoggerFactory.getLogger(AsyncRobotService.class);
 
     //实始化一个异步通知的服务..
 
@@ -48,6 +53,7 @@ public class AsyncRobotService<D extends AsyncData> extends RobotService impleme
 
     @Override
     public void start() {
+
         super.start();
         //异步的处理.
         //初始化价格服务；
@@ -55,6 +61,7 @@ public class AsyncRobotService<D extends AsyncData> extends RobotService impleme
         asyncNotify.addNotify(this);
         loadParams();
         RobotParam.get().addConfigChange(this);
+        logger.info("------------------     tradeTime " + RobotParam.get().getRobotCtx().getTradeTime() + "       --------------");
     }
 
     @Override
@@ -64,10 +71,20 @@ public class AsyncRobotService<D extends AsyncData> extends RobotService impleme
 
     @Override
     public void notify(D d) {
-        boolean f = LocalDateTime.now().getSecond() % defSs == 0;
+        boolean f = LocalDateTime.now().getMinute() % RobotParam.get().getRobotCtx().getTradeTime() == 0;
         if (!f) {
             return;
         }
+        logger.info("------------------  " + new Date() + "     notify  [in]       --------------");
+        try {
+            Random random = new Random();
+            int delay = random.nextInt(  RobotParam.get().getRobotCtx().getTradeTime()* 60);
+            Thread.sleep(delay * 1000);
+            logger.info("-------------------------- delay : "+delay +"  ------------- " + new Date() + " -----------------------------");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         String symbol = d.getSymbol();
         //发送买单.
         String buyKey = symbol + "_" + TradeEnum.BUY;

@@ -1,7 +1,7 @@
 ## 访问的交易网地址；
 url: http://47.244.153.103:8083
 ## 交易时间定义 s;
-tradeTime: 1
+tradeTime: 2
 ##获取volume的工厂算法；
 volumeFactory: com.biao.robot.RandomRobotVolume
 ##获取price的工厂算法；

@@ -41,7 +41,8 @@
         </encoder>
     </appender>
     <logger name="com.biao.robot"/>
-    <root level="${log.level}">
+<!--    <root level="${log.level}">-->
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="binlog_file"/>
         <appender-ref ref="error_file"/>
