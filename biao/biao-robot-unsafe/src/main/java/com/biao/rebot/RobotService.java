@@ -103,6 +103,7 @@ public class RobotService {
             //启动运行机器人；
             int size = RobotParam.get().getParams().size();
             service = Executors.newScheduledThreadPool(size, new NameThreadFactory("robot_trade"));
+            logger.info("------------------------------------  tradeTime =  " + RobotParam.get().getRobotCtx().getTradeTime() );
             RobotParam.get().getParams().forEach(v -> service.scheduleWithFixedDelay(
                     new RobotRun(v),
                     0,

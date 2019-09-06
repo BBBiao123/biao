@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -71,19 +72,22 @@ public class AsyncRobotService<D extends AsyncData> extends RobotService impleme
 
     @Override
     public void notify(D d) {
-        boolean f = LocalDateTime.now().getMinute() % RobotParam.get().getRobotCtx().getTradeTime() == 0;
+
+//        logger.info("------------------  "+new Date()+"   [in]       --------------");
+
+        boolean f = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli()/1000 % (1+ (int)(Math.random()*(RobotParam.get().getRobotCtx().getTradeTime()))) == 0;
         if (!f) {
             return;
         }
-        logger.info("------------------  " + new Date() + "     notify  [in]       --------------");
-        try {
-            Random random = new Random();
-            int delay = random.nextInt(  RobotParam.get().getRobotCtx().getTradeTime()* 60);
-            Thread.sleep(delay * 1000);
-            logger.info("-------------------------- delay : "+delay +"  ------------- " + new Date() + " -----------------------------");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        logger.info("------------------  " + new Date() + "     notify  [in]       --------------   " + d.getSymbol());
+//        try {
+//            Random random = new Random();
+//            int delay = random.nextInt(   10);
+//            Thread.sleep(delay * 1000);
+//            logger.info("-------------------------- delay : "+delay +"  ------------- " + new Date() + " -----------------------------");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         String symbol = d.getSymbol();
         //发送买单.
@@ -156,6 +160,21 @@ public class AsyncRobotService<D extends AsyncData> extends RobotService impleme
                 BigDecimal volume = priceService.calVolume(e.getVolume(), getWeight().getCoinMain(), getWeight().getCoinOther(), getWeight());
                 buy(price, volume);
             });
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        while (true){
+            System.out.println(new Date());
+            System.out.println(LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli()/1000);
+           Integer num = 1+ (int)(Math.random()*(10));
+            System.out.println(num);
+            boolean f = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli()/1000 % num == 0;
+            System.out.println(f);
+            if(f){
+                System.out.println();
+            }
+            Thread.sleep(1000l);
         }
     }
 }

@@ -108,13 +108,13 @@ public class RobotCancelTrade implements AsyncNotify {
         service.scheduleAtFixedRate(
                 cancelCompute,
                 0,
-                30,
+                10,
                 TimeUnit.SECONDS);
-        service.scheduleAtFixedRate(
-                new CancelCompute2(cancelCompute),
-                0,
-                30,
-                TimeUnit.SECONDS);
+//        service.scheduleAtFixedRate(
+//                new CancelCompute2(cancelCompute),
+//                0,
+//                10,
+//                TimeUnit.SECONDS);
         service.execute(new CancelRun());
     }
 
@@ -147,11 +147,14 @@ public class RobotCancelTrade implements AsyncNotify {
             while (true) {
                 try {
                     String orderNo = queue.take();
+                    logger.info("收到取消订单进行消费 ：" + orderNo);
                     if (StringUtils.isNoneBlank(orderNo)) {
                         //这里判断一下数据.
                         TradeDto o = (TradeDto) redisTemplate.opsForHash().get(TradeConstant.TRADE_PREPOSITION_KEY, orderNo);
+                        logger.info("tradeDto ：" + o.getUserId() +"     token usdtId: "+ RobotParam.get().hasUser(o.getUserId()));
                         if (o != null && RobotParam.get().hasUser(o.getUserId())) {
                             String symbol = RobotParam.joinSymbolByType(o.getCoinMain(), o.getCoinOther(), o.getType());
+                            logger.info("调用取消方法  " +symbol );
                             tradeService.cancel(orderNo, symbol);
                         }
                     }
