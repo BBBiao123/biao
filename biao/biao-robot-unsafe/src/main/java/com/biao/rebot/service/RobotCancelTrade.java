@@ -108,12 +108,12 @@ public class RobotCancelTrade implements AsyncNotify {
         service.scheduleAtFixedRate(
                 cancelCompute,
                 0,
-                5,
+                30,
                 TimeUnit.SECONDS);
         service.scheduleAtFixedRate(
                 new CancelCompute2(cancelCompute),
                 0,
-                5,
+                30,
                 TimeUnit.SECONDS);
         service.execute(new CancelRun());
     }
