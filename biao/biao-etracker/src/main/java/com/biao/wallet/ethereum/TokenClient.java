@@ -268,15 +268,17 @@ public class TokenClient {
                 EthGetTransactionCount ethGetTransactionCount = web3j
                         .ethGetTransactionCount(fromAddress, DefaultBlockParameterName.PENDING).sendAsync().get();
                 BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+                logger.info("--------------------- nonce :  " +nonce);
                 //BigInteger gasPrice = Convert.toWei(BigDecimal.valueOf(6), Convert.Unit.GWEI).toBigInteger();
                 EthGasPrice ethGasPrice = (EthGasPrice) web3j.ethGasPrice().send();
-                BigInteger gasPrice = Convert.toWei(BigDecimal.valueOf(5), Convert.Unit.GWEI).toBigInteger();
+                logger.info("--------------------- ethgasprice:  " + ethGasPrice.getGasPrice());
+                BigInteger gasPrice = Convert.toWei(BigDecimal.valueOf(30), Convert.Unit.GWEI).toBigInteger();
 //                Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, ethGasPrice.getGasPrice().multiply(BigInteger.valueOf(2)),
 //                        Constant.GAS_LIMIT, contractAddress, data);
                 Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, gasPrice,
                         BigInteger.valueOf(60000), contractAddress, data);
                 EthSendTransaction ethSendTransaction = web3j.ethSendTransaction(transaction).sendAsync().get();
-                logger.debug(ethSendTransaction.getResult());
+                logger.info(ethSendTransaction.getResult());
                 txHash = ethSendTransaction.getTransactionHash();
             } else {
                 logger.info(" 解鎖失敗 --");
