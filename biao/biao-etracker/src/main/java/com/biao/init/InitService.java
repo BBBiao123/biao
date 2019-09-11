@@ -41,5 +41,7 @@ public class InitService implements CommandLineRunner {
         filter.newTransactionFilter(web3j);
         String symbol = "MG";
         loomContractEvent.ContractFilter(web3j,symbol,TOKEN_ADDRESS_MAP.get(symbol), TOKEN_MAP.get(symbol).getDecimals());
+        String symbol_bat = "BAT";
+        loomContractEvent.ContractFilter(web3j,symbol_bat,TOKEN_ADDRESS_MAP.get(symbol_bat), TOKEN_MAP.get(symbol_bat).getDecimals());
     }
 }
