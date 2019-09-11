@@ -17,14 +17,13 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 服务处理；
- *
- *
  */
 public class RobotService {
     private final Logger logger = LoggerFactory.getLogger(RobotService.class);
@@ -104,7 +103,8 @@ public class RobotService {
             //启动运行机器人；
             int size = RobotParam.get().getParams().size();
             service = Executors.newScheduledThreadPool(size, new NameThreadFactory("robot_trade"));
-            RobotParam.get().getParams().forEach(v -> service.scheduleAtFixedRate(
+            logger.info("------------------------------------  tradeTime =  " + RobotParam.get().getRobotCtx().getTradeTime() );
+            RobotParam.get().getParams().forEach(v -> service.scheduleWithFixedDelay(
                     new RobotRun(v),
                     0,
                     RobotParam.get().getRobotCtx().getTradeTime(),
@@ -152,6 +152,13 @@ public class RobotService {
 
         @Override
         public void run() {
+            try {
+                Random random = new Random();
+                int delay = random.nextInt(  RobotParam.get().getRobotCtx().getTradeTime()* 5);
+                Thread.sleep(delay * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             try {
                 buy();
                 sell();

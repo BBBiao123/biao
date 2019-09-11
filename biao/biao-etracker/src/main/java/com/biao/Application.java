@@ -24,11 +24,16 @@ import static  com.biao.constant.Constant.*;
 @EnableTransactionManagement
 public class Application {
     public static void main(String[] args) {
-        String symbol = "MG";
-        String contractAddress = "0x10ea970cd621fab8553551030db5f9787958d422";
-        TOKEN_ADDRESS_MAP.put(symbol, contractAddress);
-        Token token = new Token(contractAddress,3);
-        TOKEN_MAP.put(symbol,token);
+        String symbol_mg = "MG";
+        String contractAddress_mg = "0x10ea970cd621fab8553551030db5f9787958d422";
+        String symbol_bat = "BAT";
+        String contractAddress_bat ="0x0d8775f648430679a709e98d2b0cb6250d2887ef";
+        TOKEN_ADDRESS_MAP.put(symbol_mg, contractAddress_mg);
+        TOKEN_ADDRESS_MAP.put(symbol_bat, contractAddress_bat);
+        Token token_mg = new Token(contractAddress_mg,3);
+        Token token_bat = new Token(contractAddress_bat,18);
+        TOKEN_MAP.put(symbol_mg,token_mg);
+        TOKEN_MAP.put(symbol_bat,token_bat);
 
 
         Constant.TOKEN_LIST = TOKEN_ADDRESS_MAP.entrySet().stream()

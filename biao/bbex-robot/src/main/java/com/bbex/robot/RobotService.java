@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +54,7 @@ public class RobotService {
             //启动运行机器人；
             int size = RobotPamart.get().getParams().size();
             service = Executors.newScheduledThreadPool(size, new NameThreadFactory("robot_trade"));
-            RobotPamart.get().getParams().forEach(k -> service.scheduleAtFixedRate(
+            RobotPamart.get().getParams().forEach(k -> service.scheduleWithFixedDelay(
                     new RobotRun(k),
                     0,
                     RobotPamart.get().getRobotCtx().getTradeTime(),
@@ -92,7 +93,14 @@ public class RobotService {
 
         @Override
         public void run() {
+            try {
             logger.info("执行线程名称 ： " + Thread.currentThread().getName() + "，  id： " + Thread.currentThread().getId());
+            Random random = new Random();
+            int delay = random.nextInt(RobotPamart.get().getRobotCtx().getTradeTime());
+                Thread.sleep(delay* 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             try {
                 buy();
                 sell();

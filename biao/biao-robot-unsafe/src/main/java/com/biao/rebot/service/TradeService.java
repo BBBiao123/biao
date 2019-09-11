@@ -199,7 +199,9 @@ public class TradeService {
         params.put(Constants.TRADE_ORDER_NO, orderNo);
         Response response;
         try {
+            logger.info("取消订单 " );
             response = oh.requestRestGet(params, RobotParam.get().headers(symbol, login(symbol)), url);
+            logger.info("取消订单 " +response.getMsg() );
         } catch (UnsupportedEncodingException e) {
             logger.error("发送GET请求失败{}", e);
             return false;
