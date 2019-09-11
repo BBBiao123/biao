@@ -272,7 +272,7 @@ public class PlatUserController {
         authenticateSigVO.setSessionId(messageVO.getSessionId());
         authenticateSigVO.setSig(messageVO.getSig());
         authenticateSigVO.setToken(messageVO.getVtoken());
-        boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+        boolean isValid = AliYunAuthenticateSigUtils.isValidOpen(authenticateSigVO);
         if (!isValid) {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
         }
@@ -339,7 +339,7 @@ public class PlatUserController {
                     authenticateSigVO.setSessionId(platUserVO.getSessionId());
                     authenticateSigVO.setSig(platUserVO.getSig());
                     authenticateSigVO.setToken(platUserVO.getVtoken());
-                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    boolean isValid = AliYunAuthenticateSigUtils.isValidOpen(authenticateSigVO);
                     if (!isValid) {
                         throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
@@ -386,7 +386,7 @@ public class PlatUserController {
                     authenticateSigVO.setSessionId(platUserVO.getSessionId());
                     authenticateSigVO.setSig(platUserVO.getSig());
                     authenticateSigVO.setToken(platUserVO.getVtoken());
-                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    boolean isValid = AliYunAuthenticateSigUtils.isValidOpen(authenticateSigVO);
                     if (!isValid) {
                         throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
@@ -515,7 +515,7 @@ public class PlatUserController {
                     authenticateSigVO.setSessionId(platUserVO.getSessionId());
                     authenticateSigVO.setSig(platUserVO.getSig());
                     authenticateSigVO.setToken(platUserVO.getVtoken());
-                    boolean isValid = AliYunAuthenticateSigUtils.isValid(authenticateSigVO);
+                    boolean isValid = AliYunAuthenticateSigUtils.isValidOpen(authenticateSigVO);
                     if (!isValid) {
                         throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
