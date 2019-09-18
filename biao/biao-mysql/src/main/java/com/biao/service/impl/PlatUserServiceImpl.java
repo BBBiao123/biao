@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.biao.entity.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,6 @@ import com.biao.constant.RedisConstants;
 import com.biao.constant.SercurityConstant;
 import com.biao.disruptor.DisruptorData;
 import com.biao.disruptor.DisruptorManager;
-import com.biao.entity.PlatUser;
-import com.biao.entity.PlatUserOplog;
-import com.biao.entity.PlatUserSyna;
-import com.biao.entity.UserRelation;
 import com.biao.enums.CardStatusEnum;
 import com.biao.enums.PlatUserOplogTypeEnum;
 import com.biao.enums.UserCardStatusEnum;
@@ -510,6 +507,11 @@ public class PlatUserServiceImpl implements PlatUserService {
     @Override
     public PlatUser findByInviteCode(String inviteCode){
         return platUserDao.findByInviteCode(inviteCode);
+    }
+
+    @Override
+    public  List<Sysdict> findBySysdictType(){
+        return platUserDao.findBySysdictType();
     }
 
 }
