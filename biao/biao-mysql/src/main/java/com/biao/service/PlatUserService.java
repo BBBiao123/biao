@@ -2,6 +2,7 @@ package com.biao.service;
 
 import com.biao.entity.PlatUser;
 import com.biao.entity.PlatUserSyna;
+import com.biao.entity.Sysdict;
 import com.biao.pojo.CardStatuScanCheckDTO;
 import com.biao.pojo.ResponsePage;
 import com.biao.query.UserLoginLogQuery;
@@ -67,4 +68,6 @@ public interface PlatUserService {
     void userCardStatuScanCheck(CardStatuScanCheckDTO cardStatuScanCheckDTO);
 
     PlatUser findByInviteCode(String inviteCode);
+
+    List<Sysdict> findBySysdictType();
 }

@@ -1,6 +1,7 @@
 package com.biao.mapper;
 
 import com.biao.entity.PlatUser;
+import com.biao.entity.Sysdict;
 import com.biao.entity.UserRelation;
 import com.biao.sql.build.PlatUserSqlBuild;
 import com.biao.sql.build.UserRelationSqlBuild;
@@ -101,4 +102,9 @@ public interface PlatUserDao {
 
     @Select("select " + PlatUserSqlBuild.columns + "  from js_plat_user where invite_code = #{inviteCode} limit 1")
     PlatUser findByInviteCode(String inviteCode);
+
+    @Select("select id,value,label,type,sort FROM sys_dict t where t.type='country_code' order by t.sort")
+    List<Sysdict> findBySysdictType();
+
+
 }

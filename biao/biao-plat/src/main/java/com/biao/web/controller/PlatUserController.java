@@ -9,6 +9,7 @@ import com.biao.disruptor.DisruptorData;
 import com.biao.disruptor.DisruptorManager;
 import com.biao.entity.PlatUser;
 import com.biao.entity.PlatUserOplog;
+import com.biao.entity.Sysdict;
 import com.biao.enums.*;
 import com.biao.exception.PlatException;
 import com.biao.google.GoogleAuthenticator;
@@ -48,10 +49,7 @@ import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -1457,5 +1455,16 @@ public class PlatUserController {
         map.put("exRate",userConfig.getExRate());
 
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(map));
+    }
+
+    /**
+     * @return
+     */
+    @GetMapping("/user/sysdict/countryCode")
+    public Mono<GlobalMessageResponseVo> getCountryCode() {
+
+        List<Sysdict> sysList=platUserService.findBySysdictType();
+
+        return Mono.just(GlobalMessageResponseVo.newSuccessInstance(sysList));
     }
 }
