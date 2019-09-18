@@ -1,6 +1,7 @@
 package com.biao.mapper;
 
 import com.biao.entity.PlatUser;
+import com.biao.entity.Sysdict;
 import com.biao.entity.UserRelation;
 import com.biao.sql.build.PlatUserSqlBuild;
 import com.biao.sql.build.UserRelationSqlBuild;
@@ -95,10 +96,15 @@ public interface PlatUserDao {
 
     @Update("UPDATE js_plat_user SET tag = #{tag}, c2c_out = '1' WHERE id = #{id} AND IFNULL(tag, '') = '' ")
     long updateUserTag(PlatUser user);
-    
+
     @Select("SELECT " + PlatUserSqlBuild.columns + " FROM js_plat_user WHERE card_status = #{cardStatus} and card_level = #{cardLevel} and (card_status_check_time< #{cardStatusCheckTime} or card_status_check_time is null) and country_code = #{contryCode}")
     List<PlatUser> findByNeedCardStatusChech(@Param("contryCode")String contryCode,@Param("cardLevel")Integer cardLevel,@Param("cardStatus")Integer cardStatus,@Param("cardStatusCheckTime")Integer cardStatusCheckTime);
 
     @Select("select " + PlatUserSqlBuild.columns + "  from js_plat_user where invite_code = #{inviteCode} limit 1")
     PlatUser findByInviteCode(String inviteCode);
+
+    @Select("select id,value,label,type,sort FROM sys_dict t where t.type='country_code' order by t.sort")
+    List<Sysdict> findBySysdictType();
+
+
 }
