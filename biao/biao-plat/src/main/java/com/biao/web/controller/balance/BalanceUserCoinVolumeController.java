@@ -490,7 +490,11 @@ public class BalanceUserCoinVolumeController {
 
                         }
                         if (coinVolumeVO.getCoinNum() != null) {
-                            coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            if("BTC".equalsIgnoreCase(coinVolumeVO.getCoinSymbol())){
+                                coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(6, BigDecimal.ROUND_HALF_UP));
+                            }else{
+                                coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            }
                         }
                         coinVolumeVO.setUserName(userName);
 
@@ -788,7 +792,12 @@ public class BalanceUserCoinVolumeController {
                         }
                         coinVolumeVO.setUserName(userName);
                         if (coinVolumeVO.getCoinNum() != null) {
-                            coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            if("BTC".equalsIgnoreCase(coinVolumeVO.getCoinSymbol())){
+                                coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(6, BigDecimal.ROUND_HALF_UP));
+                            }else{
+                                coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            }
+
                         }
 
                         if (coinVolumeVO.getAccumulIncome() != null) {
@@ -943,7 +952,11 @@ public class BalanceUserCoinVolumeController {
                             // coinVolumeVO.setCreateStr(takeOutTimeStr);
                         }
                         if (coinVolumeVO.getCoinNum() != null) {
-                            coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            if("BTC".equalsIgnoreCase(coinVolumeVO.getCoinSymbol())){
+                                coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(6, BigDecimal.ROUND_HALF_UP));
+                            }else{
+                                coinVolumeVO.setCoinNum(coinVolumeVO.getCoinNum().setScale(2, BigDecimal.ROUND_HALF_UP));
+                            }
                         }
                         listVo.add(coinVolumeVO);
                     });

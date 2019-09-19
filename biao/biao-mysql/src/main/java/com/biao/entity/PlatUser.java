@@ -125,6 +125,15 @@ public class PlatUser extends BaseEntity {
     @SqlField("is_registered_cs")
     private String isRegisteredCs;
 
+    @SqlField("country_sysid")
+    private String countrySysid;
+
+    @SqlField("country_syscode")
+    private String countrySyscode;
+
+    @SqlField("country_sysname")
+    private String countrySysname;
+
     private String multielementTag;
 
     private String moneyHoldingTag;
@@ -512,5 +521,29 @@ public class PlatUser extends BaseEntity {
 
     public void setIsRegisteredCs(String isRegisteredCs) {
         this.isRegisteredCs = isRegisteredCs;
+    }
+
+    public String getCountrySysid() {
+        return countrySysid;
+    }
+
+    public void setCountrySysid(String countrySysid) {
+        this.countrySysid = countrySysid;
+    }
+
+    public String getCountrySyscode() {
+        return countrySyscode;
+    }
+
+    public void setCountrySyscode(String countrySyscode) {
+        this.countrySyscode = countrySyscode;
+    }
+
+    public String getCountrySysname() {
+        return countrySysname;
+    }
+
+    public void setCountrySysname(String countrySysname) {
+        this.countrySysname = countrySysname;
     }
 }

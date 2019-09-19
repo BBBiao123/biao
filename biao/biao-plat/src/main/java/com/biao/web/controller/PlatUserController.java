@@ -150,6 +150,9 @@ public class PlatUserController {
         platUser.setInviteCode(platUserVO.getInviteCode());
         platUser.setCountryCode(platUserVO.getCountryCode());
         platUser.setCountryId(platUserVO.getCountryId());
+        platUser.setCountrySyscode(platUserVO.getCountrySyscode());
+        platUser.setCountrySysid(platUserVO.getCountrySysid());
+        platUser.setCountrySysname(platUserVO.getCountrySysname());
         try {
             platUserService.registerPlatUser(platUser, true);
             neo4jPlatUserService.save(platUser); // 保存用户节点和关系到NEO4J库
@@ -1466,5 +1469,35 @@ public class PlatUserController {
         List<Sysdict> sysList=platUserService.findBySysdictType();
 
         return Mono.just(GlobalMessageResponseVo.newSuccessInstance(sysList));
+    }
+
+    /**
+     * @return
+     */
+    @GetMapping("/user/sysdict/userCountryInfo")
+    public Mono<GlobalMessageResponseVo> getUserCountryInfo() {
+        return ReactiveSecurityContextHolder.getContext()
+                .filter(c -> c.getAuthentication() != null)
+                .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    PlatUser platUser=  platUserService.findById(user.getId());
+                    return Mono.just(GlobalMessageResponseVo.newSuccessInstance(platUser));
+                });
+    }
+    /**
+     * @return
+     */
+    @PostMapping("/user/sysdict/saveUserCountryInfo")
+    public Mono<GlobalMessageResponseVo> saveUserCountryInfo(PlatUserVO platUserVO) {
+        return ReactiveSecurityContextHolder.getContext()
+                .filter(c -> c.getAuthentication() != null)
+                .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).cast(RedisSessionUser.class).flatMap(user -> {
+                    PlatUser platUser=new PlatUser();
+                    platUser.setId(user.getId());
+                    platUser.setCountrySysid(platUserVO.getCountrySysid());
+                    platUser.setCountrySyscode(platUserVO.getCountrySyscode());
+                    platUser.setCountrySysname(platUserVO.getCountrySysname());
+                    platUserService.updateById(platUser);
+                    return Mono.just(GlobalMessageResponseVo.newSuccessInstance("保存成功"));
+                });
     }
 }

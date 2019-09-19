@@ -112,7 +112,7 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
         UserCoinVolume userVolume = userCoinVolumeExService.findByUserIdAndCoinSymbol(balanceUserCoinVolume.getUserId(), balanceUserCoinVolume.getCoinSymbol());
         BigDecimal userCoinIncome = userVolume.getVolume();
         BigDecimal userCoinIncome2 = userVolume.getVolume();
-        userCoinIncome= userCoinIncome.setScale(2, BigDecimal.ROUND_HALF_UP);
+        userCoinIncome= userCoinIncome.setScale(6, BigDecimal.ROUND_HALF_UP);
         BigDecimal coinBalance=balanceUserCoinVolume.getCoinBalance();
         if(coinBalance.compareTo(userCoinIncome)==0){
             coinBalance=userCoinIncome2;

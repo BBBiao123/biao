@@ -75,6 +75,12 @@ public class PlatUserVO implements Serializable {
 
     private String authTag;
 
+    private String countrySysid;
+
+    private String countrySyscode;
+
+    private String countrySysname;
+
     public Integer getRegisterType() {
         return registerType;
     }
@@ -337,5 +343,29 @@ public class PlatUserVO implements Serializable {
 
     public void setAuthTag(String authTag) {
         this.authTag = authTag;
+    }
+
+    public String getCountrySysid() {
+        return countrySysid;
+    }
+
+    public void setCountrySysid(String countrySysid) {
+        this.countrySysid = countrySysid;
+    }
+
+    public String getCountrySyscode() {
+        return countrySyscode;
+    }
+
+    public void setCountrySyscode(String countrySyscode) {
+        this.countrySyscode = countrySyscode;
+    }
+
+    public String getCountrySysname() {
+        return countrySysname;
+    }
+
+    public void setCountrySysname(String countrySysname) {
+        this.countrySysname = countrySysname;
     }
 }
