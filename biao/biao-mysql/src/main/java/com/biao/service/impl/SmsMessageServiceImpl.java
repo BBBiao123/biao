@@ -7,6 +7,7 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.biao.cache.SmsFeieeConfig;
 import com.biao.config.FreemarkConfig;
 import com.biao.constant.Constants;
 import com.biao.constant.SercurityConstant;
@@ -25,6 +26,14 @@ import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
 import freemarker.template.TemplateNotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +44,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +83,16 @@ public class SmsMessageServiceImpl implements SmsMessageService {
     @Autowired
     private MobileTemplateDao mobileTemplateDao;
 
+    @Autowired
+    private SmsFeieeConfig smsFeieeConfig;
+
     public void sendSms(String mobile, String templateCode, String outId) {
+        String[] arrStr=mobile.split(",");
+        String countrySyscode=null;
+        if(arrStr.length>1){
+            countrySyscode=arrStr[0];
+            mobile=arrStr[1];
+        }
         //4验证码存redis
         String redisTemplatKey = "redis:sms:templat:" + templateCode;
         MobileTemplate mobileTemplate = (MobileTemplate) redisTemplate.opsForValue().get(redisTemplatKey);
@@ -90,43 +110,94 @@ public class SmsMessageServiceImpl implements SmsMessageService {
                 code = outId;
             }
             System.out.println("----------"+code);
-            //初始化acsClient,暂不支持region化
-            IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", mobileTemplate.getAccessKey(), mobileTemplate.getAccessSecret());
-            DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
-            IAcsClient acsClient = new DefaultAcsClient(profile);
-            //组装请求对象-具体描述见控制台-文档部分内容
-            SendSmsRequest request = new SendSmsRequest();
-            request.setConnectTimeout(10000);
-            request.setReadTimeout(10000);
-            //必填:待发送手机号
-            request.setPhoneNumbers(mobile);
-            //必填:短信签名-可在短信控制台中找到
-            request.setSignName(mobileTemplate.getSignName());
-            //必填:短信模板-可在短信控制台中找到
-            //SMS_136700099
-            request.setTemplateCode(mobileTemplate.getTemplateCode());
-            //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
-            Map<String, Object> params = new HashMap<>();
-            params.put("code", code);
-            String templateParam = getContent(mobileTemplate.getTemplateCode(), mobileTemplate.getTemplateParam(), params);
-            //"{\"code\":"+code+"}"
-            request.setTemplateParam(templateParam);
-            //选填-上行短信扩展码(无特殊需求用户请忽略此字段)
-            //request.setSmsUpExtendCode("90997");
-            //可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
-            if (StringUtils.isNotBlank(mobileTemplate.getWorkSign())) {
-                //"yourOutId"
-                request.setOutId(mobileTemplate.getWorkSign());
-            }
-            //记录日志
-            SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-            String id = SnowFlake.createSnowFlake().nextIdString();
             MobileSendLog mobileSendLog = new MobileSendLog();
+            //初始化acsClient,暂不支持region化
+            if(StringUtils.isBlank(countrySyscode) || "+86".equals(countrySyscode)){
+                IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", mobileTemplate.getAccessKey(), mobileTemplate.getAccessSecret());
+                DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+                IAcsClient acsClient = new DefaultAcsClient(profile);
+                //组装请求对象-具体描述见控制台-文档部分内容
+                SendSmsRequest request = new SendSmsRequest();
+                request.setConnectTimeout(10000);
+                request.setReadTimeout(10000);
+                //必填:待发送手机号
+                request.setPhoneNumbers(mobile);
+                //必填:短信签名-可在短信控制台中找到
+                request.setSignName(mobileTemplate.getSignName());
+                //必填:短信模板-可在短信控制台中找到
+                //SMS_136700099
+                request.setTemplateCode(mobileTemplate.getTemplateCode());
+                //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
+                Map<String, Object> params = new HashMap<>();
+                params.put("code", code);
+                String templateParam = getContent(mobileTemplate.getTemplateCode(), mobileTemplate.getTemplateParam(), params);
+                mobileSendLog.setContent(templateParam);
+                //"{\"code\":"+code+"}"
+                request.setTemplateParam(templateParam);
+                //选填-上行短信扩展码(无特殊需求用户请忽略此字段)
+                //request.setSmsUpExtendCode("90997");
+                //可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
+                if (StringUtils.isNotBlank(mobileTemplate.getWorkSign())) {
+                    //"yourOutId"
+                    request.setOutId(mobileTemplate.getWorkSign());
+                }
+                //记录日志
+                SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
+                if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
+                    mobileSendLog.setStatus("0");
+
+                    String redisKey = new StringBuffer("redis-sms:").append(mobileTemplate.getTemplateCode()).append(":" + mobile).toString();
+                    valOpsStr.set(redisKey, code, mobileTemplate.getTimeOut(), TimeUnit.SECONDS);
+                } else {
+                    mobileSendLog.setStatus("1");
+                    logger.error("发送短信失败， mobile = {}", mobile);
+                    throw new PlatException(Constants.GLOBAL_ERROR_CODE, sendSmsResponse.getMessage());
+                }
+            }else{
+                CloseableHttpClient client = null;
+                CloseableHttpResponse response = null;
+                try {
+                    List<BasicNameValuePair> formparams = new ArrayList<>();
+                    String contMobile=countrySyscode.replace("+","")+mobile;
+                    formparams.add(new BasicNameValuePair("Account",smsFeieeConfig.getAccount()));
+                    formparams.add(new BasicNameValuePair("Pwd",smsFeieeConfig.getPwd()));
+                    formparams.add(new BasicNameValuePair("Content",code));
+                    formparams.add(new BasicNameValuePair("Mobile",contMobile));
+                    formparams.add(new BasicNameValuePair("SignId",smsFeieeConfig.getSignId()));//
+                    formparams.add(new BasicNameValuePair("TemplateId",smsFeieeConfig.getTemplateId()));//
+
+                    HttpPost httpPost = new HttpPost(smsFeieeConfig.getUrl());
+                    httpPost.setEntity(new UrlEncodedFormEntity(formparams,"UTF-8"));
+                    client = HttpClients.createDefault();
+                    response = client.execute(httpPost);
+                    HttpEntity entity = response.getEntity();
+                    String result = EntityUtils.toString(entity);
+                    System.out.println(result);
+                    if (result != null && result.indexOf("OK") != -1) {
+                        mobileSendLog.setStatus("0");
+                        String redisKey = new StringBuffer("redis-sms:").append(mobileTemplate.getTemplateCode()).append(":" + mobile).toString();
+                        valOpsStr.set(redisKey, code, mobileTemplate.getTimeOut(), TimeUnit.SECONDS);
+                    } else {
+                        mobileSendLog.setStatus("1");
+                        logger.error("发送短信失败， mobile = {}", mobile);
+                        throw new PlatException(Constants.GLOBAL_ERROR_CODE, result);
+                    }
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
+                    if (client != null) {
+                        client.close();
+                    }
+                }
+            }
+
+            String id = SnowFlake.createSnowFlake().nextIdString();
+
             mobileSendLog.setId(id);
             mobileSendLog.setDelFlag("0");
             mobileSendLog.setBusinessType(mobileTemplate.getTemplateCode());
             mobileSendLog.setTemplateId(templateCode);
-            mobileSendLog.setContent(templateParam);
             mobileSendLog.setSubject("发送手机号短信" + mobileTemplate.getTemplateCode());
             mobileSendLog.setMobile(mobile);
             mobileSendLog.setCreateDate(LocalDateTime.now());
@@ -139,18 +210,9 @@ public class SmsMessageServiceImpl implements SmsMessageService {
             DisruptorData data = new DisruptorData();
             data.setType(4);
             data.setMobileSendLog(mobileSendLog);
-            if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
-                mobileSendLog.setStatus("0");
-                DisruptorManager.instance().publishData(data);
-                String redisKey = new StringBuffer("redis-sms:").append(mobileTemplate.getTemplateCode()).append(":" + mobile).toString();
-                valOpsStr.set(redisKey, code, mobileTemplate.getTimeOut(), TimeUnit.SECONDS);
-            } else {
-                mobileSendLog.setStatus("1");
-                DisruptorManager.instance().publishData(data);
-                logger.error("发送短信失败， mobile = {}", mobile);
-                throw new PlatException(Constants.GLOBAL_ERROR_CODE, sendSmsResponse.getMessage());
-            }
-        } catch (ClientException e) {
+            DisruptorManager.instance().publishData(data);
+
+        } catch (Exception e) {
             logger.error("发送短信失败， mobile = {},aliyun调用失败", mobile);
             throw new PlatException(Constants.GLOBAL_ERROR_CODE, "短信发送失败");
         }

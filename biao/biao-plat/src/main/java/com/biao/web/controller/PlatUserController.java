@@ -283,6 +283,14 @@ public class PlatUserController {
         if (!vaildStr.equals(decryPassword)) {
             return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
         }
+        PlatUser platUser=platUserService.findByLoginName(messageVO.getMobile());
+        if(StringUtils.isBlank(messageVO.getCountrySyscode()) && platUser != null && StringUtils.isNotBlank(platUser.getCountrySyscode())){
+            messageVO.setCountrySyscode(platUser.getCountrySyscode());
+        }
+        if(StringUtils.isBlank(messageVO.getCountrySyscode())){
+            messageVO.setCountrySyscode("+86");
+        }
+        messageVO.setMobile(messageVO.getCountrySyscode()+","+messageVO.getMobile());
         if (typeEnums == VerificationCodeType.REGISTER_CODE) {
             //手机注册
             DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(messageVO.getMobile(), MessageTemplateCode.MOBILE_REGISTER_TEMPLATE.getCode(), ""));
@@ -350,6 +358,12 @@ public class PlatUserController {
                     if (!vaildStr.equals(decryPassword)) {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
                     }
+                    PlatUser platUser=platUserService.findById(user.getId());
+                    String countrySyscode=platUser.getCountryCode();
+                    if(StringUtils.isBlank(countrySyscode)){
+                        countrySyscode="+86";
+                    }
+                    platUserVO.setMobile(countrySyscode+","+platUserVO.getMobile());
                     DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), ""));
                     //smsMessageService.sendSms(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), "");
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("发送短信成功"));
@@ -391,6 +405,12 @@ public class PlatUserController {
                     if (!isValid) {
                         throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
+                    PlatUser platUser=platUserService.findById(user.getId());
+                    String countrySyscode=platUser.getCountryCode();
+                    if(StringUtils.isBlank(countrySyscode)){
+                        countrySyscode="+86";
+                    }
+                    user.setMobile(countrySyscode+","+user.getMobile());
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     if (typeEnums == VerificationCodeType.EX_TRADE_PASS) {
                         //设置交易密码
@@ -527,6 +547,12 @@ public class PlatUserController {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
                     }
                     //smsMessageService.sendSms(mobile, MessageTemplateCode.MOBILE_BINDER_UPDATE.getCode(), "");
+                    PlatUser platUser=platUserService.findById(user.getId());
+                    String countrySyscode=platUser.getCountryCode();
+                    if(StringUtils.isBlank(countrySyscode)){
+                        countrySyscode="+86";
+                    }
+                    mobile=countrySyscode+","+mobile;
                     DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(mobile, MessageTemplateCode.MOBILE_BINDER_UPDATE.getCode(), ""));
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("发送短信成功"));
                 });

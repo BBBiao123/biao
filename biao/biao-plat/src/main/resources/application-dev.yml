@@ -26,8 +26,8 @@ spring:
       maximumPoolSize: 15 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
   data:
     mongodb:
-        host: dds-j6c4cb1c77b752a41823-pub.mongodb.rds.aliyuncs.com
-        port: 3717
+        host: 127.0.0.1
+        port: 27017
         database: photo
         authentication-database: photo
         username: photoadmin
@@ -136,6 +136,13 @@ balance:
   rewardDateStr: 2019-08-01 20:00:00
   coinSmybol: BTC,ETH,USDT,LTC
   rewardNum: 100
+sms:
+  config:
+    account: 18819246850
+    pwd: 07dd55517807ec58ec58e8fd9
+    SignId: 37880
+    templateId: 36230
+    url: http://api.feige.ee/SmsService/Inter
 
 logging:
   level:

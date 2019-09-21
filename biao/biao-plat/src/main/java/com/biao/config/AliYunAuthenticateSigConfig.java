@@ -15,6 +15,8 @@ public class AliYunAuthenticateSigConfig {
 
     private String otcAccessKeySecret;
 
+    private String  appKey;
+
     public String getAccessKeyId() {
         return accessKeyId;
     }
@@ -47,5 +49,11 @@ public class AliYunAuthenticateSigConfig {
         this.otcAccessKeySecret = otcAccessKeySecret;
     }
 
+    public String getAppKey() {
+        return appKey;
+    }
 
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
+    }
 }

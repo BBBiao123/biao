@@ -64,6 +64,11 @@ public class DisruptorDataEventHandler implements WorkHandler<DisruptorData> {
             //短信提示用户登录错误
             PlatUser platUser = platUserService.findByLoginName(disruptorData.getPlatUser().getUsername());
             if (platUser != null && StringUtils.isNotBlank(platUser.getMobile())) {
+                String countrySyscode=platUser.getCountryCode();
+                if(StringUtils.isBlank(countrySyscode)){
+                    countrySyscode="+86";
+                }
+                platUser.setMobile(countrySyscode+","+platUser.getMobile());
                 //发送短信提示用户
                 smsMessageService.sendSms(platUser.getMobile(), MessageTemplateCode.MOBILE_LOGIN_ERROR_TIME_TEMPLATE.getCode(), "");
             }

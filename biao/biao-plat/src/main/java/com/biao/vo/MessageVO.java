@@ -30,6 +30,8 @@ public class MessageVO implements Serializable {
 
     private String vaildCodeKey;
 
+    private String countrySyscode;
+
     public String getMail() {
         return mail;
     }
@@ -124,5 +126,13 @@ public class MessageVO implements Serializable {
 
     public void setVaildCodeKey(String vaildCodeKey) {
         this.vaildCodeKey = vaildCodeKey;
+    }
+
+    public String getCountrySyscode() {
+        return countrySyscode;
+    }
+
+    public void setCountrySyscode(String countrySyscode) {
+        this.countrySyscode = countrySyscode;
     }
 }
