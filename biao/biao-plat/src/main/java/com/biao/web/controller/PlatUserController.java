@@ -359,7 +359,7 @@ public class PlatUserController {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
                     }
                     PlatUser platUser=platUserService.findById(user.getId());
-                    String countrySyscode=platUser.getCountryCode();
+                    String countrySyscode=platUser.getCountrySyscode();
                     if(StringUtils.isBlank(countrySyscode)){
                         countrySyscode="+86";
                     }
@@ -548,7 +548,7 @@ public class PlatUserController {
                     }
                     //smsMessageService.sendSms(mobile, MessageTemplateCode.MOBILE_BINDER_UPDATE.getCode(), "");
                     PlatUser platUser=platUserService.findById(user.getId());
-                    String countrySyscode=platUser.getCountryCode();
+                    String countrySyscode=platUser.getCountrySyscode();
                     if(StringUtils.isBlank(countrySyscode)){
                         countrySyscode="+86";
                     }
