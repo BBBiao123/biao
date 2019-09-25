@@ -110,7 +110,7 @@ public class PlatUserController {
             @ValidateFiled(index = 0, filedName = "registerType", isEnums = true, enums = "1,2", notNull = true, errMsg = "注册类型不正确"),
             @ValidateFiled(index = 0, filedName = "password", notNull = true, errMsg = "请输入格式正确的密码"),
             @ValidateFiled(index = 0, filedName = "mail", regStr = Constants.EMAIL_PATTERN, notNull = true, when = "{\"filedName\":\"registerType\",\"value\":\"2\"}", errMsg = "请输入正确的邮箱"),
-            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, when = "{\"filedName\":\"registerType\",\"value\":\"1\"}", errMsg = "请输入正确的手机号"),
+//            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, when = "{\"filedName\":\"registerType\",\"value\":\"1\"}", errMsg = "请输入正确的手机号"),
             @ValidateFiled(index = 0, filedName = "code", notNull = false, errMsg = "验证码不正确"),
             @ValidateFiled(index = 0, filedName = "countryId", errMsg = "国籍不正确"/*, when = "{\"filedName\":\"registerType\",\"value\":\"1\"}"*/),
             @ValidateFiled(index = 0, filedName = "countryCode", errMsg = "区号不正确"/*, when = "{\"filedName\":\"registerType\",\"value\":\"1\"}"*/)
@@ -244,7 +244,7 @@ public class PlatUserController {
     }
 
     @ValidateGroup(fileds = {
-            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, errMsg = "手机号不正确"),
+//            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, errMsg = "手机号不正确"),
             @ValidateFiled(index = 0, filedName = "type", isEnums = true, enums = "login,register,message,reset,withdraw", notNull = true, errMsg = "请输入正确的业务类型"),
             @ValidateFiled(index = 0, filedName = "code", errMsg = "图形验证码不能为空"),
             @ValidateFiled(index = 0, filedName = "source", errMsg = "客户端来源"),
@@ -327,7 +327,7 @@ public class PlatUserController {
     }
 
     @ValidateGroup(fileds = {
-            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, errMsg = "请输入正确的手机号")
+//            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, errMsg = "请输入正确的手机号")
     })
     @PostMapping("/user/sendMobileSms")
     public Mono<GlobalMessageResponseVo> sendMobileSms(PlatUserVO platUserVO) {
@@ -511,7 +511,7 @@ public class PlatUserController {
      * @return
      */
     @ValidateGroup(fileds = {
-            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", errMsg = "请输入正确的手机号"),
+//            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", errMsg = "请输入正确的手机号"),
     })
     @PostMapping("/user/updateMobileSms")
     public Mono<GlobalMessageResponseVo> sendUpdateMobileSms(PlatUserVO platUserVO) {
@@ -559,7 +559,7 @@ public class PlatUserController {
     }
 
     @ValidateGroup(fileds = {
-            @ValidateFiled(index = 0, regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", filedName = "mobile", notNull = true, errMsg = "请输入正确的手机号"),
+//            @ValidateFiled(index = 0, regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", filedName = "mobile", notNull = true, errMsg = "请输入正确的手机号"),
             @ValidateFiled(index = 0, regStr = "\\d{4,6}", filedName = "code", notNull = true, errMsg = "请输入正确的手机号验证码"),
             @ValidateFiled(index = 0, filedName = "googleCode", regStr = "\\d{4,6}", errMsg = "谷歌验证码不正确")
     })
@@ -1072,7 +1072,7 @@ public class PlatUserController {
     }
 
     @ValidateGroup(fileds = {
-            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, errMsg = "请输入格式正确的密码"),
+//            @ValidateFiled(index = 0, filedName = "mobile", regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", notNull = true, errMsg = "请输入格式正确的密码"),
             @ValidateFiled(index = 0, filedName = "password", notNull = true, errMsg = "请输入格式正确的密码"),
             @ValidateFiled(index = 0, filedName = "code", regStr = "\\d{4,6}", notNull = true, errMsg = "请输入正确的手机验证码"),
     })
