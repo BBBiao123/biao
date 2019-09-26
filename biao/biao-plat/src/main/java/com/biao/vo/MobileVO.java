@@ -19,6 +19,12 @@ public class MobileVO implements Serializable {
 
     private String newCode;
 
+    private String countrySysid;
+
+    private String countrySyscode;
+
+    private String countrySysname;
+
     public String getOldMobile() {
         return oldMobile;
     }
@@ -51,4 +57,27 @@ public class MobileVO implements Serializable {
         this.newCode = newCode;
     }
 
+    public String getCountrySysid() {
+        return countrySysid;
+    }
+
+    public void setCountrySysid(String countrySysid) {
+        this.countrySysid = countrySysid;
+    }
+
+    public String getCountrySyscode() {
+        return countrySyscode;
+    }
+
+    public void setCountrySyscode(String countrySyscode) {
+        this.countrySyscode = countrySyscode;
+    }
+
+    public String getCountrySysname() {
+        return countrySysname;
+    }
+
+    public void setCountrySysname(String countrySysname) {
+        this.countrySysname = countrySysname;
+    }
 }

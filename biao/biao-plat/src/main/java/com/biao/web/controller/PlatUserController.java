@@ -359,11 +359,13 @@ public class PlatUserController {
                         return Mono.just(GlobalMessageResponseVo.newErrorInstance("验证码验证失败"));
                     }
                     PlatUser platUser=platUserService.findById(user.getId());
-                    String countrySyscode=platUser.getCountrySyscode();
-                    if(StringUtils.isBlank(countrySyscode)){
-                        countrySyscode="+86";
+                    if(StringUtils.isBlank(platUserVO.getCountrySyscode()) && platUser != null && StringUtils.isNotBlank(platUser.getCountrySyscode())){
+                        platUserVO.setCountrySyscode(platUser.getCountrySyscode());
                     }
-                    platUserVO.setMobile(countrySyscode+","+platUserVO.getMobile());
+                    if(StringUtils.isBlank(platUserVO.getCountrySyscode())){
+                        platUserVO.setCountrySyscode("+86");
+                    }
+                    platUserVO.setMobile(platUserVO.getCountrySyscode()+","+platUserVO.getMobile());
                     DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), ""));
                     //smsMessageService.sendSms(platUserVO.getMobile(), MessageTemplateCode.MOBILE_BINDER_TEMPLATE.getCode(), "");
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("发送短信成功"));
@@ -406,11 +408,13 @@ public class PlatUserController {
                         throw new PlatException(Constants.COMMON_ERROR_CODE, "验证码验证失败");
                     }
                     PlatUser platUser=platUserService.findById(user.getId());
-                    String countrySyscode=platUser.getCountryCode();
-                    if(StringUtils.isBlank(countrySyscode)){
-                        countrySyscode="+86";
+                    if(StringUtils.isBlank(platUserVO.getCountrySyscode()) && platUser != null && StringUtils.isNotBlank(platUser.getCountrySyscode())){
+                        platUserVO.setCountrySyscode(platUser.getCountrySyscode());
                     }
-                    user.setMobile(countrySyscode+","+user.getMobile());
+                    if(StringUtils.isBlank(platUserVO.getCountrySyscode())){
+                        platUserVO.setCountrySyscode("+86");
+                    }
+                    user.setMobile(platUserVO.getCountrySyscode()+","+user.getMobile());
                     VerificationCodeType typeEnums = VerificationCodeType.valueToEnums(platUserVO.getSmsType());
                     if (typeEnums == VerificationCodeType.EX_TRADE_PASS) {
                         //设置交易密码
@@ -552,7 +556,13 @@ public class PlatUserController {
                     if(StringUtils.isBlank(countrySyscode)){
                         countrySyscode="+86";
                     }
-                    mobile=countrySyscode+","+mobile;
+                    if(StringUtils.isBlank(platUserVO.getCountrySyscode()) && platUser != null && StringUtils.isNotBlank(platUser.getCountrySyscode())){
+                        platUserVO.setCountrySyscode(platUser.getCountrySyscode());
+                    }
+                    if(StringUtils.isBlank(platUserVO.getCountrySyscode())){
+                        platUserVO.setCountrySyscode("+86");
+                    }
+                    mobile=platUserVO.getCountrySyscode()+","+mobile;
                     DisruptorData.saveSecurityLog(DisruptorData.buildSecurityLog(mobile, MessageTemplateCode.MOBILE_BINDER_UPDATE.getCode(), ""));
                     return Mono.just(GlobalMessageResponseVo.newSuccessInstance("发送短信成功"));
                 });
@@ -579,6 +589,11 @@ public class PlatUserController {
                         PlatUser platUser = new PlatUser();
                         platUser.setMobile(messageVO.getMobile());
                         platUser.setId(user.getId());
+                        if(StringUtils.isNotBlank(messageVO.getCountrySysid())){
+                            platUser.setCountrySysid(messageVO.getCountrySysid());
+                            platUser.setCountrySyscode(messageVO.getCountrySyscode());
+                            platUser.setCountrySysname(messageVO.getCountrySysname());
+                        }
                         platUser.setMobileAuditDate(LocalDateTime.now()); //手机认证时间
                         platUserService.updateById(platUser);
                         //更新redis数据
@@ -927,6 +942,11 @@ public class PlatUserController {
                     PlatUser updatePlatUser = new PlatUser();
                     updatePlatUser.setId(user.getId());
                     updatePlatUser.setMobile(mobileVO.getNewMobile());
+                    if(StringUtils.isNotBlank(mobileVO.getCountrySysid())){
+                        updatePlatUser.setCountrySysid(mobileVO.getCountrySysid());
+                        updatePlatUser.setCountrySyscode(mobileVO.getCountrySyscode());
+                        updatePlatUser.setCountrySysname(mobileVO.getCountrySysname());
+                    }
                     updatePlatUser.setLockDate(lockDate);
                     platUserService.updateById(updatePlatUser);
                     user.setMobile(mobileVO.getNewMobile());

@@ -18,4 +18,10 @@ public class SmsMessageVO implements Serializable {
     private Integer googleCode;
 
     private String mail;
+
+    private String countrySysid;
+
+    private String countrySyscode;
+
+    private String countrySysname;
 }
