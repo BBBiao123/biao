@@ -213,6 +213,7 @@ public class SmsMessageServiceImpl implements SmsMessageService {
             DisruptorManager.instance().publishData(data);
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("发送短信失败， mobile = {},aliyun调用失败", mobile);
             throw new PlatException(Constants.GLOBAL_ERROR_CODE, "短信发送失败");
         }
