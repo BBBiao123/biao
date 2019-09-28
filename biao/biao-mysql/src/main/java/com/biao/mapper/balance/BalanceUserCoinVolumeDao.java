@@ -27,7 +27,7 @@ public interface BalanceUserCoinVolumeDao {
     @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance  where coin_balance>=200  order by create_date desc")
     List<BalanceUserCoinVolume> findAll();
 
-    @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance    order by create_date desc")
+    @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance where lock_flag is null    order by create_date desc")
     List<BalanceUserCoinVolume> findCoinAll();
 
     @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance where coin_balance>=200 and refer_id = #{userId} and coin_symbol = #{coinSymbol} ORDER BY create_date DESC ")
@@ -52,4 +52,7 @@ public interface BalanceUserCoinVolumeDao {
 
     @Delete("DELETE FROM js_plat_user_coin_balance WHERE id IN ( SELECT t2.balance_id FROM js_plat_user_coin_balancechange t2 WHERE t2.id =#{changeId} )")
     long deleteByBalanceId(@Param("changeId") String changeId);
+
+    @Select("select " + BalanceUserCoinVolumeSqlBuild.columns + " from js_plat_user_coin_balance t where t.lock_flag is not null   and  t.id in(select t2.balance_id from js_plat_user_coin_balancechange t2 where  t2.flag=2  and t2.take_out_date is null and  TIMESTAMPDIFF(DAY,t2.create_date,NOW())<t2.contract_time )  order by t.create_date desc ")
+    List<BalanceUserCoinVolume> findAllLockBalance();
 }

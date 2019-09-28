@@ -17,7 +17,7 @@ spring:
     active: dev
   data:
     mongodb:
-        host: dds-j6c4cb1c77b752a41823-pub.mongodb.rds.aliyuncs.com
+        host: dds-j6c4cb1c77b752a41.mongodb.rds.aliyuncs.com
         port: 3717
         database: photo
         authentication-database: photo

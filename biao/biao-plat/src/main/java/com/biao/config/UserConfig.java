@@ -20,10 +20,16 @@ public class UserConfig {
     private BigDecimal secretFreeQuota;
 
     private Integer lastAndroidVersion;
+
     private Integer lastIosVersion;
+
     private Integer isAndroidForceUpdate;
+
     private Integer isIosForceUpdate;
-    private String androidUrl;
+
+
+    private String  androidUrl;
+
     private String iosUrl;
 
     private BigDecimal exRate;

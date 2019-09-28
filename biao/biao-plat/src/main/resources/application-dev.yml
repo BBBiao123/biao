@@ -136,6 +136,9 @@ balance:
   rewardDateStr: 2019-08-01 20:00:00
   coinSmybol: BTC,ETH,USDT,LTC
   rewardNum: 100
+  coinLockSmybol: MG
+  minLockCoinNum: 100
+  
 sms:
   config:
     account: 18819246850

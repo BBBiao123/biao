@@ -101,7 +101,7 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
 
     @Override
     @Transactional
-    public void balanceVolume( BalanceUserCoinVolume balanceUserCoinVolume,BigDecimal rewardNum){
+    public void balanceVolume( BalanceUserCoinVolume balanceUserCoinVolume,BalanceChangeUserCoinVolume balanceChangeUserCoinVolume,BigDecimal rewardNum){
           String key="balanceVolume:"+balanceUserCoinVolume.getUserId();
           Integer vaildValue= cacheMap.get(key);
           System.out.println("------"+vaildValue);
@@ -123,6 +123,9 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
         List<BalanceUserCoinVolume> flaglist = balanceUserCoinVolumeDao.findByUserId(balanceUserCoinVolume.getUserId());
         String balanceUserCoinVolumeId = SnowFlake.createSnowFlake().nextIdString();
         balanceUserCoinVolume.setId(balanceUserCoinVolumeId);
+        if( balanceChangeUserCoinVolume.getFlag() != 0){
+            balanceUserCoinVolume.setLockFlag(1);
+        }
         balanceUserCoinVolumeDao.insert(balanceUserCoinVolume);
         if (!CollectionUtils.isNotEmpty(flaglist)) {
             List<BalancePlatJackpotVolumeDetail> jackpotList = balancePlatJackpotVolumeDetailDao.findByUserIdAndCoin("MG");
@@ -148,12 +151,11 @@ public class BalanceUserCoinVolumeServiceImpl implements BalanceUserCoinVolumeSe
                 balancePlatJackpotVolumeDetailDao.insert(jackpotDetail);
             }
         }
-        BalanceChangeUserCoinVolume balanceChangeUserCoinVolume = new BalanceChangeUserCoinVolume();
+//        BalanceChangeUserCoinVolume balanceChangeUserCoinVolume = new BalanceChangeUserCoinVolume();
         balanceChangeUserCoinVolume.setCoinNum(balanceUserCoinVolume.getCoinBalance());
         balanceChangeUserCoinVolume.setUserId(balanceUserCoinVolume.getUserId());
         balanceChangeUserCoinVolume.setCoinSymbol(balanceUserCoinVolume.getCoinSymbol());
         balanceChangeUserCoinVolume.setCoinPlatSymbol("MG");
-        balanceChangeUserCoinVolume.setFlag(0);
         balanceChangeUserCoinVolume.setMail(balanceUserCoinVolume.getMail());
         balanceChangeUserCoinVolume.setMobile(balanceUserCoinVolume.getMobile());
         balanceChangeUserCoinVolume.setBalanceId(balanceUserCoinVolume.getId());

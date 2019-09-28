@@ -49,4 +49,6 @@ public class BalanceCoinVolumeVO implements Serializable {
     private String mobile;
     private String mail;
     private String exPassword;
+    private int flag;
+    private Integer contractTime;
 }
