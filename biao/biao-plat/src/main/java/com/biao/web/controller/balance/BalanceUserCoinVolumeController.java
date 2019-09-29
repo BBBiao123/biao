@@ -807,6 +807,7 @@ public class BalanceUserCoinVolumeController {
                     if (longTime < 30) {
                         coinNum = coinNum.subtract(coinNum.multiply(new BigDecimal(0.05)));
                     }
+                    coinNum=coinNum.setScale(16,BigDecimal.ROUND_HALF_UP);
                     balanceUserCoinVolumeService.balanceOutVolume(balanceUserCoinVolume,coinNum);
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });

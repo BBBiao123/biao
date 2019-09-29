@@ -93,6 +93,7 @@ public class UserCoinVolumeExServiceImpl implements UserCoinVolumeExService {
             return new UpdateRsp().setSuccess(false).setMsg("没有找到用户相关的资产信息.");
         }
         BigDecimal newVolume = Optional.ofNullable(volume.getVolume()).orElse(BigDecimal.ZERO);
+        newVolume=newVolume.setScale(16,BigDecimal.ROUND_HALF_UP);
         //如果需要相减volume.
         if (isSubtractVolume) {
             //得到资产交易可能使用的最大所需资产数
