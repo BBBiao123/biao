@@ -481,7 +481,12 @@ public class RedisSessionUser implements UserDetails {
         }
 
         if(StringUtils.isNotEmpty(mobile)){
-            csUsername = mobile.substring(7,11).concat(csUsername);
+            if(mobile.length()>4){
+                csUsername = mobile.substring(mobile.length()-4,mobile.length()).concat(csUsername);
+            }else{
+                csUsername = mobile.concat(csUsername);
+            }
+
         }else{
             csUsername = mail.substring(0,4).concat(csUsername);
         }
