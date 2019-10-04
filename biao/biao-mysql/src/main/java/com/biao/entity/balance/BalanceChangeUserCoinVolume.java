@@ -48,6 +48,9 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
     @SqlField("balance_id")
     private String balanceId;
 
+    @SqlField("contract_time")
+    private Integer contractTime;
+
     public String getUserId() {
         return userId;
     }
@@ -126,5 +129,13 @@ public class BalanceChangeUserCoinVolume extends BaseEntity {
 
     public void setBalanceId(String balanceId) {
         this.balanceId = balanceId;
+    }
+
+    public Integer getContractTime() {
+        return contractTime;
+    }
+
+    public void setContractTime(Integer contractTime) {
+        this.contractTime = contractTime;
     }
 }

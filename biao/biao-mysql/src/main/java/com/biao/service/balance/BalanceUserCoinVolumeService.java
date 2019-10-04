@@ -42,6 +42,6 @@ public interface BalanceUserCoinVolumeService {
     List<BalanceUserCoinVolume> findByAllRank();
     long deleteByBalanceId(String changeId);
 
-    void balanceVolume(BalanceUserCoinVolume balanceUserCoinVolume, BigDecimal rewardNum);
+    void balanceVolume(BalanceUserCoinVolume balanceUserCoinVolume,BalanceChangeUserCoinVolume balanceChange, BigDecimal rewardNum);
     void balanceOutVolume( BalanceChangeUserCoinVolume balanceUserCoinVolume, BigDecimal coinNum);
 }

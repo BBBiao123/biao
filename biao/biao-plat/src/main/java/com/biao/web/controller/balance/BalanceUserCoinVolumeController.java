@@ -261,6 +261,7 @@ public class BalanceUserCoinVolumeController {
                     if(balanceCoinVolumeVO.getCoinNum().compareTo(BigDecimal.ZERO)<=0){
                         return GlobalMessageResponseVo.newErrorInstance("转入资产不能少于等于0");
                     }
+
                     if (StringUtils.isBlank(e.getExPassword())) {
                         return GlobalMessageResponseVo.newErrorInstance("请先设置交易密码");
                     }
@@ -299,6 +300,12 @@ public class BalanceUserCoinVolumeController {
                     if(!"USDT".equalsIgnoreCase(balanceCoinVolumeVO.getCoinSymbol())){
                         depositValue=depositValue.multiply(platPrice);
                     }
+                    if(balanceCoinVolumeVO.getFlag()==2){
+                        BigDecimal lockNum=balancePlatDayRateConfig.getMinLockCoinNum();
+                      if(depositValue.compareTo(lockNum)<0){
+                          return GlobalMessageResponseVo.newErrorInstance("锁仓转入资产不能少于等于"+lockNum);
+                      }
+                    }
                     BalanceUserCoinVolume balanceUserCoinVolume = new BalanceUserCoinVolume();
                     System.out.println("用户ID：" + balanceCoinVolumeVO.getUserId() + "-----币种：" + balanceCoinVolumeVO.getCoinSymbol());
                     List<BalanceUserCoinVolume> flaglist = balanceUserCoinVolumeService.findAll(balanceCoinVolumeVO.getUserId());
@@ -323,61 +330,10 @@ public class BalanceUserCoinVolumeController {
                     }
                     balanceUserCoinVolume.setReferId(e.getReferId());
                     balanceUserCoinVolume.setCreateDate(LocalDateTime.now());
-//                    balanceUserCoinVolumeService.save(balanceUserCoinVolume);
-                    balanceUserCoinVolumeService.balanceVolume(balanceUserCoinVolume,balancePlatDayRateConfig.getRewardNum());
-//                    if (!CollectionUtils.isNotEmpty(flaglist)) {
-//                        List<BalancePlatJackpotVolumeDetail> jackpotList = balancePlatJackpotVolumeService.findAll("MG");
-//                        BalancePlatJackpotVolumeDetail jackpotDetail = new BalancePlatJackpotVolumeDetail();
-//                        if (CollectionUtils.isNotEmpty(jackpotList)) {
-//                            jackpotDetail = jackpotList.get(0);
-//                        }
-//                        if (jackpotDetail.getAllCoinIncome() != null) {
-//                            jackpotDetail.setAllCoinIncome(jackpotDetail.getAllCoinIncome().add(balancePlatDayRateConfig.getRewardNum()));
-//                        } else {
-//                            jackpotDetail.setAllCoinIncome(balancePlatDayRateConfig.getRewardNum());
-//                        }
-//                        if (jackpotDetail.getRewardDate() == null) {
-//                            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//                            LocalDateTime time = LocalDateTime.now();
-//                            String localTime = df.format(time);
-//                            LocalDateTime ldt = LocalDateTime.parse(balancePlatDayRateConfig.getRewardDateStr(), df);
-//                            jackpotDetail.setRewardDate(ldt);
-//                        }
-//                        if (jackpotDetail.getCoinSymbol() == null) {
-//                            jackpotDetail.setCoinSymbol("MG");
-//                        }
-//                        if (StringUtils.isNotEmpty(jackpotDetail.getId()) && !"null".equals(jackpotDetail.getId())) {
-//                            balancePlatJackpotVolumeService.updateById(jackpotDetail);
-//                        } else {
-//                            jackpotDetail.setCreateDate(LocalDateTime.now());
-//                            balancePlatJackpotVolumeService.save(jackpotDetail);
-//                        }
-//                    }
-//                    BalanceChangeUserCoinVolume balanceChangeUserCoinVolume = new BalanceChangeUserCoinVolume();
-//                    balanceChangeUserCoinVolume.setCoinNum(balanceCoinVolumeVO.getCoinNum());
-//                    balanceChangeUserCoinVolume.setUserId(balanceUserCoinVolume.getUserId());
-//                    balanceChangeUserCoinVolume.setCoinSymbol(balanceCoinVolumeVO.getCoinSymbol());
-//                    balanceChangeUserCoinVolume.setCoinPlatSymbol("MG");
-//                    balanceChangeUserCoinVolume.setFlag(0);
-//                    balanceChangeUserCoinVolume.setMail(e.getMail());
-//                    balanceChangeUserCoinVolume.setMobile(e.getMobile());
-//                    balanceChangeUserCoinVolume.setBalanceId(balanceUserCoinVolume.getId());
-//                    balanceChangeUserCoinVolumeService.save(balanceChangeUserCoinVolume);
-
-//                    userCoinVolumeExService.updateOutcome(null, userCoinIncome2, e.getId(), balanceUserCoinVolume.getCoinSymbol(), false);
-//                    Coin coinVo = coinDao.findByName(balanceUserCoinVolume.getCoinSymbol());
-//                    OfflineTransferLog offlineTransferLog = new OfflineTransferLog();
-//                    String id = SnowFlake.createSnowFlake().nextIdString();
-//                    offlineTransferLog.setId(id);
-//                    offlineTransferLog.setCreateDate(LocalDateTime.now());
-//                    offlineTransferLog.setUpdateDate(LocalDateTime.now());
-//                    offlineTransferLog.setUserId(e.getId());
-//                    offlineTransferLog.setCoinSymbol(balanceUserCoinVolume.getCoinSymbol());
-//                    offlineTransferLog.setVolume(userCoinIncome2);
-//                    offlineTransferLog.setType(20);//常规账户到挖矿部落
-//                    offlineTransferLog.setCoinId(coinVo.getId());
-//                    offlineTransferLog.setSourceVolume(BigDecimal.ZERO);
-//                    offlineTransferLogDao.insert(offlineTransferLog);
+                    BalanceChangeUserCoinVolume balanceChangeUserCoinVolume= new BalanceChangeUserCoinVolume();
+                    balanceChangeUserCoinVolume.setFlag(balanceCoinVolumeVO.getFlag());
+                    balanceChangeUserCoinVolume.setContractTime(balanceCoinVolumeVO.getContractTime());
+                    balanceUserCoinVolumeService.balanceVolume(balanceUserCoinVolume,balanceChangeUserCoinVolume,balancePlatDayRateConfig.getRewardNum());
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
@@ -841,12 +797,6 @@ public class BalanceUserCoinVolumeController {
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
                     balanceUserCoinVolume.setMobile(e.getMobile());
                     balanceUserCoinVolume.setMail(e.getMail());
-//                    balanceChangeUserCoinVolumeService.save(balanceUserCoinVolume);
-//                    BalanceChangeUserCoinVolume balanceUserCoinVolumeUpdate = new BalanceChangeUserCoinVolume();
-//                    BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolumeUpdate);
-//                    balanceUserCoinVolumeUpdate.setTakeOutDate(LocalDateTime.now());
-//                    balanceChangeUserCoinVolumeService.updateById(balanceUserCoinVolumeUpdate);
-//                    balanceUserCoinVolumeService.deleteByBalanceId(balanceChangeCoinVolumeVO.getId());
                     LocalDateTime localDateTimeNow = LocalDateTime.now();
                     Instant instant = Instant.ofEpochMilli(balanceChangeCoinVolumeVO.getCreateTime());
                     ZoneId zone = ZoneId.systemDefault();
@@ -857,21 +807,8 @@ public class BalanceUserCoinVolumeController {
                     if (longTime < 30) {
                         coinNum = coinNum.subtract(coinNum.multiply(new BigDecimal(0.05)));
                     }
+                    coinNum=coinNum.setScale(16,BigDecimal.ROUND_HALF_UP);
                     balanceUserCoinVolumeService.balanceOutVolume(balanceUserCoinVolume,coinNum);
-//                    Coin coinVo = coinDao.findByName(balanceUserCoinVolume.getCoinSymbol());
-//                    OfflineTransferLog offlineTransferLog = new OfflineTransferLog();
-//                    String id = SnowFlake.createSnowFlake().nextIdString();
-//                    offlineTransferLog.setId(id);
-//                    offlineTransferLog.setCreateDate(LocalDateTime.now());
-//                    offlineTransferLog.setUpdateDate(LocalDateTime.now());
-//                    offlineTransferLog.setUserId(e.getId());
-//                    offlineTransferLog.setCoinSymbol(balanceUserCoinVolume.getCoinSymbol());
-//                    offlineTransferLog.setVolume(coinNum);
-//                    offlineTransferLog.setType(21);//挖矿部落到常规账户
-//                    offlineTransferLog.setCoinId(coinVo.getId());
-//                    offlineTransferLog.setSourceVolume(BigDecimal.ZERO);
-//                    offlineTransferLogDao.insert(offlineTransferLog);
-//                    userCoinVolumeExService.updateIncome(null, coinNum, balanceChangeCoinVolumeVO.getUserId(), balanceChangeCoinVolumeVO.getCoinSymbol(), false);
                     return GlobalMessageResponseVo.newSuccessInstance("操作成功！");
                 });
     }
@@ -1041,6 +978,8 @@ public class BalanceUserCoinVolumeController {
                     List<BalanceUserCoinVolume> balanceDetailList = balanceUserCoinVolumeService.findAll(e.getId());
                     //我的挖矿总额
                     BigDecimal coinBalance = BigDecimal.ZERO;
+                    BigDecimal coinLhBalance = BigDecimal.ZERO;
+                    BigDecimal coinStatBalance = BigDecimal.ZERO;
                     if (CollectionUtils.isNotEmpty(balanceDetailList)) {
                         for (BalanceUserCoinVolume userCoinVolume : balanceDetailList) {
 //                            TradePairVO tradePair = tradePairMap.get(userCoinVolume.getCoinSymbol());
@@ -1052,6 +991,11 @@ public class BalanceUserCoinVolumeController {
 //                                }
 //                            }
                             coinBalance = coinBalance.add(userCoinVolume.getDepositValue());
+                            if(userCoinVolume.getLockFlag() == null){
+                                coinLhBalance=coinLhBalance.add(userCoinVolume.getDepositValue());
+                            }else{
+                                coinStatBalance=coinStatBalance.add(userCoinVolume.getDepositValue());
+                            }
                         }
                     }
                     listVo.setCoinBalance(coinBalance);
@@ -1059,8 +1003,8 @@ public class BalanceUserCoinVolumeController {
                     BigDecimal balance2 = new BigDecimal(1000);
                     BigDecimal balance3 = new BigDecimal(200);
                     BigDecimal dayRate = new BigDecimal(0);
-                    String positionName = "";
-                    if (listVo.getCoinBalance() != null && listVo.getCoinBalance().compareTo(balance3) >= 0) {
+                    String positionName =  "暂无仓位";
+                    if (coinLhBalance != null && coinLhBalance.compareTo(balance3) >= 0) {
                         if (listVo.getCoinBalance().compareTo(balance) > 0) {
                             dayRate = dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
                             positionName = "三级仓";
@@ -1071,9 +1015,10 @@ public class BalanceUserCoinVolumeController {
                             positionName = "一级仓";
                             dayRate = dayRate.add(balancePlatDayRateConfig.getOneDayRate().multiply(new BigDecimal(100)));
                         }
-                    } else {
-                        positionName = "暂无仓位";
+                    } else if(coinStatBalance != null && coinStatBalance.compareTo(BigDecimal.ZERO)>0){
+                        positionName=  "锁仓合约用户";
                     }
+
                     listVo.setRise(dayRate.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
                     listVo.setPositionName(positionName);
                     //一级邀请人数
@@ -1381,6 +1326,31 @@ public class BalanceUserCoinVolumeController {
 //        }
 //        balanceUserCoinVolumeDetailService.balanceJackpotIncomeCount(tradePairMap);
 //    }
+
+    /**
+     * @return
+     */
+    @GetMapping("/balance/volume/coinLockList")
+    public Mono<GlobalMessageResponseVo> findCoinLockList() {
+        Mono<SecurityContext> context
+                = ReactiveSecurityContextHolder.getContext();
+
+        return context.filter(c -> Objects.nonNull(c.getAuthentication()))
+                .map(s -> s.getAuthentication().getPrincipal())
+                .cast(RedisSessionUser.class)
+                .map(e -> {
+                    List<Coin> listVo = new ArrayList<Coin>();
+                    String[] coinArr = balancePlatDayRateConfig.getCoinLockSmybol().split(",");
+                    for (String coinName : coinArr) {
+                        Coin coinVo = coinDao.findByName(coinName);
+                        if (coinVo != null) {
+                            listVo.add(coinVo);
+                        }
+                    }
+
+                    return GlobalMessageResponseVo.newSuccessInstance(listVo);
+                });
+    }
 
 
 }

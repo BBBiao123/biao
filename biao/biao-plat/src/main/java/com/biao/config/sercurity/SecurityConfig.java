@@ -281,6 +281,7 @@ public class SecurityConfig {
         }
 
         private DataBuffer handlerUserError(MultiValueMap<String, String> data, Exception exception, ServerWebExchange exchange) {
+            exception.printStackTrace();
             DataBufferFactory bufferFactory = exchange.getResponse().bufferFactory();
             int code = Constants.GLOBAL_ERROR_CODE;
             String message = null;

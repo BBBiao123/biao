@@ -16,6 +16,8 @@ public class BalancePlatDayRateConfig {
 	private String rewardDateStr ;
 	private String coinSmybol;
 	private BigDecimal rewardNum;
+	private String coinLockSmybol;
+	private BigDecimal minLockCoinNum;
 
 	public BigDecimal getOneDayRate() {
 		return oneDayRate;
@@ -71,5 +73,21 @@ public class BalancePlatDayRateConfig {
 
 	public void setRewardNum(BigDecimal rewardNum) {
 		this.rewardNum = rewardNum;
+	}
+
+	public String getCoinLockSmybol() {
+		return coinLockSmybol;
+	}
+
+	public void setCoinLockSmybol(String coinLockSmybol) {
+		this.coinLockSmybol = coinLockSmybol;
+	}
+
+	public BigDecimal getMinLockCoinNum() {
+		return minLockCoinNum;
+	}
+
+	public void setMinLockCoinNum(BigDecimal minLockCoinNum) {
+		this.minLockCoinNum = minLockCoinNum;
 	}
 }

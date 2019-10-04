@@ -102,6 +102,15 @@ public class BalanceUserCoinCountVolume extends BaseEntity {
     @SqlField("differential_reward")
     private BigDecimal differentialReward;
 
+    @SqlField("coin_lock_balance")
+    private BigDecimal coinLockBalance;
+
+    @SqlField("statics_lock_income")
+    private BigDecimal staticsLockIncome;
+
+    @SqlField("coin_sum_balance")
+    private BigDecimal coinSumBalance;
+
     public String getUserId() {
         return userId;
     }
@@ -332,5 +341,29 @@ public class BalanceUserCoinCountVolume extends BaseEntity {
 
     public void setCoinPlatSymbol(String coinPlatSymbol) {
         this.coinPlatSymbol = coinPlatSymbol;
+    }
+
+    public BigDecimal getCoinLockBalance() {
+        return coinLockBalance;
+    }
+
+    public void setCoinLockBalance(BigDecimal coinLockBalance) {
+        this.coinLockBalance = coinLockBalance;
+    }
+
+    public BigDecimal getStaticsLockIncome() {
+        return staticsLockIncome;
+    }
+
+    public void setStaticsLockIncome(BigDecimal staticsLockIncome) {
+        this.staticsLockIncome = staticsLockIncome;
+    }
+
+    public BigDecimal getCoinSumBalance() {
+        return coinSumBalance;
+    }
+
+    public void setCoinSumBalance(BigDecimal coinSumBalance) {
+        this.coinSumBalance = coinSumBalance;
     }
 }

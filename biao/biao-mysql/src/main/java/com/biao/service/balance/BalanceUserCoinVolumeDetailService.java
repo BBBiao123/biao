@@ -43,5 +43,5 @@ public interface BalanceUserCoinVolumeDetailService {
 
    BigDecimal  findPriceByUpdateDate();
     BigDecimal  findPriceByCoinSymbolUpdateDate(String coinSymbol);
-
+    void  balanceRelieveLock();
 }

@@ -353,19 +353,19 @@ public class FileController {
     public @ResponseBody ResponseEntity<String> multipleSave(MultipartFile file){
         String fileName = null;
 
-        try {
-            fileName = file.getOriginalFilename();
-            byte[] bytes = file.getBytes();
-            BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new java.io.File("/home/deploy/appdownload/" + fileName)));
-            buffStream.write(bytes);
-            buffStream.close();
+                try {
+                    fileName = file.getOriginalFilename();
+                    byte[] bytes = file.getBytes();
+                    BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new java.io.File("/home/deploy/appdownload/" + fileName)));
+                    buffStream.write(bytes);
+                    buffStream.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+                } catch (Exception e) {
+                     e.printStackTrace();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+                }
 
-        return   ResponseEntity.status(HttpStatus.OK).body("上传成功");
+            return   ResponseEntity.status(HttpStatus.OK).body("上传成功");
 
     }
 
