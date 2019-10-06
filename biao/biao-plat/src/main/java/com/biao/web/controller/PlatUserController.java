@@ -903,7 +903,7 @@ public class PlatUserController {
 
     @ValidateGroup(fileds = {
             @ValidateFiled(index = 0, regStr = "\\d{4,6}", filedName = "oldCode", notNull = true, errMsg = "请输入正确的手机号验证码"),
-            @ValidateFiled(index = 0, regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", filedName = "newMobile", notNull = true, errMsg = "请输入正确的手机号"),
+//            @ValidateFiled(index = 0, regStr = "1[3|4|5|6|7|8|9][0-9]\\d{4,8}", filedName = "newMobile", notNull = true, errMsg = "请输入正确的手机号"),
             @ValidateFiled(index = 0, regStr = "\\d{4,6}", filedName = "newCode", notNull = true, errMsg = "请输入正确的手机号验证码")
     })
     @PostMapping("/user/updateUserMobile")
