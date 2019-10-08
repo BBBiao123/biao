@@ -53,6 +53,8 @@ public class InitService implements CommandLineRunner {
         loomContractEvent.ContractFilter(web3j, symbol_bat, TOKEN_ADDRESS_MAP.get(symbol_bat), TOKEN_MAP.get(symbol_bat).getDecimals());
         String symbol_zrx = "ZRX";
         loomContractEvent.ContractFilter(web3j, symbol_zrx, TOKEN_ADDRESS_MAP.get(symbol_zrx), TOKEN_MAP.get(symbol_zrx).getDecimals());
+        String symbol_MTL = "MTL";
+        loomContractEvent.ContractFilter(web3j, symbol_zrx, TOKEN_ADDRESS_MAP.get(symbol_MTL), TOKEN_MAP.get(symbol_MTL).getDecimals());
 
         //处理客户的转币需求
 //        logger.info("——————————————————————————————————————开始处理 转账  ——————————————————————————————————————");

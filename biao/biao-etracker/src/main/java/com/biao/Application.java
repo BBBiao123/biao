@@ -30,15 +30,20 @@ public class Application {
         String contractAddress_bat ="0x0d8775f648430679a709e98d2b0cb6250d2887ef";
         String symbol_zrx = "ZRX";
         String contractAddress_zrx ="0xe41d2489571d322189246dafa5ebde1f4699f498";
+        String symbol_MTL = "MTL";
+        String contractAddress_MTL ="0xf433089366899d83a9f26a773d59ec7ecf30355e";
         TOKEN_ADDRESS_MAP.put(symbol_mg, contractAddress_mg);
         TOKEN_ADDRESS_MAP.put(symbol_bat, contractAddress_bat);
         TOKEN_ADDRESS_MAP.put(symbol_zrx, contractAddress_zrx);
+        TOKEN_ADDRESS_MAP.put(symbol_MTL, contractAddress_MTL);
         Token token_mg = new Token(contractAddress_mg,3);
         Token token_bat = new Token(contractAddress_bat,18);
         Token token_zrx = new Token(contractAddress_zrx,18);
+        Token token_MTL = new Token(contractAddress_zrx,8);
         TOKEN_MAP.put(symbol_mg,token_mg);
         TOKEN_MAP.put(symbol_bat,token_bat);
         TOKEN_MAP.put(symbol_zrx,token_zrx);
+        TOKEN_MAP.put(symbol_MTL,token_MTL);
 
 
         Constant.TOKEN_LIST = TOKEN_ADDRESS_MAP.entrySet().stream()
