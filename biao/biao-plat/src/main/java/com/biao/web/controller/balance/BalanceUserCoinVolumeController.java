@@ -303,7 +303,7 @@ public class BalanceUserCoinVolumeController {
                     if(balanceCoinVolumeVO.getFlag()==2){
                         BigDecimal lockNum=balancePlatDayRateConfig.getMinLockCoinNum();
                       if(depositValue.compareTo(lockNum)<0){
-                          return GlobalMessageResponseVo.newErrorInstance("锁仓转入资产不能少于等于"+lockNum);
+                          return GlobalMessageResponseVo.newErrorInstance("锁仓转入资产不能少于"+lockNum+"USDT");
                       }
                     }
                     BalanceUserCoinVolume balanceUserCoinVolume = new BalanceUserCoinVolume();
