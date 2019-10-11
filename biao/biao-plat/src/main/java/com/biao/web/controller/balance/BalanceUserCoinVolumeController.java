@@ -793,6 +793,9 @@ public class BalanceUserCoinVolumeController {
                     if (!result) {
                         return GlobalMessageResponseVo.newErrorInstance("请输入正确的交易密码");
                     }
+                    if(StringUtils.isBlank(balanceChangeCoinVolumeVO.getUserId())){
+                        balanceChangeCoinVolumeVO.setUserId(e.getId());
+                    }
                     BalanceChangeUserCoinVolume balanceUserCoinVolume = new BalanceChangeUserCoinVolume();
                     BeanUtils.copyProperties(balanceChangeCoinVolumeVO, balanceUserCoinVolume);
                     balanceUserCoinVolume.setMobile(e.getMobile());
@@ -1164,6 +1167,9 @@ public class BalanceUserCoinVolumeController {
                         listVo.setUserSurplus(listVo.getUserSurplus().setScale(2, BigDecimal.ROUND_HALF_UP));
                     } else {
                         listVo.setUserSurplus(BigDecimal.ZERO);
+                    }
+                    if (StringUtils.isBlank(listVo.getUserId())) {
+                        listVo.setUserId(e.getId());
                     }
 
                     return GlobalMessageResponseVo.newSuccessInstance(listVo);
