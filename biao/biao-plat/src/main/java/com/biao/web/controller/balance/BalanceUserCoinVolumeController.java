@@ -1005,10 +1005,10 @@ public class BalanceUserCoinVolumeController {
                     BigDecimal dayRate = new BigDecimal(0);
                     String positionName =  "暂无仓位";
                     if (coinLhBalance != null && coinLhBalance.compareTo(balance3) >= 0) {
-                        if (listVo.getCoinBalance().compareTo(balance) > 0) {
+                        if (coinLhBalance.compareTo(balance) > 0) {
                             dayRate = dayRate.add(balancePlatDayRateConfig.getThreeDayRate().multiply(new BigDecimal(100)));
                             positionName = "三级仓";
-                        } else if (listVo.getCoinBalance().compareTo(balance2) > 0) {
+                        } else if (coinLhBalance.compareTo(balance2) > 0) {
                             dayRate = dayRate.add(balancePlatDayRateConfig.getSecondDayRate().multiply(new BigDecimal(100)));
                             positionName = "二级仓";
                         } else {
