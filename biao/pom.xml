@@ -98,7 +98,7 @@
         <ehcache-web.version>2.0.4</ehcache-web.version>
         <quartz.version>2.2.3</quartz.version>
         <okhttp.vesrion>3.10.0</okhttp.vesrion>
-        <jsoup.version>1.11.3</jsoup.version>
+        <jsoup.version>1.14.2</jsoup.version>
         <redisson.version>3.10.0</redisson.version>
         <disruptor.version>3.3.7</disruptor.version>
         <bson.version>3.8.2</bson.version>
@@ -243,7 +243,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.11.3</version>
+                <version>1.14.2</version>
             </dependency>
 
         </dependencies>
