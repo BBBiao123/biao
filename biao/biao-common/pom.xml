@@ -12,7 +12,7 @@
     <artifactId>biao-common</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <email.version>1.4</email.version>
+        <email.version>1.5</email.version>
     </properties>
     <dependencies>
         <dependency>
